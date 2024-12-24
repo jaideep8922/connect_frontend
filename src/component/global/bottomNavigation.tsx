@@ -10,9 +10,9 @@ const BottomNavigation = () => {
     const pathname = usePathname()
 
     // Dynamically set userType
-    // const userType:any = "Retailer"; 
+    const userType:any = "Retailer"; 
 
-    const userType:any = "Supplier";
+    // const userType:any = "Supplier";
 
     // const userType: UserType = "Supplier";
 

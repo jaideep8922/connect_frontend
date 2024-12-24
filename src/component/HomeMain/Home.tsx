@@ -110,8 +110,8 @@ const supplierMenuItems = [
 ]
 
 export default function MainHome() {
-  // const userType:any = "Retailer"
-  const userType:any = "Supplier"
+  const userType:any = "Retailer"
+  // const userType:any = "Supplier"
   
   const router = useRouter();
 
