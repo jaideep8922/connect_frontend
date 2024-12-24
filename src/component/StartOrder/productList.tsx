@@ -1,6 +1,6 @@
 'use client'
 
-import { ArrowLeft, ShoppingCart, Search, Minus, Plus } from 'lucide-react'
+import { ArrowLeft, ShoppingCart, Search } from 'lucide-react'
 import { useState } from 'react'
 import Image from 'next/image'
 import Pista from '@/assets/pista.jpg';

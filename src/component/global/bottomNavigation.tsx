@@ -1,6 +1,8 @@
 import React from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 
+type UserType = "Supplier" | "Retailer" | "Distributor";
+
 const BottomNavigation = () => {
     const router = useRouter();
 
@@ -11,6 +13,8 @@ const BottomNavigation = () => {
     // const userType:any = "Retailer"; 
 
     const userType:any = "Supplier";
+
+    // const userType: UserType = "Supplier";
 
     const isActive = (path: string) => pathname === path;
 
