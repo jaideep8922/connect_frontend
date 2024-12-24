@@ -18,7 +18,7 @@ const BottomNavigation = () => {
 
     const isActive = (path: string) => pathname === path;
 
-    console.log("isActive", isActive)
+    // console.log("isActive", isActive)
 
     return (
         <div>
