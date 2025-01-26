@@ -2,11 +2,12 @@
 import Image from "next/image";
 import { ArrowLeft, Plus, Minus, NotebookPen } from 'lucide-react';
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Pista from '@/assets/pista.jpg';
 import { AlertTriangle, ShoppingCart, MessageSquare } from 'lucide-react'
 import SendEnquiryModal from "@/component/global/sendEnquiryPopup";
 import SuccessMessage from "@/component/global/successEnquiry";
+import { useRouter, useSearchParams } from "next/navigation";
 
 const products = [
     {
@@ -90,10 +91,105 @@ export default function CartRequestPage() {
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [isModalClose, setIsModalClose] = useState(false)
     const [showSuccess, setShowSuccess] = useState(false);
+    
+      const router = useRouter()
+      const searchParams = useSearchParams()
+      const orderId = searchParams.get('orderId')
 
-    const handleConfirm = () => {
-        setIsModalOpen(false)
-    }
+      console.log("orderId",orderId)
+
+
+        const [orders, setOrders] = useState<any>([]);
+        const [loading, setLoading] = useState(false);
+      
+      
+        useEffect(() => {
+          const localData: any = JSON.parse(localStorage.getItem('userDetails') || '{}');
+          const customId = localData?.data?.customId;
+      
+          const fetchOrders = async () => {
+            setLoading(true);
+            try {
+              const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/order/get-order-history-by-supplier-id`, {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ customId }),
+              });
+      
+              if (response.ok) {
+                const data = await response.json();
+                if (data.success) {
+                  setOrders(data.data);
+                } else {
+                  console.error("Failed to fetch orders: ", data.message);
+                }
+              } else {
+                console.error("Failed to fetch orders: HTTP error", response.status);
+              }
+            } catch (error) {
+              console.error("Error fetching orders: ", error);
+            } finally {
+              setLoading(false);
+            }
+          };
+      
+          fetchOrders();
+        }, []);
+
+        console.log("orders",orders)
+
+        const [orderDetails, setOrderDetails] = useState<any>(null)
+
+
+        useEffect(() => {
+            if (orderId && orders) {
+              // Find the order matching the orderId
+              const order = orders.find((order:any) => order.orderId === orderId)
+              setOrderDetails(order)
+            }
+          }, [orderId, orders])
+
+    // const handleConfirm = () => {
+    //     setIsModalOpen(false)
+    // }
+
+    const handleConfirm = async () => {
+        setIsModalOpen(false);
+        try {
+            const response = await fetch(
+                `${process.env.NEXT_PUBLIC_BACKEND_URL}/order/update-order-status`,
+                {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        orderId: orderId, // Use the extracted orderId from the search params
+                        statusId: 2,      // Send statusId as 2
+                    }),
+                }
+            );
+    
+            if (response.ok) {
+                const data = await response.json();
+                if (data.success) {
+                    setShowSuccess(true);
+                    setTimeout(() => {
+                        router.push("/current-received");
+                    }, 3000);
+                } else {
+                    console.error("Failed to update order status: ", data.message);
+                }
+            } else {
+                console.error("Failed to update order status: HTTP error", response.status);
+            }
+        } catch (error) {
+            console.error("Error updating order status: ", error);
+        }
+    };
+    
 
     const handleConfirmReject = () => {
         setIsModalClose(false)
@@ -112,6 +208,8 @@ export default function CartRequestPage() {
         setIsOpen(false)
     }
 
+    console.log("orderDetails?.statusId", orderDetails?.statusId)
+
     return (
         <div className="bg-white">
             <header className="sticky top-0 z-10 bg-white px-4 py-3 shadow-sm">
@@ -122,7 +220,7 @@ export default function CartRequestPage() {
                         </Link>
                         <div>
                             <h1 className="text-lg font-semibold">Your cart</h1>
-                            <p className="text-sm text-gray-500">6 Item / 144 Quantity</p>
+                            <p className="text-sm text-gray-500">{orderDetails?.totalItem} Item / {orderDetails?.totalQuantity} Quantity</p>
                         </div>
                     </div>
 
@@ -184,21 +282,22 @@ export default function CartRequestPage() {
             <main className="p-4">
                 {activeTab === "cart" ? (
                     <div className="grid grid-cols-2 gap-4">
-                        {products.map((product) => (
+                        {orderDetails?.OrderProductDetails.map((product:any) => (
                             <div
                                 key={product.id}
                                 className="overflow-hidden rounded-xl bg-white shadow-sm p-2 border"
                             >
                                 <div className="relative aspect-square">
                                     <Image
-                                        src={product.image}
-                                        alt={product.name}
+                                        src={product.product.productImage}
+                                        alt={product.product.productImage}
                                         fill
                                         className="object-cover rounded-xl"
                                     />
-                                    <div className="absolute bottom-0 left-0 right-0 rounded-b-xl bg-black/50 px-2 py-1">
+
+                                    {/* <div className="absolute bottom-0 left-0 right-0 rounded-b-xl bg-black/50 px-2 py-1">
                                         <p className="text-xs text-white">MOQ: {product.moq}</p>
-                                    </div>
+                                    </div> */}
                                 </div>
                                 <div className="flex items-center justify-between border-t p-3">
                                     <button className="rounded-full bg-gray-100 p-2">
@@ -211,6 +310,8 @@ export default function CartRequestPage() {
                                 </div>
                             </div>
                         ))}
+
+
                     </div>
                 ) : (
                     <div className="text-center text-gray-700">
@@ -220,12 +321,12 @@ export default function CartRequestPage() {
                                     <div className="bg-white shadow-lg rounded-lg p-4 border">
                                         {/* Header */}
                                         <div className="flex items-center justify-between">
-                                            <div className="flex items-center gap-2">
+                                            {/* <div className="flex items-center gap-2">
                                                 <span className="text-sm text-gray-500">Status</span>
                                                 <span className="rounded-full bg-yellow-100 px-2 py-1 text-xs font-semibold text-yellow-800">
                                                     {orderDetails.status}
                                                 </span>
-                                            </div>
+                                            </div> */}
                                             <div className="text-sm text-gray-500">
                                                 ORDER ID : {orderDetails.orderId}
                                             </div>
@@ -233,41 +334,38 @@ export default function CartRequestPage() {
 
                                         {/* Date and Time */}
                                         <div className="mt-4 flex justify-between text-sm text-gray-500">
-                                            <div>Date : {orderDetails.date}</div>
-                                            <div>Time : {orderDetails.time}</div>
+                                            <div>Date :  {new Date(orderDetails.createdAt).toLocaleString()}</div>
+                                            {/* <div>Time : {orderDetails.time}</div> */}
                                         </div>
 
                                         {/* Order Summary */}
                                         <div className="mt-4 space-y-2 text-sm">
                                             <div className="flex justify-between">
                                                 <span>TOTAL ITEM :</span>
-                                                <span>{orderDetails.totalItems}</span>
+                                                <span>{orderDetails.totalItem}</span>
+                                                {/* <span>{orderDetails.totalItems}</span> */}
                                             </div>
                                             <div className="flex justify-between">
                                                 <span>TOTAL QUANTITY :</span>
                                                 <span>{orderDetails.totalQuantity}</span>
                                             </div>
-                                            <div className="mt-4 space-y-2 border-t pt-2">
+                                            {/* <div className="mt-4 space-y-2 border-t pt-2">
                                                 <div className="flex justify-between">
                                                     <span>SUBTOTAL :</span>
-                                                    <span>₹{orderDetails.subtotal.toFixed(2)}</span>
                                                 </div>
                                                 <div className="flex justify-between">
                                                     <span>SHIPPING :</span>
-                                                    <span>₹{orderDetails.shipping.toFixed(2)}</span>
                                                 </div>
                                                 <div className="flex justify-between">
                                                     <span>OTHERS :</span>
-                                                    <span>₹{orderDetails.others.toFixed(2)}</span>
                                                 </div>
                                                 <div className="flex justify-between">
                                                     <span>DISCOUNT :</span>
-                                                    <span>₹{orderDetails.discount.toFixed(2)}</span>
                                                 </div>
-                                            </div>
+                                            </div> */}
                                             <div className="flex justify-between border-t pt-2 font-medium">
                                                 <span>Total Amount :</span>
-                                                <span>₹{orderDetails.subtotal.toFixed(2)}</span>
+                                                {/* <span>₹{orderDetails.}</span> */}
                                             </div>
                                         </div>
 
@@ -279,14 +377,19 @@ export default function CartRequestPage() {
 
                                     </div>
                                     {/* Action Buttons */}
-                                    <div className="mt-6 flex gap-4">
-                                        <button onClick={() => setIsModalClose(true)} className="flex flex-1 items-center justify-center gap-2 rounded-md bg-red-600 py-3 text-white">
-                                            Reject
-                                        </button>
-                                        <button onClick={() => setIsModalOpen(true)} className="flex flex-1 items-center justify-center gap-2 rounded-md bg-green-500 py-3 text-white">
-                                            Accept
-                                        </button>
-                                    </div>
+                                    {orderDetails?.statusId === 1 ? (
+                                                                    <div className="mt-6 flex gap-4">
+                                                                    <button onClick={() => setIsModalClose(true)} className="flex flex-1 items-center justify-center gap-2 rounded-md bg-red-600 py-3 text-white">
+                                                                        Reject
+                                                                    </button>
+                                                                    <button onClick={() => setIsModalOpen(true)} className="flex flex-1 items-center justify-center gap-2 rounded-md bg-green-500 py-3 text-white">
+                                                                        Accept
+                                                                    </button>
+                                                                </div>
+                                    ):(
+                                        <></>
+                                    )}
+
 
                                     <SendEnquiryModal
                                         isOpen={isModalOpen}
@@ -313,7 +416,7 @@ export default function CartRequestPage() {
 
 
                                     {/* Product List */}
-                                    <div className="mt-6 space-y-4">
+                                    {/* <div className="mt-6 space-y-4">
                                         {orderDetails.products.map((product, index) => (
                                             <div
                                                 key={index}
@@ -346,7 +449,7 @@ export default function CartRequestPage() {
                                                 </div>
                                             </div>
                                         ))}
-                                    </div>
+                                    </div> */}
                                 </div>
                             </div>
                         </div>

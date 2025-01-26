@@ -12,96 +12,119 @@ import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 import Link from 'next/link'
 import BottomNavigation from '../global/bottomNavigation'
+import { useEffect, useState } from 'react'
 
 export default function ShopMain() {
-    const categories = [
-        { id: 1, Icon: Leaf, bgColor: 'bg-green-100', textColor: 'text-green-600' },
-        { id: 2, Icon: Apple, bgColor: 'bg-red-100', textColor: 'text-red-600' },
-        { id: 3, Icon: Coffee, bgColor: 'bg-yellow-100', textColor: 'text-yellow-600' },
-        { id: 4, Icon: ShoppingBag, bgColor: 'bg-blue-100', textColor: 'text-blue-600' },
-        { id: 5, Icon: Droplet, bgColor: 'bg-purple-100', textColor: 'text-purple-600' },
-        { id: 6, Icon: Spray, bgColor: 'bg-pink-100', textColor: 'text-pink-600' },
-        { id: 7, Icon: Droplet, bgColor: 'bg-purple-100', textColor: 'text-purple-600' },
-        { id: 8, Icon: Spray, bgColor: 'bg-pink-100', textColor: 'text-pink-600' },
-        { id: 9, Icon: ShoppingBag, bgColor: 'bg-blue-100', textColor: 'text-blue-600' },
+    const [productData, setProductData] = useState<any>([]);
+    const [sellerData, setSellerData] = useState<any>([]);
+    const [error, setError] = useState<string | null>(null);
+    const [imageSlider, setImageSlider] = useState<any>([]);
 
-    ];
+    const localData: any = JSON.parse(localStorage.getItem('userDetails') || '{}');
+    const sellerId = localData?.data?.sellerId;
 
-    const products = [
-        {
-            id: 1,
-            name: "Pistachios",
-            image: Pista,
-            moq: "100 xyz",
-            prices: {
-                average: "₹1009.26",
-                good: "₹1299.26",
-                high: "₹1599.26",
-            },
-        },
-        {
-            id: 2,
-            name: "Almonds",
-            image: Pista,
-            moq: "200 xyz",
-            prices: {
-                average: "₹899.50",
-                good: "₹1099.00",
-                high: "₹1399.75",
-            },
-        },
-        {
-            id: 3,
-            name: "Almonds",
-            image: Pista,
-            moq: "200 xyz",
-            prices: {
-                average: "₹899.50",
-                good: "₹1099.00",
-                high: "₹1399.75",
-            },
-        },
-        {
-            id: 4,
-            name: "Almonds",
-            image: Pista,
-            moq: "200 xyz",
-            prices: {
-                average: "₹899.50",
-                good: "₹1099.00",
-                high: "₹1399.75",
-            },
-        },
-        {
-            id: 5,
-            name: "Almonds",
-            image: Pista,
-            moq: "200 xyz",
-            prices: {
-                average: "₹899.50",
-                good: "₹1099.00",
-                high: "₹1399.75",
-            },
-        },
-        {
-            id: 6,
-            name: "Almonds",
-            image: Pista,
-            moq: "200 xyz",
-            prices: {
-                average: "₹899.50",
-                good: "₹1099.00",
-                high: "₹1399.75",
-            },
-        },
-    ];
+    useEffect(() => {
+        const fetchProductList = async () => {
+            try {
+                const response = await fetch(
+                    `${process.env.NEXT_PUBLIC_BACKEND_URL}/product/get-product-list?sellerId=${sellerId}`,
+                    {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                    }
+                );
 
-    const sliderData = [
-        { id: 1, imageUrl: 'https://images.unsplash.com/photo-1509721434272-b79147e0e708?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1500&q=80', title: 'Slide 1' },
-        { id: 2, imageUrl: 'https://images.unsplash.com/photo-1506710507565-203b9f24669b?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1536&q=80', title: 'Slide 2' },
-        { id: 3, imageUrl: 'https://images.unsplash.com/photo-1536987333706-fc9adfb10d91?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1500&q=80', title: 'Slide 3' },
-    ];
+                const result = await response.json();
 
+                if (!response.ok) {
+                    throw new Error(result.message || 'Failed to fetch product details');
+                }
+
+                setProductData(result);
+                setError(null);
+            } catch (error: any) {
+                console.error('Error fetching product list:', error.message);
+                setError(error.message);
+            }
+        };
+
+        if (sellerId) {
+            fetchProductList();
+        }
+    }, [sellerId]); 
+
+    useEffect(() => {
+        const fetchSellerDetails = async () => {
+            try {
+                const response = await fetch(
+                    `${process.env.NEXT_PUBLIC_BACKEND_URL}/users/getUserById`,
+                    {
+                        method: 'POST', // Changed to POST for sending a body
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            customId: sellerId,
+                            userType: "Supplier",
+                        }),
+                    }
+                );
+
+                const result = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(result.message || 'Failed to fetch seller details');
+                }
+
+                setSellerData(result);
+                setError(null);
+            } catch (error: any) {
+                console.error('Error fetching seller details:', error.message);
+                setError(error.message);
+            }
+        };
+
+        if (sellerId) {
+            fetchSellerDetails();
+        }
+    }, [sellerId]);
+
+    const phoneNumber = sellerData?.data?.phone;
+    localStorage.setItem('sellerPhone', phoneNumber);
+
+    useEffect(() => {
+        const fetchBannerImages = async () => {
+            try {
+                const response = await fetch(
+                    `${process.env.NEXT_PUBLIC_BACKEND_URL}/get-banner-image?sellerId=${sellerId}`,
+                    {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                    }
+                );
+
+                const result = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(result.message || 'Failed to fetch banner images');
+                }
+
+                setImageSlider(result);
+                setError(null);
+            } catch (error: any) {
+                console.error('Error fetching banner images:', error.message);
+                setError(error.message);
+            }
+        };
+
+        if (sellerId) {
+            fetchBannerImages();
+        }
+    }, [sellerId]); 
 
     return (
         <div className="bg-white m-2 overflow-hidden">
@@ -129,8 +152,8 @@ export default function ShopMain() {
                         className="w-full h-full object-cover border-2 border-gray-200 rounded-full"
                     />
                 </div>
-                <h2 className="font-semibold text-xl">Gaurav Singh</h2>
-                <p className="text-md text-gray-500">Gaurav Enterprises Pvt. Ltd</p>
+                <h2 className="font-semibold text-xl">{sellerData?.data?.businessName}</h2>
+                <p className="text-md text-gray-500">{sellerData?.data?.businessOwner}</p>
             </div>
 
             {/* Promo Banner */}
@@ -143,17 +166,18 @@ export default function ShopMain() {
                     loop={true}
                     className="w-full h-64"
                 >
-                    {sliderData.map((slide) => (
-                        <SwiperSlide key={slide.id}>
+                    {imageSlider?.data?.map((slide: any) => (
+                        <SwiperSlide key={slide?.id}>
                             <div className="relative w-full h-full">
-                                <img
-                                    src={slide.imageUrl}
-                                    alt={slide.title}
-
+                                <Image
+                                    src={slide?.imageLink}
+                                    alt={slide?.imageLink}
+                                    width={400}
+                                    height={150}
                                     className="object-cover rounded-lg"
                                 />
                                 <div className="absolute bottom-8 left-4 bg-black bg-opacity-50 text-white p-2 text-sm rounded">
-                                    {slide.title}
+                                    {slide.sellerId}
                                 </div>
                             </div>
                         </SwiperSlide>
@@ -162,21 +186,19 @@ export default function ShopMain() {
             </div>
 
             <div className="px-1">
-                <h2 className="text-2xl font-semibold mb-4 mt-2 ">Featured Products</h2>
+                <h2 className="text-2xl font-semibold my-5 ">Featured Products</h2>
                 <div className="grid grid-cols-2 gap-2">
-                    {products.map((product) => (
+                    {productData?.data?.map((product: any) => (
                         // <Link href='/single-view'>
                         <ProductCard key={product.id} product={product} />
                         // </Link>
                     ))}
-                  
+
                 </div>
             </div>
             <div className='mt-20'>
-            <BottomNavigation />
-
+                <BottomNavigation />
             </div>
         </div>
     )
 }
-

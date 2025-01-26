@@ -30,7 +30,7 @@ export function BookReviewCard({ text, timestamp, colorClass }: BookReviewProps)
   return (
     <div className={`relative group ${colorClass} rounded-lg p-4 shadow-sm overflow-hidden`}>
       <div className="space-y-2 relative z-10">
-        <h2 className="font-medium text-gray-900">Book Review :</h2>
+        <h2 className="font-medium text-gray-900">Notes :</h2>
         <p className="text-sm text-gray-700">{text}</p>
         <time className="block text-xs text-gray-600">{timestamp}</time>
       </div>

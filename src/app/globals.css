@@ -79,3 +79,24 @@ a {
     @apply block lg:hidden;
   }
 }
+
+
+.goog-te-gadget-simple {
+  background-color: #FFF;
+  border-left: 1px solid #D5D5D5;
+  border-top: 1px solid #9B9B9B;
+  border-bottom: 1px solid #E8E8E8;
+  border-right: 1px solid #D5D5D5;
+  font-size: 10pt;
+  display: inline-flex; /* Ensure elements stay inline and use flexbox for alignment */
+  align-items: center; /* Align icon and text vertically */
+  padding: 1px 5px; /* Adjust padding for better spacing */
+  cursor: pointer;
+}
+
+.goog-te-gadget-simple img {
+  display: inline-block; /* Ensure the icon stays inline */
+  margin-right: 5px; /* Add spacing between the icon and text */
+  height: 16px; /* Adjust size if necessary */
+  width: auto;
+}

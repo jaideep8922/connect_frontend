@@ -90,6 +90,7 @@ export default function CartProcesssPage() {
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [isModalClose, setIsModalClose] = useState(false)
     const [showSuccess, setShowSuccess] = useState(false);
+    const [isImageModalOpen, setIsImageModalOpen] = useState(false);
 
     const handleConfirm = () => {
         setIsModalOpen(false)
@@ -111,8 +112,6 @@ export default function CartProcesssPage() {
         console.log("Saving description:", description)
         setIsOpen(false)
     }
-
-
 
     type Status = 'reject' | 'accept' | 'pending' | 'complete'
 
@@ -296,61 +295,159 @@ export default function CartProcesssPage() {
                                     </div>
 
                                     {isModalOpen && (
-                                        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-                                            <div className="max-w-md mx-auto p-6 bg-white rounded-lg shadow-lg">
-                                                <h1 className="text-2xl font-bold mb-6">Change Status!</h1>
+  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+    <div className="max-w-md mx-auto p-6 bg-white rounded-lg shadow-lg">
+      <h1 className="text-2xl font-bold mb-6">Change Status!</h1>
 
-                                                {/* Current Status */}
-                                                <div className="mb-6">
-                                                    <p className="text-lg">Enquiry Sent</p>
-                                                    <div className="text-gray-400 space-y-1">
-                                                        <p>Customer Cancelled</p>
-                                                        <p>Enquiry Received</p>
-                                                    </div>
-                                                </div>
+      {/* Status Options */}
+      <div className="space-y-3 mb-8">
+        {[
+          { id: 'reject', label: 'Reject' },
+          { id: 'accept', label: 'Accept' },
+          { id: 'pending', label: 'Mark Pending' },
+          { id: 'complete', label: 'Mark Complete' },
+        ].map((option) => (
+          <label
+            key={option.id}
+            className="flex items-center justify-between p-4 rounded-lg border border-gray-100 bg-white shadow-sm cursor-pointer hover:bg-gray-50"
+          >
+            <span className="text-gray-600">{option.label}</span>
+            <input
+              type="radio"
+              name="status"
+              value={option.id}
+              checked={selectedStatus === option.id}
+              onChange={(e) => {
+                setSelectedStatus(e.target.value as Status);
+                if (e.target.value === 'complete') setIsImageModalOpen(true);
+              }}
+              className="h-5 w-5 rounded-full border-2 border-gray-300 text-blue-600 focus:ring-blue-500"
+            />
+          </label>
+        ))}
+      </div>
 
-                                                {/* Status Options */}
-                                                <div className="space-y-3 mb-8">
-                                                    {[
-                                                        { id: 'reject', label: 'Reject' },
-                                                        { id: 'accept', label: 'Accept' },
-                                                        { id: 'pending', label: 'Mark Pending' },
-                                                        { id: 'complete', label: 'Mark Complete' },
-                                                    ].map((option) => (
-                                                        <label
-                                                            key={option.id}
-                                                            className="flex items-center justify-between p-4 rounded-lg border border-gray-100 bg-white shadow-sm cursor-pointer hover:bg-gray-50"
-                                                        >
-                                                            <span className="text-gray-600">{option.label}</span>
-                                                            <input
-                                                                type="radio"
-                                                                name="status"
-                                                                value={option.id}
-                                                                checked={selectedStatus === option.id}
-                                                                onChange={(e) => setSelectedStatus(e.target.value as Status)}
-                                                                className="h-5 w-5 rounded-full border-2 border-gray-300 text-blue-600 focus:ring-blue-500"
-                                                            />
-                                                        </label>
-                                                    ))}
-                                                </div>
+      {/* Action Buttons */}
+      <div className="flex gap-4">
+        <button
+          className="flex-1 px-6 py-3 rounded-lg border border-gray-200 text-gray-700 hover:bg-gray-50"
+          onClick={() => setSelectedStatus(null)}
+        >
+          Cancel
+        </button>
+        <button
+          className="flex-1 px-6 py-3 rounded-lg bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50"
+          onClick={() => setIsModalOpen(false)}
+        >
+          Confirm
+        </button>
+      </div>
+    </div>
+  </div>
+)}
 
-                                                {/* Action Buttons */}
-                                                <div className="flex gap-4">
-                                                    <button
-                                                        className="flex-1 px-6 py-3 rounded-lg border border-gray-200 text-gray-700 hover:bg-gray-50"
-                                                        onClick={() => setSelectedStatus(null)}
-                                                    >
-                                                        Cancel
-                                                    </button>
-                                                    <button
-                                                        className="flex-1 px-6 py-3 rounded-lg bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50" onClick={()=> setIsModalOpen(false)}
-                                                    >
-                                                        Confirm
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    )}
+{isImageModalOpen && (
+  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+    <div className="max-w-sm mx-auto p-6 bg-white rounded-lg shadow-lg">
+      <h1 className="text-xl font-semibold mb-4 flex items-center gap-2">
+        <span>Take or Upload Image</span>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          strokeWidth={2}
+          stroke="currentColor"
+          className="w-6 h-6 text-blue-600"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M3 16.5V12c0-2.828 2.134-5 4.75-5h1.5M3 7h3.25a2 2 0 0 1 2 2v0a2 2 0 0 1-2 2H3v7a1 1 0 0 0 1 1h10.5c.828 0 1.5-.672 1.5-1.5V3c0-.828-.672-1.5-1.5-1.5H6.5C5.672 1.5 5 2.172 5 3v7m6.5 3v8"
+          />
+        </svg>
+      </h1>
+      <div className="flex flex-col gap-4">
+        <label className="block">
+          <input
+            type="file"
+            accept="image/*"
+            capture="environment"
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (file) {
+                console.log("Captured Image: ", file);
+                // Handle file upload logic here
+              }
+            }}
+            className="hidden"
+            id="cameraInput"
+          />
+         <button
+  className="w-full px-6 py-3 rounded-lg bg-blue-600 text-white hover:bg-blue-700"
+  onClick={() => {
+    const cameraInput = document.getElementById('cameraInput');
+    if (cameraInput) {
+      (cameraInput as HTMLInputElement).click(); // Type assertion to avoid null error
+    }
+  }}
+>
+  Open Camera
+</button>
+
+        </label>
+        <label className="block">
+          <input
+            type="file"
+            accept="image/*"
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (file) {
+                console.log("Uploaded Image: ", file);
+                // Handle file upload logic here
+              }
+              
+            }}
+            className="hidden"
+            id="uploadInput"
+          />
+          {/* <button
+            className="w-full px-6 py-3 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50"
+            onClick={() => document.getElementById('uploadInput').click()}
+          >
+            Upload Image
+          </button> */}
+          <button
+  className="w-full px-6 py-3 rounded-lg bg-blue-600 text-white hover:bg-blue-700"
+  onClick={() => {
+    const cameraInput = document.getElementById('cameraInput');
+    if (cameraInput) {
+      (cameraInput as HTMLInputElement).click(); // Type assertion to avoid null error
+    }
+  }}
+>
+  Upload Image
+</button>
+
+        </label>
+      </div>
+      <div className="flex gap-4 mt-4">
+        <button
+          className="flex-1 px-6 py-3 rounded-lg border border-gray-200 text-gray-700 hover:bg-gray-50"
+          onClick={() => setIsImageModalOpen(false)}
+        >
+          Cancel
+        </button>
+        <button
+          className="flex-1 px-6 py-3 rounded-lg bg-blue-600 text-white hover:bg-blue-700"
+          onClick={() => setIsImageModalOpen(false)}
+        >
+          Done
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
 
 
 

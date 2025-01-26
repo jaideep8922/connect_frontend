@@ -14,7 +14,15 @@ module.exports = {
           poppins: ['Poppins', 'sans-serif'], 
         },
       },
-    
+      animation: {
+        'border-blink': 'border-blink-animation 1s infinite',
+      },
+      keyframes: {
+        'border-blink-animation': {
+          '0%, 100%': { borderColor: '#38bdf8' }, 
+          '50%': { borderColor: '#ec4899' }, 
+        },
+      },
   },
   plugins: [],
 }

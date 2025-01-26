@@ -2,7 +2,10 @@ import type { Metadata } from "next";
 import "./globals.css";
 import ClientProvider from "./clientProvider";
 import { Poppins } from 'next/font/google';
-
+import LanguageSelector from "@/component/language";
+import { Provider } from 'react-redux';
+import {store} from '../store/store'
+import ReduxProvider from "@/component/global/reduxProvider";
 
 const poppins = Poppins({
   subsets: ['latin'], 
@@ -22,10 +25,13 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${poppins.className} block lg:hidden`}>
-      <ClientProvider>
-        {children}
+      <body className={`${poppins.className} `}>
+      <LanguageSelector />
+<ReduxProvider>
+        <ClientProvider>
+          {children}
         </ClientProvider>
+        </ReduxProvider>
       </body>
     </html>
   );

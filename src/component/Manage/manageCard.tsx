@@ -9,10 +9,12 @@ interface ProductCardProps {
 }
 
 export function ManageCard({ product, onEdit }: ProductCardProps) {
+
+    console.log("product", product)
     const router = useRouter()
 
     const handleClick = () => {
-        router.push('/add-product')
+        router.push('/manage-edit')
     }
 
     const [selectedPrice, setSelectedPrice] = useState<string>("");
@@ -23,20 +25,18 @@ export function ManageCard({ product, onEdit }: ProductCardProps) {
 
     return (
         <div className="rounded-lg border bg-card text-card-foreground shadow-sm" onClick={handleClick}>
-            <div className="relative aspect-square">
-                <Image
-                    src={product.image}
+            <div className="relative">
+                <img
+                    src={product?.productImage}
                     alt={product.name}
-
-                    fill
-                    className="object-cover rounded-t-lg"
+                    className="object-cover rounded-t-lg h-32 w-full"
                 />
-                <div className="absolute bottom-0 left-0 right-0 rounded-b-xl bg-black/50 px-2 py-1">
+                {/* <div className="absolute bottom-0 left-0 right-0 rounded-b-xl bg-black/50 px-2 py-1">
                     <p className="text-xs text-white">MOQ: {product.moq}</p>
-                </div>
+                </div> */}
             </div>
             <div className="p-2">
-                <h3 className="font-medium">{product.name}</h3>
+                <h3 className="font-medium">{product.productName}</h3>
                 <div className="mt-2">
                     <label className="flex items-center text-xs ">
                         <input
@@ -47,7 +47,7 @@ export function ManageCard({ product, onEdit }: ProductCardProps) {
                             onChange={handlePriceChange}
                             className="mr-2"
                         />
-                        Average: <span className="px-1 font-semibold">{'500'}</span>
+                        Average: <span className="px-1 font-semibold">{'₹ 500'}</span>
                     </label>
                 </div>
                 <div className="mt-2">
@@ -60,7 +60,7 @@ export function ManageCard({ product, onEdit }: ProductCardProps) {
                             onChange={handlePriceChange}
                             className="mr-2"
                         />
-                        Good: <span className="px-1 font-semibold">{'1500'}</span>
+                        Good: <span className="px-1 font-semibold">{'₹ 1500'}</span>
                     </label>
                 </div>
                 <div className="mt-2">
@@ -73,7 +73,7 @@ export function ManageCard({ product, onEdit }: ProductCardProps) {
                             onChange={handlePriceChange}
                             className="mr-2"
                         />
-                        High: <span className="px-1 font-semibold">{'2000'}</span>
+                        High: <span className="px-1 font-semibold">{'₹ 2000'}</span>
                     </label>
                 </div>
                 {/* <div className="mt-1 text-sm">

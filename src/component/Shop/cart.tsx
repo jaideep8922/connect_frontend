@@ -2,102 +2,97 @@
 import Image from "next/image";
 import { ArrowLeft, Plus, Minus, NotebookPen } from 'lucide-react';
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Pista from '@/assets/pista.jpg';
 import { AlertTriangle, ShoppingCart, MessageSquare } from 'lucide-react'
 import SendEnquiryModal from "../global/sendEnquiryPopup";
 import SuccessMessage from "../global/successEnquiry";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "@/store/store";
+import { addToCart, removeFromCart } from "@/store/slices/cartSlice";
+import toast, { Toaster } from 'react-hot-toast';
+import { useRouter } from "next/navigation";
 
-const products = [
-    {
-        id: 1,
-        name: "Almonds",
-        image: Pista,
-        moq: "100 meters",
-        quantity: 1,
-    },
-    {
-        id: 2,
-        name: "Red Apples",
-        image: Pista,
-        moq: "100 meters",
-        quantity: 1,
-    },
-    {
-        id: 3,
-        name: "Pistachios",
-        image: Pista,
-        moq: "100 meters",
-        quantity: 1,
-    },
-    {
-        id: 4,
-        name: "White Stones",
-        image: Pista,
-        moq: "100 meters",
-        quantity: 1,
-    },
-];
 
-const orderDetails = {
-    id: 1,
-    orderId: "475121",
-    status: "Pending",
-    date: "06-07-2024",
-    time: "10:15 am",
-    totalItems: 33,
-    totalQuantity: 108,
-    subtotal: 0,
-    shipping: 0,
-    others: 0,
-    discount: 0,
-    products: [
-        {
-            name: "Almonds",
-            image: Pista,
-            moq: "50 Kg",
-            mrp: 1000,
-            quantity: "50 Kg",
-            totalQty: "50 x 1000 = 50000",
-            totalAmount: 49999.5,
-            id: 1
-        },
-        {
-            name: "Apple",
-            image: Pista,
-            moq: "50 Kg",
-            mrp: 1000,
-            quantity: "50 Kg",
-            totalQty: "50 x 1000 = 50000",
-            totalAmount: 49999.5,
-            id: 2
-        },
-        {
-            name: "Cashew",
-            image: Pista,
-            moq: "50 Kg",
-            mrp: 750,
-            quantity: "50 Kg",
-            totalQty: "50 x 750 = 37500",
-            totalAmount: 37499.5,
-            id: 3
-        }
-    ]
-}
 
 export default function CartPage() {
     const [activeTab, setActiveTab] = useState<"cart" | "bill">("cart");
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [showSuccess, setShowSuccess] = useState(false);
+    const dispatch = useDispatch()
+    const router = useRouter()
+
+
+    const carts = useSelector((state: RootState) => state.cart.cart);
+
+    const sendCartData = async () => {
+        const localData: any = JSON.parse(localStorage.getItem('userDetails') || '{}');
+        const customId = localData?.data?.customId;
+        const sellerId = localData?.data?.sellerId;
+    
+        // If no userDetails or missing customId/sellerId
+        if (!customId || !sellerId) {
+            alert("User details are missing or invalid.");
+            return;
+        }
+    
+        // If the cart is empty, return early
+        if (carts.length === 0) {
+            alert("Your cart is empty.");
+            return;
+        }
+    
+        // Prepare the payload
+        const payload = {
+            retailerId: customId,
+            statusId: 1,
+            totalItem: carts.length,
+            totalQuantity: carts.reduce((acc: any, item: any) => acc + item.quantity, 0),
+            notes: description || '',
+            sellerId: sellerId,
+            orderProductDetails: carts.map((item: any) => ({
+                productId: item.productId,
+                quantity: item.quantity,
+                price: parseFloat(item.price) 
+            }))
+        };
+    
+        try {
+            // Make the API POST call using fetch
+            const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/order/create-order`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(payload),
+            });
+    
+            const result = await response.json();
+    
+            if (response.ok) {
+                // Handle success
+                console.log("Enquiry sent successfully:", result);
+                toast.success("Enquiry sent successfully!");
+                localStorage.removeItem('cart');
+                router.push('/shop')
+            } else {
+                // Handle error with response from the API
+                console.error("Error sending enquiry:", result);
+                toast.error(result.message || "Failed to send enquiry. Please try again.");
+            }
+        } catch (error) {
+            console.error("Error sending enquiry:", error);
+            toast.error("An error occurred. Please try again.");
+        }
+    };
+    
+
 
     const handleConfirm = () => {
         // Handle the confirmation logic here
-        console.log('Enquiry sent!')
+        sendCartData();
         setIsModalOpen(false)
         setShowSuccess(true);
-
-        // Hide the success message after 3 seconds
-        //   setTimeout(() => setShowSuccess(false), 3000);
     }
 
     const [isOpen, setIsOpen] = useState(false)
@@ -113,8 +108,43 @@ export default function CartPage() {
         setIsOpen(false)
     }
 
+
+
+    const handleIncrement = (item: any) => {
+        const cartItem = {
+          productId: item.productId,
+          name: item.productName,
+          image: item.productImage,
+          price: item.price,
+          selectedPrice: item.selectedPrice,
+          quantity: item.quantity + 1, 
+        };
+      
+        dispatch(addToCart(cartItem)); 
+      };
+      
+      const handleDecrement = (item: any) => {
+        if (item.quantity > 1) {
+          const cartItem = {
+            productId: item.productId,
+            name: item.productName,
+            image: item.productImage,
+            price: item.price,
+            selectedPrice: item.selectedPrice,
+            quantity: item.quantity - 1, 
+          };
+      
+          dispatch(addToCart(cartItem)); 
+        } else {
+          dispatch(removeFromCart({ productId: item.productId, selectedPrice: item.selectedPrice }));
+        }
+      };
+      
+
+
     return (
         <div className="bg-white">
+            <Toaster />
             <header className="sticky top-0 z-10 bg-white px-4 py-3 shadow-sm">
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
@@ -123,7 +153,7 @@ export default function CartPage() {
                         </Link>
                         <div>
                             <h1 className="text-lg font-semibold">Your cart</h1>
-                            <p className="text-sm text-gray-500">6 Item / 144 Quantity</p>
+                            <p className="text-sm text-gray-500">{carts?.length} Item / {carts?.reduce((acc, item) => acc + item.quantity, 0)} Quantity</p>
                         </div>
                     </div>
                     <button className="flex items-center gap-2 rounded-full bg-blue-50 px-4 py-2 text-blue-600" onClick={() => setIsOpen(true)}>
@@ -191,9 +221,9 @@ export default function CartPage() {
             <main className="p-4">
                 {activeTab === "cart" ? (
                     <div className="grid grid-cols-2 gap-4">
-                        {products.map((product) => (
+                        {carts.map((product: any) => (
                             <div
-                                key={product.id}
+                                key={product.productId}
                                 className="overflow-hidden rounded-xl bg-white shadow-sm p-2 border"
                             >
                                 <div className="relative aspect-square">
@@ -203,16 +233,19 @@ export default function CartPage() {
                                         fill
                                         className="object-cover rounded-xl"
                                     />
-                                    <div className="absolute bottom-0 left-0 right-0 rounded-b-xl bg-black/50 px-2 py-1">
-                                        <p className="text-xs text-white">MOQ: {product.moq}</p>
-                                    </div>
                                 </div>
                                 <div className="flex items-center justify-between border-t p-3">
-                                    <button className="rounded-full bg-gray-100 p-2">
+                                    <button
+                                        className="rounded-full bg-gray-100 p-2"
+                                        onClick={() => handleDecrement(product)}
+                                    >
                                         <Minus className="h-5 w-5 text-gray-600" />
                                     </button>
                                     <span className="text-lg font-medium">{product.quantity}</span>
-                                    <button className="rounded-full bg-gray-100 p-2">
+                                    <button
+                                        className="rounded-full bg-gray-100 p-2"
+                                        onClick={() => handleIncrement(product)}
+                                    >
                                         <Plus className="h-5 w-5 text-gray-600" />
                                     </button>
                                 </div>
@@ -225,64 +258,55 @@ export default function CartPage() {
                             <div className=" rounded-lg bg-white shadow-sm">
                                 <div className="">
                                     <div className="bg-white shadow-lg rounded-lg p-4 border">
-                                        {/* Header */}
-                                        <div className="flex items-center justify-between">
-                                            <div className="flex items-center gap-2">
-                                                <span className="text-sm text-gray-500">Status</span>
-                                                <span className="rounded-full bg-yellow-100 px-2 py-1 text-xs font-semibold text-yellow-800">
-                                                    {orderDetails.status}
-                                                </span>
-                                            </div>
-                                            <div className="text-sm text-gray-500">
-                                                ORDER ID : {orderDetails.orderId}
-                                            </div>
-                                        </div>
+
 
                                         {/* Date and Time */}
                                         <div className="mt-4 flex justify-between text-sm text-gray-500">
-                                            <div>Date : {orderDetails.date}</div>
-                                            <div>Time : {orderDetails.time}</div>
+                                        <div>Date : {new Date().toLocaleDateString()}</div>
+                                        <div>Time : {new Date().toLocaleTimeString()}</div>
                                         </div>
 
                                         {/* Order Summary */}
                                         <div className="mt-4 space-y-2 text-sm">
                                             <div className="flex justify-between">
                                                 <span>TOTAL ITEM :</span>
-                                                <span>{orderDetails.totalItems}</span>
+                                                <span>{carts?.length}</span>
                                             </div>
                                             <div className="flex justify-between">
                                                 <span>TOTAL QUANTITY :</span>
-                                                <span>{orderDetails.totalQuantity}</span>
+                                                <span>{carts?.reduce((acc, item) => acc + item.quantity, 0)}</span>
                                             </div>
                                             <div className="mt-4 space-y-2 border-t pt-2">
-                                                <div className="flex justify-between">
+                                                {/* <div className="flex justify-between">
                                                     <span>SUBTOTAL :</span>
-                                                    <span>₹{orderDetails.subtotal.toFixed(2)}</span>
-                                                </div>
-                                                <div className="flex justify-between">
+                                                    <span>₹{subtotal?.toFixed(2)}</span>
+                                                </div> */}
+
+                                                {/* <div className="flex justify-between">
+                                                    <span>TAX :</span>
+                                                    <span>₹{carts?.others}</span>
+                                                </div> */}
+                                                {/* <div className="flex justify-between">
                                                     <span>SHIPPING :</span>
-                                                    <span>₹{orderDetails.shipping.toFixed(2)}</span>
+                                                    <span>₹{carts.shipping.toFixed(2)}</span>
                                                 </div>
-                                                <div className="flex justify-between">
-                                                    <span>OTHERS :</span>
-                                                    <span>₹{orderDetails.others.toFixed(2)}</span>
-                                                </div>
+                                                
                                                 <div className="flex justify-between">
                                                     <span>DISCOUNT :</span>
-                                                    <span>₹{orderDetails.discount.toFixed(2)}</span>
-                                                </div>
+                                                    <span>₹{carts.discount.toFixed(2)}</span>
+                                                </div> */}
                                             </div>
                                             <div className="flex justify-between border-t pt-2 font-medium">
                                                 <span>Total Amount :</span>
-                                                <span>₹{orderDetails.subtotal.toFixed(2)}</span>
+                                                <span>₹{carts?.reduce((acc, item:any) => acc + (item.price * item.quantity), 0)}</span>
                                             </div>
                                         </div>
 
                                         {/* Warning Message */}
-                                        <div className="mt-4 flex justify-center items-center gap-2 text-sm text-red-500">
+                                        {/* <div className="mt-4 flex justify-center items-center gap-2 text-sm text-red-500">
                                             <AlertTriangle className="h-4 w-4" />
                                             <span>Bill not generated by the seller</span>
-                                        </div>
+                                        </div> */}
 
                                     </div>
                                     {/* Action Buttons */}
@@ -291,17 +315,14 @@ export default function CartPage() {
                                             <MessageSquare className="h-4 w-4" />
                                             Send Enquiry
                                         </button>
-                                        <button className="flex flex-1 items-center justify-center gap-2 rounded-md border border-gray-300 py-2 text-gray-700 hover:bg-gray-50">
-                                            <ShoppingCart className="h-4 w-4" />
-                                            Add Item
-                                        </button>
+
                                     </div>
 
                                     <SendEnquiryModal
                                         isOpen={isModalOpen}
                                         onClose={() => setIsModalOpen(false)}
                                         onConfirm={handleConfirm}
-                                        title="Accept Order ?"
+                                        title="Send Enquiry ?"
 
                                     />
 
@@ -313,8 +334,8 @@ export default function CartPage() {
 
 
                                     {/* Product List */}
-                                    <div className="mt-6 space-y-4">
-                                        {orderDetails.products.map((product, index) => (
+                                    {/* <div className="mt-6 space-y-4">
+                                        {cart?.map((product:any, index:any) => (
                                             <div
                                                 key={index}
                                                 className="flex gap-4 rounded-lg border bg-white p-4"
@@ -331,22 +352,22 @@ export default function CartPage() {
                                                     <h3 className="flex justify-start font-semibold">{product.name}</h3>
                                                     <div className="mt-1 space-y-1 text-xs text-gray-500">
                                                         <div className="flex justify-between">
-                                                            <span>MOQ: {product.moq}</span>
+                                                            <span>MOQ: {product.moq || 1}</span>
                                                             <span>Total Qty: {product.quantity}</span>
                                                         </div>
                                                         <div className="flex justify-between">
-                                                            <span>MRP: ₹{product.mrp}</span>
-                                                            <span>{product.totalQty}</span>
-                                                        </div>
+                                                            <span>MRP: ₹{product.price}</span>
+                                                            <span>{cartItems.reduce((acc, item) => acc + item.quantity, 0)}</span>
+                                                            </div>
                                                         <div className="flex justify-between font-semibold text-gray-900">
                                                             <span>Total Amount:</span>
-                                                            <span>₹{product.totalAmount}</span>
-                                                        </div>
+                                                            <span>₹{totalAmount.toFixed(2)}</span>
+                                                            </div>
                                                     </div>
                                                 </div>
                                             </div>
                                         ))}
-                                    </div>
+                                    </div> */}
                                 </div>
                             </div>
                         </div>
@@ -356,3 +377,4 @@ export default function CartPage() {
         </div>
     );
 }
+

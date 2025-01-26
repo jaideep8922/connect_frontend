@@ -1,6 +1,7 @@
 "use client"
 import { ArrowLeft } from 'lucide-react'
 import React, { useState } from 'react'
+import toast, { Toaster } from 'react-hot-toast';
 
 const AddNote = () => {
   const [title, setTitle] = useState("");
@@ -16,26 +17,45 @@ const AddNote = () => {
     setShowPopup(false);
     setIsSubmitting(true);
 
-    const payload = { title, text };
+    const localData: any = JSON.parse(localStorage.getItem('userDetails') || '{}');
+    const customId = localData?.data?.customId;
+    const notesText = text; 
+
+    if (!customId) {
+      console.error("Neither sellerId nor retailerId is available.");
+      toast.error("Please provide valid seller or retailer details.");
+      return;
+    }
+
+    const requestBody: any = { notes: notesText }; 
+    if (customId.startsWith("SU")) {
+      requestBody.sellerId = customId;
+    } else if (customId.startsWith("RE")) {
+      requestBody.retailerId = customId;
+    } else {
+      console.error("Invalid customId prefix.");
+      toast.error("Invalid customId format. Please check your details.");
+      return;
+    }
 
     try {
-      const response = await fetch("/api/saveData", {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/notes/save-notes`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(payload),
+        body: JSON.stringify(requestBody),
       });
 
       if (response.ok) {
-        alert("Data saved successfully!");
+        toast.success("Data saved successfully!");
         setTitle("");
         setText("");
       } else {
-        alert("Failed to save data.");
+        toast.error("Failed to save data.");
       }
     } catch (error) {
-      alert("An error occurred.");
+      toast.error("An error occurred.");
     } finally {
       setIsSubmitting(false);
     }
@@ -43,6 +63,7 @@ const AddNote = () => {
 
   return (
     <div>
+      <Toaster />
       <header className="sticky top-0 z-10 flex h-20 items-center justify-between border-b bg-white px-4">
         <button
           className="flex items-center justify-center rounded-full p-2 hover:bg-gray-100"
@@ -57,19 +78,20 @@ const AddNote = () => {
           <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-yellow-400 text-[10px] font-bold">
             2
           </span>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-notepad-text"><path d="M8 2v4" /><path d="M12 2v4" /><path d="M16 2v4" /><rect width="16" height="18" x="4" y="4" rx="2" /><path d="M8 10h6" /><path d="M8 14h8" /><path d="M8 18h5" /></svg>
           <span className="sr-only">Notifications</span>
         </div>
       </header>
 
       <div className="max-w-md mx-auto p-4 bg-gray-50 rounded-lg shadow">
         <h1 className="text-xl font-bold mb-4">Enter Details</h1>
-        <input
+        {/* <input
           type="text"
           placeholder="Title"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           className="w-full p-2 mb-4 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
+        /> */}
         <textarea
           placeholder="Type something..."
           value={text}

@@ -1,7 +1,8 @@
 "use client"
 import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
-
+import Logo from '../../assets/company_logo.png'
+import Image from 'next/image';
 const Home: React.FC = () => {
   const router = useRouter()
   const handleNavigate = () => {
@@ -21,15 +22,16 @@ const Home: React.FC = () => {
       <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-blue-600 to-[#383698] text-white">
         {/* Logo */}
         <div className="mb-8">
-          <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center">
-            <svg
+          <div className="w-24 h-24 rounded-full flex items-center justify-center">
+            {/* <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 100 100"
               fill="currentColor"
               className="w-16 h-16 text-blue-600"
             >
               <path d="M50 10L90 90H10Z" />
-            </svg>
+            </svg> */}
+            <Image src={Logo} alt="logo" width={100} height={100} />
           </div>
         </div>
 
@@ -47,9 +49,9 @@ const Home: React.FC = () => {
             Let’s Get Started!
           </button>
           <br></br>
-          <button className="px-6 w-80 py-3 bg-white text-blue-600 rounded-full hover:bg-gray-200 transition duration-200">
+          {/* <button className="px-6 w-80 py-3 bg-white text-blue-600 rounded-full hover:bg-gray-200 transition duration-200">
             Create an account
-          </button>
+          </button> */}
         </div>
 
       </div>
