@@ -14,8 +14,8 @@ export default function ReviewsPage() {
 
   useEffect(() => {
     // Fetch user details and determine user type
-    const localData:any = JSON.parse(localStorage.getItem('userDetails') || '{}'); 
-    const customId = localData?.data?.customId; 
+    const localData: any = JSON.parse(localStorage.getItem('userDetails') || '{}');
+    const customId = localData?.data?.customId;
 
     let userType = "";
     let payload = {};
@@ -43,21 +43,19 @@ export default function ReviewsPage() {
     // Fetch reviews from the API
     const fetchReviews = async () => {
       try {
-        const response = await fetch("http://localhost:4000/review/get-review", {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/review/get-review`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify(
-            
             payload
-          
           ),
         });
 
         if (response.ok) {
           const data = await response.json();
-          setReviews(data?.data || []); 
+          setReviews(data?.data || []);
         } else {
           console.error("Failed to fetch reviews:", response.statusText);
         }
@@ -111,9 +109,11 @@ export default function ReviewsPage() {
         </div>
       </header>
 
-      {reviews?.length > 0 && (
+      {reviews?.length > 0 ? (
         <ReviewCard data={reviews} />
 
+      ) : (
+        <div className="flex items-center justify-center my-4">No review Found</div>
       )}
 
       <div className="mx-auto bg-white pb-20">

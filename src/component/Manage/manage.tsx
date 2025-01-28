@@ -74,7 +74,10 @@ export default function ManageMainPage() {
 
   const handleAdd = () => {
     router.push('/add-product')
+
   }
+
+  console.log("productsproducts", products)
 
   return (
     <>

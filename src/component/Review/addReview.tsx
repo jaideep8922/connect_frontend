@@ -22,7 +22,7 @@ export default function AddReviewPage() {
             setError("");
 
             const response = await fetch(
-                "http://localhost:4000/order/get-order-history-by-retailer-id",
+                `${process.env.NEXT_PUBLIC_BACKEND_URL}/order/get-order-history-by-retailer-id`,
                 {
                     method: "POST",
                     headers: {
@@ -252,7 +252,7 @@ function OrderCard({ order }: any) {
         };
 
         try {
-            const response = await fetch("http://localhost:4000/review/add-review", {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/review/add-review`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"

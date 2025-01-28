@@ -47,7 +47,7 @@ export function ManageCard({ product, onEdit }: ProductCardProps) {
                             onChange={handlePriceChange}
                             className="mr-2"
                         />
-                        Average: <span className="px-1 font-semibold">{'₹ 500'}</span>
+                        Average: <span className="px-1 font-semibold">{product?.averagePrice}</span>
                     </label>
                 </div>
                 <div className="mt-2">
@@ -60,7 +60,7 @@ export function ManageCard({ product, onEdit }: ProductCardProps) {
                             onChange={handlePriceChange}
                             className="mr-2"
                         />
-                        Good: <span className="px-1 font-semibold">{'₹ 1500'}</span>
+                        Good: <span className="px-1 font-semibold">{product?.goodPrice}</span>
                     </label>
                 </div>
                 <div className="mt-2">
@@ -73,7 +73,7 @@ export function ManageCard({ product, onEdit }: ProductCardProps) {
                             onChange={handlePriceChange}
                             className="mr-2"
                         />
-                        High: <span className="px-1 font-semibold">{'₹ 2000'}</span>
+                        High: <span className="px-1 font-semibold">{product?.highPrice}</span>
                     </label>
                 </div>
                 {/* <div className="mt-1 text-sm">

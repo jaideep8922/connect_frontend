@@ -34,12 +34,12 @@ const orderStatuses: OrderStatus[] = [
         color: "text-pink-500",
         link: '/cancel-order'
     },
-    {
-        title: "Enquiry Rejected",
-        subtitle: "Enquiry rejected by me",
-        color: "text-red-500",
-        link: '/rejected-order'
-    },
+    // {
+    //     title: "Enquiry Rejected",
+    //     subtitle: "Enquiry rejected by me",
+    //     color: "text-red-500",
+    //     link: '/rejected-order'
+    // },
 ]
 
 export default function RequestOrderStatusList() {

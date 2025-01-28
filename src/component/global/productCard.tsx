@@ -5,6 +5,7 @@ import toast, { Toaster } from 'react-hot-toast';
 import { useDispatch, useSelector } from 'react-redux';
 import { addToCart, removeFromCart } from "@/store/slices/cartSlice";
 import { RootState } from "@/store/store";
+import { useRouter } from "next/navigation";
 
 // Define the ProductCardProps interface
 interface ProductCardProps {
@@ -20,11 +21,11 @@ interface ProductCardProps {
 }
 
 const ProductCard = ({ product }: ProductCardProps) => {
-  const [selectedPrice, setSelectedPrice] = useState<string>(""); 
-  const [quantity, setQuantity] = useState<number>(1); 
-  const [cart, setCart] = useState<any[]>([]); 
-  const [isAddedToCart, setIsAddedToCart] = useState(false); 
-
+  const [selectedPrice, setSelectedPrice] = useState<string>("");
+  const [quantity, setQuantity] = useState<number>(1);
+  const [cart, setCart] = useState<any[]>([]);
+  const [isAddedToCart, setIsAddedToCart] = useState(false);
+  const router = useRouter();
   const dispatch = useDispatch();
   const carts = useSelector((state: RootState) => state.cart.cart);
 
@@ -67,10 +68,10 @@ const ProductCard = ({ product }: ProductCardProps) => {
       image: product.productImage,
       price: product[selectedPrice as keyof typeof product],
       selectedPrice: selectedPrice,
-      quantity: quantity, 
+      quantity: quantity,
     };
 
-    
+
     setQuantity(quantity + 1);
     dispatch(addToCart(cartItem));
 
@@ -85,14 +86,14 @@ const ProductCard = ({ product }: ProductCardProps) => {
         image: product.productImage,
         price: product[selectedPrice as keyof typeof product],
         selectedPrice: selectedPrice,
-        quantity: quantity, 
+        quantity: quantity,
       };
 
       setQuantity(quantity - 1);
       console.log("Quantity decremented:", quantity - 1);
       dispatch(removeFromCart(cartItem));
 
-      
+
     } else {
       // If quantity reaches 0, revert to "Add to Cart"
       setIsAddedToCart(false);
@@ -100,6 +101,9 @@ const ProductCard = ({ product }: ProductCardProps) => {
     }
   };
 
+  const navigateToCart = () => {
+    router.push('/cart')
+  }
 
   // Current date formatting
   const currentDate = new Date();
@@ -140,7 +144,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
           <label className="flex items-center text-xs">
             <input
               type="radio"
-              name={`price-${product.productId}`} 
+              name={`price-${product.productId}`}
               value="averagePrice"
               checked={selectedPrice === "averagePrice"}
               onChange={handlePriceChange}
@@ -156,7 +160,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
           <label className="flex items-center text-xs">
             <input
               type="radio"
-              name={`price-${product.productId}`} 
+              name={`price-${product.productId}`}
               value="goodPrice"
               checked={selectedPrice === "goodPrice"}
               onChange={handlePriceChange}
@@ -172,7 +176,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
           <label className="flex items-center text-xs">
             <input
               type="radio"
-              name={`price-${product.productId}`} 
+              name={`price-${product.productId}`}
               value="highPrice"
               checked={selectedPrice === "highPrice"}
               onChange={handlePriceChange}
@@ -183,31 +187,42 @@ const ProductCard = ({ product }: ProductCardProps) => {
         </div>
       )}
 
-      {/* Quantity Adjustments */}
-      {isAddedToCart ? (
-        <div className="flex justify-between items-center bg-blue-500 w-full p-[6px] px-3 text-white rounded-xl mt-4">
-          <button
-            onClick={handleDecrement}
-            className="rounded-md"
+      <div className="relative">
+        {isAddedToCart && (
+          <div
+            className="absolute top-[-3rem] right-[0.1rem] bg-blue-600 text-white p-2 rounded-full cursor-pointer flex items-center"
+            onClick={navigateToCart}
           >
-            -
-          </button>
-          <span className="text-sm">{quantity}</span>
+            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-shopping-cart"><circle cx="8" cy="21" r="1" /><circle cx="19" cy="21" r="1" /><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12" /></svg>
+          </div>
+        )}
+
+        {/* Quantity Adjustments */}
+        {isAddedToCart ? (
+          <div className="flex justify-between items-center bg-blue-500 w-full p-[6px] px-3 text-white rounded-xl mt-4">
+            <button
+              onClick={handleDecrement}
+              className="rounded-md"
+            >
+              -
+            </button>
+            <span className="text-sm">{quantity}</span>
+            <button
+              onClick={handleIncrement}
+              className=" rounded-md"
+            >
+              +
+            </button>
+          </div>
+        ) : (
           <button
-            onClick={handleIncrement}
-            className=" rounded-md"
+            onClick={handleAddToCart}
+            className="bg-blue-500 w-full items-center p-[6px] text-white rounded-xl mt-4"
           >
-            +
+            Add to Cart
           </button>
-        </div>
-      ) : (
-        <button
-          onClick={handleAddToCart}
-          className="bg-blue-500 w-full items-center p-[6px] text-white rounded-xl mt-4"
-        >
-          Add to Cart
-        </button>
-      )}
+        )}
+      </div>
     </div>
   );
 };

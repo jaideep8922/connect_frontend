@@ -1,53 +1,116 @@
 "use client";
 
-import React, { useState } from 'react';
-import { QrReader } from 'react-qr-reader';
-import axios from 'axios';
+import React, { useState } from "react";
+import  QrReader  from "react-qr-reader";
 
 const QRScanner = () => {
-  const [qrResult, setQrResult] = useState<string | null>(null);
-  const [userId, setUserId] = useState<string | null>(null);
-  const [message, setMessage] = useState<string>('');
+  const [qrData, setQrData] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleScan = async (data: string | null) => {
-    if (data) {
-      setQrResult(data); // This is the scanned QR code
-      try {
-        const qrData = JSON.parse(data); // Parse the QR code content
-        setUserId(qrData.id); // Extract the user ID from the QR code
-
-        // Send the scanned QR code to the backend
-        const response = await axios.post('http://localhost:3000/api/retailer/login', { qrCode: qrData });
-        setMessage('Login successful');
-        console.log('Response:', response.data);
-      } catch (error: any) {
-        setMessage('Login failed');
-        console.error('Error:', error.response?.data || error.message);
+  // Function to handle the result from the QR reader
+  const handleScanResult = (result: any, error: any) => {
+    if (result) {
+      console.log("Scanned QR Code Data:", result?.getText());
+      setQrData(result?.getText() || null);
+    }
+    
+    if (error) {
+      console.error("Error scanning QR Code:", error);
+      if (error instanceof Error) {
+        console.error("Error message:", error.message);
+        console.error("Error stack:", error.stack);
+      } else {
+        console.error("Unknown error format:", error);
       }
+      setError(`Error scanning QR code: ${error?.message || 'Unknown error'}`);
     }
   };
 
-  const handleError = (error: Error) => {
-    console.error('QR Scanner Error:', error);
+  const [qrCode, setQrCode] = useState<string | null>(null);
+  const [retailer, setRetailer] = useState<any>(null);
+
+  const handleScan = async (data: any) => {
+    if (data) {
+      console.log('QR Code Scanned:', data); // Log the scanned QR code
+      setQrCode(data);
+
+      try {
+        // Make the API request to fetch retailer data based on the scanned QR code
+        const response = await fetch(`http://localhost:4000/api/retailer/scan/${data}`);
+        const result = await response.json();
+
+        if (response.ok) {
+          console.log('Retailer data fetched:', result); // Log the response data
+          setRetailer(result);
+        } else {
+          console.error('API Error:', result.message || 'An error occurred');
+          setError(result.message || 'An error occurred');
+        }
+      } catch (err) {
+        console.error('Request Failed:', err);
+        setError('Failed to fetch retailer data');
+      }
+    }
+  };
+  
+  const handleError = (err: any) => {
+    console.error('Scanner Error:', err); // Log any scanner errors
+    setError('Failed to scan QR code');
   };
 
   return (
-    <div>
-      <h1>Retailer Login</h1>
+    <div className="flex flex-col items-center justify-center h-screen">
+      <h1 className="text-xl font-bold mb-4">Scan QR Code</h1>
+
+      <div style={{ width: '100%', maxWidth: '500px', margin: '0 auto' }}>
       <QrReader
-        constraints={{ facingMode: 'user' }}
-        onResult={(result, error) => {
+        onResult={(result:any, error:any) => {
           if (result) {
-            handleScan(result?.text || null);
+            handleScan(result.getText());
           }
           if (error) {
             handleError(error);
           }
         }}
       />
-      <p>{qrResult ? `Scanned QR Code: ${qrResult}` : 'Scan a QR code to log in'}</p>
-      <p>{userId ? `User ID: ${userId}` : 'Waiting for scan...'}</p>
-      <p>{message}</p>
+    </div>
+
+      <div className="w-full max-w-md">
+        <div className="w-full h-auto">
+          {/* <QrReader
+            onResult={handleScanResult}
+            constraints={{ facingMode: "user" }} // Front camera for desktops/mobile
+          /> */}
+{/* 
+<QrReader
+        // delay={300}
+        style={{ width: '20%' }}
+        onScan={handleScan}
+        onError={handleError}
+      /> */}
+      {qrCode && (
+        <div>
+          <p>Scanned QR Code: {qrCode}</p>
+        </div>
+      )}
+        </div>
+      </div>
+
+      {qrData && (
+        <p className="mt-4 text-green-600 font-medium">
+          Scanned Data: {qrData}
+        </p>
+      )}
+
+      {error && (
+        <p className="mt-4 text-red-600 font-medium">
+          {error}
+        </p>
+      )}
+
+      {!qrData && !error && (
+        <p className="mt-4 text-gray-600">Please point the camera to a QR code.</p>
+      )}
     </div>
   );
 };

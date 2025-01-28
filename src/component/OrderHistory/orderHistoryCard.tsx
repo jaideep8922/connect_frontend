@@ -11,14 +11,8 @@ interface OrderCardProps {
 }
 
 export function OrderHistoryCard({
-  orderId,
-  totalItem,
-  totalQuantity,
-  totalAmount,
-  statusId,
-  notes,
-  createdAt,
-}: OrderCardProps) {
+ order
+}: any) {
   const statusMapping: { [key: number]: string } = {
     1: "Pending",
     2: "Accepted",
@@ -36,24 +30,26 @@ export function OrderHistoryCard({
   };
 
   // Map statusId to string status
-  const status = statusMapping[statusId];
+  const status = statusMapping[order.statusId];
 
-  const formattedDate = new Date(createdAt).toLocaleDateString("en-US", {
+  const formattedDate = new Date(order.createdAt).toLocaleDateString("en-US", {
     year: "numeric",
     month: "2-digit",
     day: "2-digit",
   });
-  const formattedTime = new Date(createdAt).toLocaleTimeString("en-US", {
+  const formattedTime = new Date(order.createdAt).toLocaleTimeString("en-US", {
     hour: "2-digit",
     minute: "2-digit",
     hour12: true,
   });
 
+  console.log("order", order)
+
   return (
     <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm m-1">
       <div className="flex items-center justify-between">
         <div className="space-y-1">
-          <p className="text-sm text-gray-500">Order Id: {orderId}</p>
+          <p className="text-sm text-gray-500">Order Id: {order.orderId}</p>
           <div className="flex items-center gap-2 text-sm text-gray-500">
             <span>Date: {formattedDate}</span>
             <span>Time: {formattedTime}</span>
@@ -70,20 +66,20 @@ export function OrderHistoryCard({
       <div className="mt-4 space-y-2">
         <div className="flex justify-between text-sm">
           <span className="text-gray-600">TOTAL ITEM</span>
-          <span className="font-medium">{totalItem}</span>
+          <span className="font-medium">{order.totalItem}</span>
         </div>
         <div className="flex justify-between text-sm">
           <span className="text-gray-600">TOTAL QUANTITY</span>
-          <span className="font-medium">{totalQuantity}</span>
+          <span className="font-medium">{order.totalQuantity}</span>
         </div>
-        <div className="mt-4 flex justify-between">
+        {/* <div className="mt-4 flex justify-between">
           <span className="text-gray-600">Total Amount:</span>
           <span className="text-lg font-semibold">
-            ₹{totalItem * totalQuantity}
+            ₹{order.totalItem * order.totalQuantity}
           </span>
-        </div>
+        </div> */}
         <div className="flex justify-between text-sm">
-          <span className="font-medium">Note: {notes}</span>
+          <span className="font-medium">Note: {order.notes}</span>
         </div>
       </div>
     </div>

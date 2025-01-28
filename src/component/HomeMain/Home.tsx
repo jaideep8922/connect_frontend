@@ -1,11 +1,12 @@
 "use client"
-import { Bell, ChevronRight, Package, History, Star,Images,UsersRound, HelpCircle, ShoppingCart, ClipboardList, Truck, FileText } from 'lucide-react'
+import { Bell, ChevronRight, Package, History, Star, Images, UsersRound, HelpCircle, ShoppingCart, ClipboardList, Truck, FileText } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from "next/navigation";
 import Logo from '@/assets/company_logo.png'
 import BottomNavigation from '../global/bottomNavigation';
 import { useEffect, useState } from 'react';
+import Profile from '../../assets/profile_user.jpg'
 
 const retailerMenuItem = [
   {
@@ -132,96 +133,102 @@ const supplierMenuItems = [
 export default function MainHome() {
   // const userType:any = "Retailer"
   const userType = localStorage.getItem("userType");
-  
+
   const router = useRouter();
 
   // const menuItems = userType === "Supplier" ? supplierMenuItems : retailerMenuItem;
 
-  const isAdmin = false; 
+  const isAdmin = false;
 
 
   const menuItems = (userType === "Supplier" ? supplierMenuItems : retailerMenuItem)
-  .filter((item) => !(item.href === '/start-order' && !isAdmin));
+    .filter((item) => !(item.href === '/start-order' && !isAdmin));
 
-// Conditionally add "Start Order" for Retailer if isAdmin is true
-if (userType === "Retailer" && isAdmin) {
-  menuItems.unshift({
-    id: 0, // Ensure unique ID
-    icon: ShoppingCart,
-    title: 'Start Ordering',
-    subtitle: 'Place your order',
-    bgColor: 'bg-yellow-50',
-    iconColor: 'text-yellow-500',
-    href: '/start-order',
-  });
-}
+  // Conditionally add "Start Order" for Retailer if isAdmin is true
+  if (userType === "Retailer" && isAdmin) {
+    menuItems.unshift({
+      id: 0, // Ensure unique ID
+      icon: ShoppingCart,
+      title: 'Start Ordering',
+      subtitle: 'Place your order',
+      bgColor: 'bg-yellow-50',
+      iconColor: 'text-yellow-500',
+      href: '/start-order',
+    });
+  }
 
-    const [sellerData, setSellerData] = useState<any>([]);
-    const [error, setError] = useState<string | null>(null);
+  const [sellerData, setSellerData] = useState<any>([]);
+  const [error, setError] = useState<string | null>(null);
 
-    const localData: any = JSON.parse(localStorage.getItem('userDetails') || '{}');
-    const customId = localData?.data?.customId;
+  const localData: any = JSON.parse(localStorage.getItem('userDetails') || '{}');
+  const localUserType: any = localStorage.getItem('userType') || null;
+  const customId = localData?.data?.customId;
 
 
-    useEffect(() => {
-        const fetchSellerDetails = async () => {
-            try {
-                const response = await fetch(
-                    `${process.env.NEXT_PUBLIC_BACKEND_URL}/users/getUserById`,
-                    {
-                        method: 'POST', // Changed to POST for sending a body
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({
-                            customId: customId,
-                            userType: "Retailer",
-                        }),
-                    }
-                );
+  useEffect(() => {
+    const fetchSellerDetails = async () => {
+      try {
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/users/getUserById`,
+          {
+            method: 'POST', 
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              customId: customId,
+              userType:localUserType,
+            }),
+          }
+        );
 
-                const result = await response.json();
+        const result = await response.json();
 
-                if (!response.ok) {
-                    throw new Error(result.message || 'Failed to fetch seller details');
-                }
-
-                setSellerData(result?.data);
-                setError(null);
-            } catch (error: any) {
-                console.error('Error fetching seller details:', error.message);
-                setError(error.message);
-            }
-        };
-
-        if (customId) {
-            fetchSellerDetails();
+        if (!response.ok) {
+          throw new Error(result.message || 'Failed to fetch seller details');
         }
-    }, [customId]);
+
+        setSellerData(result?.data);
+        setError(null);
+      } catch (error: any) {
+        console.error('Error fetching seller details:', error.message);
+        setError(error.message);
+      }
+    };
+
+    if (customId) {
+      fetchSellerDetails();
+    }
+  }, [customId]);
 
 
-    console.log("sellerData", sellerData)
- 
+  console.log("sellerData", sellerData)
+
 
   return (
     <div className="bg-gray-50">
       {/* Header */}
       <header className="flex items-center justify-between bg-white p-4 shadow-sm mb-2">
         <div className="flex items-center gap-2">
-          <div className="flex h-[2rem] w-[2rem] items-center justify-center rounded text-white">
-            <span className="">
-              <Image src={sellerData?.filePath} alt="logo" width={30} height={30}/>
-            </span>
+          <div className="flex h-[2rem] w-[2rem] items-center justify-center rounded-full text-white overflow-hidden">
+            <Image
+              src={sellerData?.filePath ? sellerData.filePath : Profile}
+              alt="Seller avatar"
+              width={50}
+              height={50}
+              className="rounded-full object-cover"
+            />
           </div>
+
           <div>
             <h1 className="font-semibold">{sellerData?.businessName}</h1>
             <p className="text-sm text-gray-500">{sellerData?.businessOwner}</p>
           </div>
         </div>
         {/* <button className="rounded-full p-2 hover:bg-gray-100"> */}
-          <Link href='/notification'>
+        <Link href='/notification'>
           <Bell className="h-6 w-6 text-gray-600" />
-          </Link>
+        </Link>
         {/* </button> */}
       </header>
 

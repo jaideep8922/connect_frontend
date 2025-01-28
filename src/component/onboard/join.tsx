@@ -6,10 +6,11 @@ import Image from "next/image";
 import Camera from '@/assets/camera-plus.svg';
 import Logo from '@/assets/logo.png';
 import toast, { Toaster } from 'react-hot-toast';
-import FingerprintJS from '@fingerprintjs/fingerprintjs';
+import { useSearchParams } from "next/navigation";
+import axios from "axios";
 
 interface FormData {
-  userType: "Retailer" | "Supplier";
+  userType: "Retailer" | "Supplier" | "Guest";
   businessOwner: string;
   businessName: string;
   phone: string;
@@ -24,9 +25,40 @@ interface FormData {
   file: File | null;
 }
 
+
 const JoinPage: React.FC = () => {
   const [selectedImage, setSelectedImage] = useState<any>(null)
   const [otpVisible, setOtpVisible] = useState(false);
+  const [phone, setPhone] = useState("");
+
+  const [otp, setOtp] = useState("");
+  const [showOtpBox, setShowOtpBox] = useState(false);
+  const [error, setError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+
+
+  // const handleSubmitOtp = async () => {
+  //   setError(""); // Reset error state
+
+  //   try {
+  //     // API call to verify OTP
+  //     const response = await axios.post("http://localhost:4000/api/guests/verify-otp", {
+  //       phone,
+  //       otp,
+  //     });
+  //     if (response.status === 200) {
+  //       // Redirect or handle successful login
+  //       alert("OTP verified successfully! Redirecting to shop...");
+  //       // Replace with actual redirection logic
+  //       window.location.href = "/shop";
+  //     }
+  //   } catch (err: any) {
+  //     setError(err.response?.data?.message || "Invalid OTP. Please try again.");
+  //   }
+  // };
+
+
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
@@ -35,28 +67,6 @@ const JoinPage: React.FC = () => {
       setSelectedImage(imageUrl)
     }
   }
-
-  const [retailerId, setRetailerId] = useState('')
-  const [status, setStatus] = useState<'idle' | 'capturing' | 'success' | 'error'>('idle')
-
-  const [fingerprintId, setFingerprintId] = useState<string | null>(null);
-
-  const generateMobileFingerprint = async () => {
-    setStatus("capturing");
-    try {
-      const fp = await FingerprintJS.load();
-      const result = await fp.get();
-
-      // Get fingerprint unique ID
-      setFingerprintId(result.visitorId);
-      console.log("Generated Fingerprint ID:", result.visitorId);
-
-      setStatus("success");
-    } catch (error) {
-      console.error("Error generating fingerprint:", error);
-      setStatus("error");
-    }
-  };
 
   const [formData, setFormData] = useState<FormData>({
     userType: "Retailer",
@@ -86,12 +96,27 @@ const JoinPage: React.FC = () => {
     }));
   };
 
+
+  const searchParams = useSearchParams();
+  const [supplierId, setSupplierId] = useState<string | null>(null);
+
+  useEffect(() => {
+    const supplierIdParam = searchParams.get("id");
+    if (supplierIdParam) {
+      setSupplierId(supplierIdParam);
+      toast.success(`Supplier ID: ${supplierIdParam} captured successfully.`);
+    } else {
+      toast.error("No Supplier ID found in the URL.");
+    }
+  }, [searchParams]);
+
+
   // Handle Next Step
   const handleNext = async () => {
     if (step < 5) {
       setStep(step + 1);
     } else {
-      
+
       const payload: any = {
         userType: formData.userType,
         businessName: formData.businessName,
@@ -103,71 +128,77 @@ const JoinPage: React.FC = () => {
         pincode: formData.pincode,
         city: formData.city,
         state: formData.state,
-        // qrCode: "95160", 
-        // fingerprint: formData.fingerprintId,
       };
-    
+
+      toast.success(supplierId)
+      // if (formData.userType === "Retailer") {
+      //   payload.sellerId = supplierId;
+      // } 
+
       if (formData.userType === "Retailer") {
-        payload.sellerId = 'SU-3347';
-      } else if (formData.userType === "Supplier") {
-        payload.sellerId = 'SU-3347';
+        payload.sellerId = supplierId;
       }
-        
+
       try {
-        const response =  await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/users/create`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/users/create`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify(payload),
         });
-    
+
         if (response.ok) {
           const responseData = await response.json();
           if (responseData.success) {
             toast.success("onboarded successfully")
-            // localStorage.setItem("token", responseData.token); 
-            // localStorage.setItem("userType", formData.userType);
-            // localStorage.setItem("useDetails", responseData.success)
-
-            localStorage.setItem("userDetails", JSON.stringify(responseData.data.user)); 
-            localStorage.setItem("token", responseData.token); 
+            localStorage.setItem("userDetails", JSON.stringify(responseData.data.user));
+            localStorage.setItem("token", responseData.token);
             localStorage.setItem("userType", formData.userType);
 
             setTimeout(() => {
               if (formData.userType === "Retailer") {
                 const userData = responseData.data.user;
                 router.push(`/initial-profile?userData=${encodeURIComponent(JSON.stringify(userData))}`);
-                // router.push("/initial-profile");
-                // setTimeout(() => {
-                //   router.push("/");
-                // }, 5000);
               } else if (formData.userType === "Supplier") {
                 router.push("/manage");
               }
-            }, 5000);
-
-            
-            // alert(responseData.message); 
-            //   if (formData.userType === "Retailer") {
-            //   router.push("/initial-profile");
-            // } else if (formData.userType === "Supplier") {
-            //   router.push("/manage");
-            // }
+            }, 5000)
           } else {
             toast.error("onboarding error.")
           }
         } else {
-          const errorData = await response.json(); 
-          console.error("Error Response:", errorData);
+          const errorData = await response.json();
+          toast.error("Error Response:", errorData);
         }
-      } catch (error) {
-        console.error("Error submitting data:", error);
-      }}};
+      } catch (error: any) {
+        toast.error("Error submitting data:", error);
+      }
+    }
+
+  };
 
   // Handle Previous Step
   const handlePrevious = () => {
     if (step > 1) setStep(step - 1);
+  };
+
+  const handleSendOtp = async () => {
+    setError(""); // Reset error state
+    setIsSubmitting(true);
+
+    try {
+      // API call to send OTP
+      const response = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/guests/create`, { phone, sellerId: supplierId });
+      if (response.status === 201) {
+        router.push(`/shop`)
+        // setShowOtpBox(true); // Show OTP box on success
+      }
+    } catch (err: any) {
+      setError(err.response?.data?.message || "Failed to send OTP. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
 
@@ -189,35 +220,6 @@ const JoinPage: React.FC = () => {
     }
   };
 
-  // const handleFinalSubmit = async () => {
-  //   if (!formData.fingerprintId) {
-  //     alert("Fingerprint not captured. Please try again.");
-  //     return;
-  //   }
-
-  //   console.log("Submitting Final Form Data:", formData);
-  //   // Make API call to save data
-  //   try {
-  //     const response = await fetch("/api/onboard", {
-  //       method: "POST",
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //       },
-  //       body: JSON.stringify(formData),
-  //     });
-
-  //     if (response.ok) {
-  //       alert("Onboarding successful!");
-  //       router.push("/dashboard");
-  //     } else {
-  //       alert("Failed to onboard. Try again.");
-  //     }
-  //   } catch (error) {
-  //     console.error("Error submitting data:", error);
-  //   }
-  // };
-
-  
 
   return (
     <div className=" h-screen flex flex-col items-center justify-between bg-white">
@@ -238,7 +240,7 @@ const JoinPage: React.FC = () => {
         {step === 1 && (
           <div className="">
             <h1 className="text-lg font-bold mb-6 border-b w-20 border-b-black">Join as</h1>
-            <div className=" flex space-x-20 mb-10">
+            <div className=" flex space-x-5 mb-10 w-30">
               <label className="flex items-center space-x-2">
                 <input
                   type="radio"
@@ -248,7 +250,7 @@ const JoinPage: React.FC = () => {
                   onChange={() => setFormData({ ...formData, userType: "Retailer" })}
                   className="form-radio text-blue-600"
                 />
-                <span className="text-lg">Retailer</span>
+                <span className="text-MD">Retailer</span>
               </label>
 
               <label className="flex items-center space-x-2">
@@ -260,10 +262,72 @@ const JoinPage: React.FC = () => {
                   onChange={() => setFormData({ ...formData, userType: "Supplier" })}
                   className="form-radio text-blue-600"
                 />
-                <span className="text-lg">Supplier</span>
+                <span className="text-md">Supplier</span>
+              </label>
+
+              <label className="flex items-center space-x-2">
+                <input
+                  type="radio"
+                  name="userType"
+                  value="Supplier"
+                  checked={formData.userType === "Guest"}
+                  onChange={() => setFormData({ ...formData, userType: "Guest" })}
+                  className="form-radio text-blue-600"
+                />
+                <span className="text-md">Guest User</span>
               </label>
             </div>
           </div>
+        )}
+
+        {formData.userType === "Guest" && (
+          <div className=" mt-10 mb-16">
+
+            {/* Phone Input */}
+            {!showOtpBox && (
+              <div>
+                <label className="block mb-1 font-medium">Phone Number:</label>
+                <input
+                  type="text"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  placeholder="Enter your phone number"
+                  className="w-full p-2 border rounded"
+                  required
+                />
+                <button
+                  onClick={handleSendOtp}
+                  className={`w-full bg-blue-500 text-white py-2 rounded mt-2 ${isSubmitting ? "opacity-50 cursor-not-allowed" : "hover:bg-blue-600"
+                    }`}
+                >
+                  Submit
+                </button>
+              </div>
+            )}
+
+            {/* OTP Input */}
+            {showOtpBox && (
+              <div className="mt-4">
+                <label className="block mb-1 font-medium">Enter OTP:</label>
+                <input
+                  type="text"
+                  value={otp}
+                  onChange={(e) => setOtp(e.target.value)}
+                  placeholder="Enter OTP"
+                  className="w-full p-2 border rounded"
+                  required
+                />
+                <button
+                  onClick={handleSendOtp}
+                  disabled={!otp}
+                  className="w-full bg-green-500 text-white py-2 rounded mt-2 hover:bg-green-600"
+                >
+                  Submit OTP
+                </button>
+              </div>
+            )}
+          </div>
+
         )}
 
         {step === 2 && (
@@ -356,7 +420,7 @@ const JoinPage: React.FC = () => {
               </div>
             )}
 
-            
+
 
             <div>
               <h1 className="text-md font-bold py-2">Shop Marka</h1>
@@ -434,20 +498,6 @@ const JoinPage: React.FC = () => {
         {step === 5 && (
           <div className="w-full max-w-md space-y-4">
 
-            {/* <QRScanner /> */}
-
-
-            {/* <div className="flex flex-col items-center justify-center space-y-4">
-              <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="blue" strokeWidth="2" strokeLinecap="round" stroke-linejoin="round" className="lucide lucide-fingerprint"><path d="M12 10a2 2 0 0 0-2 2c0 1.02-.1 2.51-.26 4" /><path d="M14 13.12c0 2.38 0 6.38-1 8.88" /><path d="M17.29 21.02c.12-.6.43-2.3.5-3.02" /><path d="M2 12a10 10 0 0 1 18-6" /><path d="M2 16h.01" /><path d="M21.8 16c.2-2 .131-5.354 0-6" /><path d="M5 19.5C5.5 18 6 15 6 12a6 6 0 0 1 .34-2" /><path d="M8.65 22c.21-.66.45-1.32.57-2" /><path d="M9 6.8a6 6 0 0 1 9 5.2v2" /></svg>
-              <button
-                onClick={generateMobileFingerprint}
-                className="py-2 px-4 bg-blue-600 text-white rounded-lg"
-              >
-                {status === "capturing" ? "Capturing..." : "Generate Fingerprint"}
-              </button>
-              {status === "success" && <p>Fingerprint ID: {fingerprintId}</p>}
-            </div> */}
-
             <div className="flex justify-center items-center flex-col space-y-2">
               <label
                 htmlFor="profile-upload"
@@ -493,41 +543,45 @@ const JoinPage: React.FC = () => {
       </main>
 
       {/* Footer with Navigation */}
-      <footer className="flex flex-col items-center space-y-6 mb-10 w-full px-4 mt-5">
-        <div className="flex flex-col w-full max-w-md space-y-4">
 
-          {/* Next/Submit Button */}
-          <button
-            onClick={handleNext}
-            className="w-full py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition duration-200"
-          >
-            {step < 5 ? "Next" : "Submit"}
-          </button>
+      {formData.userType === "Guest" ? (
+        <></>
+      ) : (
+        <footer className="flex flex-col items-center space-y-6 mb-10 w-full px-4 mt-5">
+          <div className="flex flex-col w-full max-w-md space-y-4">
 
-          {/* Back Button */}
-          {step > 1 && (
+            {/* Next/Submit Button */}
             <button
-              onClick={handlePrevious}
-              className="w-full py-3 bg-gray-300 text-black rounded-xl hover:bg-gray-400 transition duration-200"
+              onClick={handleNext}
+              className="w-full py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition duration-200"
             >
-              Back
+              {step < 5 ? "Next" : "Submit"}
             </button>
-          )}
 
-        </div>
+            {/* Back Button */}
+            {step > 1 && (
+              <button
+                onClick={handlePrevious}
+                className="w-full py-3 bg-gray-300 text-black rounded-xl hover:bg-gray-400 transition duration-200"
+              >
+                Back
+              </button>
+            )}
 
-        {/* Pagination Dots */}
-        <div className="flex space-x-2">
-          {[1, 2, 3, 4].map((page) => (
-            <span
-              key={page}
-              className={`w-3 h-3 rounded-full ${step === page ? "bg-blue-600" : "bg-gray-300"
-                }`}
-            ></span>
-          ))}
-        </div>
-      </footer>
+          </div>
 
+          {/* Pagination Dots */}
+          <div className="flex space-x-2">
+            {[1, 2, 3, 4].map((page) => (
+              <span
+                key={page}
+                className={`w-3 h-3 rounded-full ${step === page ? "bg-blue-600" : "bg-gray-300"
+                  }`}
+              ></span>
+            ))}
+          </div>
+        </footer>
+      )}
     </div>
   );
 };

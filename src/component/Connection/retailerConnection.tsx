@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react'
 import { MoreHorizontal, Ban, Pause, ArrowLeft } from 'lucide-react'
 
 // Replace with your API endpoint
-// const API_URL = "http://localhost:4000/user/retailer-list?sellerId=SU-4999"
 const localData: any = JSON.parse(localStorage.getItem('userDetails') || '{}');
 const customId = localData?.data?.customId; 
 

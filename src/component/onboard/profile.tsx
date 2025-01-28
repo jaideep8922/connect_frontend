@@ -89,8 +89,20 @@ const UserProfile: React.FC = () => {
       <span className="text-sm bg-blue-100 text-blue-500 px-2 py-2 m-2 rounded-full ">
         {customId.startsWith('RE') ? <>retailer</> : <>supplier</>}
       </span>
-
+{/* 
+{qrCode && (
       <img src={qrCode} alt="QR Code" className="w-full h-full" />
+
+)} */}
+
+{qrCode && (
+  <div className="mt-4">
+    <img src={qrCode} alt="QR Code" className="w-60 h-60" />
+    {/* <p className="text-sm text-gray-500 mt-2">
+      Scan this QR code to access your onboarding page.
+    </p> */}
+  </div>
+)}
 
 
       {/* QR Code Section */}

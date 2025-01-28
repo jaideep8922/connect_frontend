@@ -19,7 +19,7 @@ const OrderTracker = () => {
       setError("");
 
       const response = await fetch(
-        "http://localhost:4000/order/get-order-history-by-retailer-id",
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/order/get-order-history-by-retailer-id`,
         {
           method: "POST",
           headers: {

@@ -31,7 +31,7 @@ export default function OrdersHistoryPage() {
         let response;
         if (userData === "Retailer") {
           response = await fetch(
-            "http://localhost:4000/order/get-order-history-by-retailer-id",
+            `${process.env.NEXT_PUBLIC_BACKEND_URL}/order/get-order-history-by-retailer-id`,
             {
               method: "POST",
               headers: {
@@ -42,7 +42,7 @@ export default function OrdersHistoryPage() {
           );
         } else if (userData === "Supplier") {
           response = await fetch(
-            "http://localhost:4000/order/get-order-history-by-supplier-id",
+            `${process.env.NEXT_PUBLIC_BACKEND_URL}/order/get-order-history-by-supplier-id`,
             {
               method: "POST",
               headers: {
@@ -77,9 +77,6 @@ export default function OrdersHistoryPage() {
       fetchOrders();
     }
   }, [userData, customId]);
-  
-
-  
 
   // Filter orders based on the selected status
   const filteredOrders =
@@ -156,7 +153,7 @@ export default function OrdersHistoryPage() {
           ) : filteredOrders.length > 0 ? (
             filteredOrders.map((order:any) => (
               // <Link href="/order-history-single"
-                <OrderHistoryCard {...order} />
+                <OrderHistoryCard order={order} />
               // </Link>
             ))
           ) : (
