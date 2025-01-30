@@ -8,15 +8,26 @@ const AddNote = () => {
   const [text, setText] = useState("");
   const [showPopup, setShowPopup] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-
   const [customId, setCustomId] = useState<string | null>(null);
 
   useEffect(() => {
     // This effect runs only on the client side after the component mounts
-    const localData: any = JSON.parse(localStorage.getItem('userDetails') || '{}');
-    const userCustomId = localData?.data?.customId;
-    if (userCustomId) {
-      setCustomId(userCustomId);
+    if (typeof window !== 'undefined') {
+      try {
+        const localData: any = localStorage.getItem('userDetails');
+        if (localData) {
+          const parsedData = JSON.parse(localData);
+          const userCustomId = parsedData?.data?.customId;
+          if (userCustomId) {
+            setCustomId(userCustomId);
+          }
+        } else {
+          console.error("No userDetails found in localStorage.");
+        }
+      } catch (error) {
+        console.error("Error parsing userDetails from localStorage:", error);
+        toast.error("Failed to load user details.");
+      }
     }
   }, []);
 
@@ -28,17 +39,16 @@ const AddNote = () => {
     setShowPopup(false);
     setIsSubmitting(true);
 
-    // const localData: any = JSON.parse(localStorage.getItem('userDetails') || '{}');
-    // const customId = localData?.data?.customId;
-    const notesText = text; 
+    const notesText = text;
 
     if (!customId) {
       console.error("Neither sellerId nor retailerId is available.");
       toast.error("Please provide valid seller or retailer details.");
+      setIsSubmitting(false);
       return;
     }
 
-    const requestBody: any = { notes: notesText }; 
+    const requestBody: any = { notes: notesText };
     if (customId.startsWith("SU")) {
       requestBody.sellerId = customId;
     } else if (customId.startsWith("RE")) {
@@ -46,6 +56,7 @@ const AddNote = () => {
     } else {
       console.error("Invalid customId prefix.");
       toast.error("Invalid customId format. Please check your details.");
+      setIsSubmitting(false);
       return;
     }
 
@@ -80,10 +91,10 @@ const AddNote = () => {
           className="flex items-center justify-center rounded-full p-2 hover:bg-gray-100"
           aria-label="Go back"
         >
-          <ArrowLeft className="h-5 w-5 cursor-pointer" onClick={() => window.history.back()} />
+          <ArrowLeft className="h-5 w-5 text-black cursor-pointer" onClick={() => window.history.back()} />
         </button>
 
-        <h1 className="text-lg font-medium">Note</h1>
+        <h1 className="text-lg font-medium text-black">Note</h1>
 
         <div className="relative flex h-8 w-8 items-center justify-center rounded-full bg-emerald-500 text-white">
           <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-yellow-400 text-[10px] font-bold">
@@ -95,7 +106,7 @@ const AddNote = () => {
       </header>
 
       <div className="max-w-md mx-auto p-4 bg-[#FFEFD3] rounded-lg shadow">
-        <h1 className="text-xl font-bold mb-4">Enter Details</h1>
+        <h1 className="text-xl font-bold mb-4 text-black">Enter Details</h1>
         {/* <input
           type="text"
           placeholder="Title"
@@ -107,7 +118,7 @@ const AddNote = () => {
           placeholder="Type something..."
           value={text}
           onChange={(e) => setText(e.target.value)}
-          className="w-full p-2 mb-4 h-60 border rounded focus:outline-none"
+          className="w-full p-2 mb-4 h-60 border rounded focus:outline-none text-black bg-white"
         />
         <button
           onClick={handleSave}
@@ -120,11 +131,11 @@ const AddNote = () => {
         {showPopup && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
             <div className="bg-white p-6 rounded-lg shadow-lg">
-              <p className="mb-4">Are you sure you want to save?</p>
+              <p className="mb-4 text-black">Are you sure you want to save?</p>
               <div className="flex justify-end gap-4">
                 <button
                   onClick={() => setShowPopup(false)}
-                  className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
+                  className="px-4 py-2 bg-gray-600 rounded hover:bg-gray-400"
                 >
                   Cancel
                 </button>

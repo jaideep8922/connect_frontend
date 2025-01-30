@@ -4,7 +4,19 @@ import { useState, useEffect } from 'react'
 import { MoreHorizontal, Ban, Pause, ArrowLeft } from 'lucide-react'
 
 // Replace with your API endpoint
-const localData: any = JSON.parse(localStorage.getItem('userDetails') || '{}');
+// const localData: any = JSON.parse(localStorage.getItem('userDetails') || '{}');
+const getLocalData = () => {
+  try {
+    const data = localStorage.getItem('userDetails')
+    return data ? JSON.parse(data) : null
+  } catch (error) {
+    console.error("Error reading from localStorage:", error)
+    return null
+  }
+}
+
+const localData = getLocalData()
+
 const customId = localData?.data?.customId; 
 
 const API_URL = `${process.env.NEXT_PUBLIC_BACKEND_URL}/user/retailer-list?sellerId=${customId}`

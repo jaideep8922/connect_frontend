@@ -7,15 +7,14 @@ import toast, { Toaster } from 'react-hot-toast';
 
 
 export default function AddReviewPage() {
-    const router = useRouter()
+    const router = useRouter();
 
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
-
-
+  
     const [customId, setCustomId] = useState<string | null>(null);
-
+  
     // Fetch orders only after component is mounted (client-side)
     useEffect(() => {
       if (typeof window !== "undefined") {
@@ -65,44 +64,6 @@ export default function AddReviewPage() {
         fetchOrders();
       }
     }, [customId]);
-
-    // const localData: any = JSON.parse(localStorage.getItem('userDetails') || '{}');
-    // const customId = localData?.data?.customId;
-
-
-    // const fetchOrders = async () => {
-    //     try {
-    //         setLoading(true);
-    //         setError("");
-
-    //         const response = await fetch(
-    //             `${process.env.NEXT_PUBLIC_BACKEND_URL}/order/get-order-history-by-retailer-id`,
-    //             {
-    //                 method: "POST",
-    //                 headers: {
-    //                     "Content-Type": "application/json",
-    //                 },
-    //                 body: JSON.stringify({ customId }),
-    //             }
-    //         );
-
-    //         if (!response.ok) {
-    //             throw new Error(`Failed to fetch orders: ${response.statusText}`);
-    //         }
-
-    //         const data = await response.json();
-    //         setOrders(data.data || []);
-    //     } catch (err: any) {
-    //         setError(err.message || "Something went wrong.");
-    //     } finally {
-    //         setLoading(false);
-    //     }
-    // };
-
-    // useEffect(() => {
-    //     fetchOrders()
-    // }, [])
-
 
     return (
         <>

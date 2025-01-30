@@ -48,7 +48,7 @@
 //         <h1 className="text-lg font-medium">Cancel Order</h1>
 
 //         <div className="relative flex h-8 w-8 items-center justify-center rounded-full bg-emerald-500 text-white">
-         
+
 //           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-shopping-cart"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>          <span className="sr-only">Notifications</span>
 //         </div>
 //       </header>
@@ -133,42 +133,57 @@ interface Order {
 export default function CurrentCancelOrderMain() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(false);
-
+  const [customId, setCustomId] = useState<string | null>(null); // State to store customId
 
   useEffect(() => {
-    const localData: any = JSON.parse(localStorage.getItem('userDetails') || '{}');
-    const customId = localData?.data?.customId;
-
-    const fetchOrders = async () => {
-      setLoading(true);
-      try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/order/get-order-history-by-supplier-id`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ customId }),
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          if (data.success) {
-            setOrders(data.data);
-          } else {
-            console.error("Failed to fetch orders: ", data.message);
-          }
-        } else {
-          console.error("Failed to fetch orders: HTTP error", response.status);
-        }
-      } catch (error) {
-        console.error("Error fetching orders: ", error);
-      } finally {
-        setLoading(false);
+    // Ensure localStorage is only accessed on the client side
+    if (typeof window !== "undefined") {
+      const localData: any = JSON.parse(localStorage.getItem('userDetails') || '{}');
+      const customId = localData?.data?.customId;
+      if (customId) {
+        setCustomId(customId);
+      } else {
+        console.error("Custom ID not found in localStorage");
       }
-    };
-
-    fetchOrders();
+    }
   }, []);
+
+  useEffect(() => {
+    if (customId) {
+      const fetchOrders = async () => {
+        setLoading(true);
+        try {
+          const response = await fetch(
+            `${process.env.NEXT_PUBLIC_BACKEND_URL}/order/get-order-history-by-supplier-id`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ customId }),
+            }
+          );
+
+          if (response.ok) {
+            const data = await response.json();
+            if (data.success) {
+              setOrders(data.data);
+            } else {
+              console.error("Failed to fetch orders: ", data.message);
+            }
+          } else {
+            console.error("Failed to fetch orders: HTTP error", response.status);
+          }
+        } catch (error) {
+          console.error("Error fetching orders: ", error);
+        } finally {
+          setLoading(false);
+        }
+      };
+
+      fetchOrders();
+    }
+  }, [customId]);
 
   const statusMap: Record<number, { label: string; bgColor: string }> = {
     1: { label: "Pending", bgColor: "bg-yellow-100 text-yellow-700" },
@@ -223,7 +238,7 @@ export default function CurrentCancelOrderMain() {
           <div className="flex items-center justify-between">
             <p className="text-lg font-medium text-gray-600">Total Cancelled Order</p>
             <p className="text-3xl font-bold text-gray-800">
-            {orders.filter((order) => order.statusId === 5).length}
+              {orders.filter((order) => order.statusId === 5).length}
             </p>
           </div>
         </div>
@@ -233,41 +248,41 @@ export default function CurrentCancelOrderMain() {
         ) : (
           <div className="space-y-3">
             {orders.
-             filter((order) => order.statusId === 5).
-            map((order, index) => (
-              // <Link href="/request-cart" key={index}>
+              filter((order) => order.statusId === 5).
+              map((order, index) => (
+                // <Link href="/request-cart" key={index}>
 
-              <Link href={`/request-cart?orderId=${order.orderId}`} key={index}>
-                <div className="p-4 border bg-white shadow-sm rounded-lg m-1">
-                  <div className="flex items-start gap-3">
-                    <div className="p-2 bg-blue-50 rounded-lg">
-                      <Package className="h-5 w-5 text-red-500" />
-                    </div>
-                    <div className="flex-1">
-                      <div className="flex justify-between items-start">
-                        <div>
-                          <h3 className="font-medium text-red-700">Order Id: {order.orderId}</h3>
-                          <p className="text-sm text-muted-foreground mt-1">
-                            Items: {order.totalItem} · Quantity: {order.totalQuantity}
+                <Link href={`/request-cart?orderId=${order.orderId}`} key={index}>
+                  <div className="p-4 border bg-white shadow-sm rounded-lg m-1">
+                    <div className="flex items-start gap-3">
+                      <div className="p-2 bg-blue-50 rounded-lg">
+                        <Package className="h-5 w-5 text-red-500" />
+                      </div>
+                      <div className="flex-1">
+                        <div className="flex justify-between items-start">
+                          <div>
+                            <h3 className="font-medium text-red-700">Order Id: {order.orderId}</h3>
+                            <p className="text-sm text-muted-foreground mt-1">
+                              Items: {order.totalItem} · Quantity: {order.totalQuantity}
+                            </p>
+                          </div>
+
+                          <p
+                            className={`text-sm inline-block font-medium px-3 py-1 rounded-full ${statusMap[order.statusId]?.bgColor || "bg-gray-100 text-gray-700"}`}
+                          >
+                            {statusMap[order.statusId]?.label || "Unknown"}
                           </p>
                         </div>
-
-                        <p
-                          className={`text-sm inline-block font-medium px-3 py-1 rounded-full ${statusMap[order.statusId]?.bgColor || "bg-gray-100 text-gray-700"}`}
-                        >
-                          {statusMap[order.statusId]?.label || "Unknown"}
-                        </p>
-                      </div>
-                      <div className="mt-2 text-sm">
-                        <p className="text-muted-foreground mt-4">Created At: {new Date(order.createdAt).toLocaleString()}</p>
-                        <br></br>
-                        <p className="text-muted-foreground"><span className="text-red-600">Notes :</span> {order.notes}</p>
+                        <div className="mt-2 text-sm">
+                          <p className="text-muted-foreground mt-4">Created At: {new Date(order.createdAt).toLocaleString()}</p>
+                          <br></br>
+                          <p className="text-muted-foreground"><span className="text-red-600">Notes :</span> {order.notes}</p>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              </Link>
-            ))}
+                </Link>
+              ))}
           </div>
         )}
       </div>

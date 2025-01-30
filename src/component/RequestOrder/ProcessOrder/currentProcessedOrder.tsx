@@ -12,84 +12,54 @@ interface Order {
 }
 
 export default function CurrentProcessedOrderMain() {
-
-
   const [orders, setOrders] = useState<any>([]);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     // Ensure `localStorage` access happens only on the client side
     if (typeof window !== "undefined") {
-      const localData: any = JSON.parse(localStorage.getItem('userDetails') || '{}');
-      const customId = localData?.data?.customId;
+      try {
+        const localData: any = JSON.parse(localStorage.getItem("userDetails") || "{}");
+        const customId = localData?.data?.customId;
 
-      const fetchOrders = async () => {
-        setLoading(true);
-        try {
-          const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/order/get-order-history-by-supplier-id`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ customId }),
-          });
-
-          if (response.ok) {
-            const data = await response.json();
-            if (data.success) {
-              setOrders(data.data);
-            } else {
-              console.error("Failed to fetch orders: ", data.message);
-            }
-          } else {
-            console.error("Failed to fetch orders: HTTP error", response.status);
-          }
-        } catch (error) {
-          console.error("Error fetching orders: ", error);
-        } finally {
-          setLoading(false);
+        if (customId) {
+          fetchOrders(customId);
+        } else {
+          console.error("Custom ID is missing from user details.");
         }
-      };
-
-      fetchOrders();
+      } catch (error) {
+        console.error("Error parsing localStorage data:", error);
+      }
     }
   }, []);
 
+  const fetchOrders = async (customId: string) => {
+    setLoading(true);
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/order/get-order-history-by-supplier-id`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ customId }),
+      });
 
-  // useEffect(() => {
-  //   const localData: any = JSON.parse(localStorage.getItem('userDetails') || '{}');
-  //   const customId = localData?.data?.customId;
-
-  //   const fetchOrders = async () => {
-  //     setLoading(true);
-  //     try {
-  //       const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/order/get-order-history-by-supplier-id`, {
-  //         method: "POST",
-  //         headers: {
-  //           "Content-Type": "application/json",
-  //         },
-  //         body: JSON.stringify({ customId }),
-  //       });
-
-  //       if (response.ok) {
-  //         const data = await response.json();
-  //         if (data.success) {
-  //           setOrders(data.data);
-  //         } else {
-  //           console.error("Failed to fetch orders: ", data.message);
-  //         }
-  //       } else {
-  //         console.error("Failed to fetch orders: HTTP error", response.status);
-  //       }
-  //     } catch (error) {
-  //       console.error("Error fetching orders: ", error);
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   };
-
-  //   fetchOrders();
-  // }, []);
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success) {
+          setOrders(data.data);
+        } else {
+          console.error("Failed to fetch orders: ", data.message);
+        }
+      } else {
+        console.error("Failed to fetch orders: HTTP error", response.status);
+      }
+    } catch (error) {
+      console.error("Error fetching orders: ", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const statusMap: Record<number, { label: string; bgColor: string }> = {
     1: { label: "Pending", bgColor: "bg-yellow-100 text-yellow-700" },
@@ -97,7 +67,7 @@ export default function CurrentProcessedOrderMain() {
     3: { label: "Completed", bgColor: "bg-green-100 text-green-700" },
     4: { label: "Cancelled", bgColor: "bg-red-100 text-red-700" },
   };
-
+  
   return (
     <>
       <header className="sticky top-0 z-10 flex h-20 items-center justify-between border-b bg-white px-4">

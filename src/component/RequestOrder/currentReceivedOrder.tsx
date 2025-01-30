@@ -21,45 +21,59 @@ interface Order {
 export default function CurrentReceivedOrderMain() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(false);
+  const [customId, setCustomId] = useState<string | null>(null); // State to store customId
 
-
+  // Ensure we are working with the client-side by checking if window is defined
   useEffect(() => {
     if (typeof window !== "undefined") {
+      const localData: any = JSON.parse(localStorage.getItem("userDetails") || "{}");
 
-    const localData: any = JSON.parse(localStorage.getItem('userDetails') || '{}');
-    const customId = localData?.data?.customId;
-
-    const fetchOrders = async () => {
-      setLoading(true);
-      try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/order/get-order-history-by-supplier-id`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ customId }),
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          if (data.success) {
-            setOrders(data.data);
-          } else {
-            console.error("Failed to fetch orders: ", data.message);
-          }
-        } else {
-          console.error("Failed to fetch orders: HTTP error", response.status);
-        }
-      } catch (error) {
-        console.error("Error fetching orders: ", error);
-      } finally {
-        setLoading(false);
+      // Check if localStorage has valid data
+      if (localData?.data?.customId) {
+        setCustomId(localData.data.customId);
+      } else {
+        console.error("User details not found in localStorage.");
       }
-    };
+    }
+  }, []); // Runs only once on mount
 
-    fetchOrders();
-  }
-  }, []);
+  // Fetch orders once customId is available
+  useEffect(() => {
+    if (customId) {
+      const fetchOrders = async () => {
+        setLoading(true);
+        try {
+          const response = await fetch(
+            `${process.env.NEXT_PUBLIC_BACKEND_URL}/order/get-order-history-by-supplier-id`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ customId }),
+            }
+          );
+
+          if (response.ok) {
+            const data = await response.json();
+            if (data.success) {
+              setOrders(data.data);
+            } else {
+              console.error("Failed to fetch orders: ", data.message);
+            }
+          } else {
+            console.error("Failed to fetch orders: HTTP error", response.status);
+          }
+        } catch (error) {
+          console.error("Error fetching orders: ", error);
+        } finally {
+          setLoading(false);
+        }
+      };
+
+      fetchOrders();
+    }
+  }, [customId]); // Only fetch orders when customId is available
 
   const statusMap: Record<number, { label: string; bgColor: string }> = {
     1: { label: "Pending", bgColor: "bg-yellow-100 text-yellow-700" },

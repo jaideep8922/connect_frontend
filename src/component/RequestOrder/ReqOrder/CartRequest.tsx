@@ -2,7 +2,7 @@
 import Image from "next/image";
 import { ArrowLeft, Plus, Minus, NotebookPen } from 'lucide-react';
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import Pista from '@/assets/pista.jpg';
 import { AlertTriangle, ShoppingCart, MessageSquare } from 'lucide-react'
 import SendEnquiryModal from "@/component/global/sendEnquiryPopup";
@@ -11,80 +11,166 @@ import { useRouter, useSearchParams } from "next/navigation";
 import toast, { Toaster } from 'react-hot-toast';
 
 
-export default function CartRequestPage() {
-    const [activeTab, setActiveTab] = useState<"cart" | "bill">("cart");
-    const [isModalOpen, setIsModalOpen] = useState(false)
-    const [isModalOpens, setIsModalOpens] = useState(false)
+const CartRequestPage: React.FC = () => {
 
-    const [isModalClose, setIsModalClose] = useState(false)
-    const [isModalCloses, setIsModalCloses] = useState(false)
+    const [activeTab, setActiveTab] = useState<"cart" | "bill">("cart");
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isModalOpens, setIsModalOpens] = useState(false);
+    const [isModalClose, setIsModalClose] = useState(false);
+    const [isModalCloses, setIsModalCloses] = useState(false);
     const [showSuccess, setShowSuccess] = useState(false);
 
-    const router = useRouter()
-    const searchParams = useSearchParams()
-    const orderId = searchParams.get('orderId')
+    const router = useRouter();
+    const searchParams = useSearchParams();
+    const orderId = searchParams.get('orderId');
 
-    console.log("orderId", orderId)
-
+    console.log("orderId", orderId);
 
     const [orders, setOrders] = useState<any>([]);
     const [loading, setLoading] = useState(false);
 
-
     useEffect(() => {
         if (typeof window !== "undefined") {
+            // Try to safely retrieve data from localStorage
+            const localData = localStorage.getItem('userDetails');
+            if (localData) {
+                try {
+                    const parsedData = JSON.parse(localData);
+                    const customId = parsedData?.data?.customId;
 
-        const localData: any = JSON.parse(localStorage.getItem('userDetails') || '{}');
-        const customId = localData?.data?.customId;
+                    if (customId) {
+                        fetchOrders(customId); // Fetch orders only if customId is valid
+                    } else {
+                        console.error("No customId found in localStorage.");
+                    }
+                } catch (error) {
+                    console.error("Error parsing localStorage data:", error);
+                }
+            } else {
+                console.error("No userDetails found in localStorage.");
+            }
+        }
+    }, []);
 
-        const fetchOrders = async () => {
-            setLoading(true);
-            try {
-                const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/order/get-order-history-by-supplier-id`, {
-                    method: "POST",
+    const fetchOrders = async (customId: string) => {
+        setLoading(true);
+        try {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/order/get-order-history-by-supplier-id`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ customId }),
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                if (data.success) {
+                    setOrders(data.data);
+                } else {
+                    console.error("Failed to fetch orders: ", data.message);
+                }
+            } else {
+                console.error("Failed to fetch orders: HTTP error", response.status);
+            }
+        } catch (error) {
+            console.error("Error fetching orders: ", error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        if (orderId && orders.length > 0) {
+            const order = orders.find((order: any) => order.orderId === orderId);
+            setOrderDetails(order);
+        }
+    }, [orderId, orders]);
+
+    const [orderDetails, setOrderDetails] = useState<any>(null);
+
+    const handleConfirm = async () => {
+        setIsModalOpen(false);
+        try {
+            const response = await fetch(
+                `${process.env.NEXT_PUBLIC_BACKEND_URL}/order/update-order-status`,
+                {
+                    method: "PUT",
                     headers: {
                         "Content-Type": "application/json",
                     },
-                    body: JSON.stringify({ customId }),
-                });
-
-                if (response.ok) {
-                    const data = await response.json();
-                    if (data.success) {
-                        setOrders(data.data);
-                    } else {
-                        console.error("Failed to fetch orders: ", data.message);
-                    }
-                } else {
-                    console.error("Failed to fetch orders: HTTP error", response.status);
+                    body: JSON.stringify({
+                        orderId,
+                        statusId: 2, // Send statusId as 2
+                    }),
                 }
-            } catch (error) {
-                console.error("Error fetching orders: ", error);
-            } finally {
-                setLoading(false);
+            );
+
+            if (response.ok) {
+                const data = await response.json();
+                if (data.success) {
+                    toast.success("Order status updated successfully");
+                    setTimeout(() => {
+                        router.push("/request-order");
+                    }, 3000);
+                } else {
+                    console.error("Failed to update order status:", data.message);
+                }
+            } else {
+                console.error("Failed to update order status: HTTP error", response.status);
             }
-        };
-
-        fetchOrders();
-    }
-    }, []);
-
-    console.log("orders", orders)
-
-    const [orderDetails, setOrderDetails] = useState<any>(null)
-
-
-    useEffect(() => {
-        if (orderId && orders) {
-            // Find the order matching the orderId
-            const order = orders.find((order: any) => order.orderId === orderId)
-            setOrderDetails(order)
+        } catch (error) {
+            console.error("Error updating order status:", error);
         }
-    }, [orderId, orders])
+    };
 
-    // const handleConfirm = () => {
-    //     setIsModalOpen(false)
-    // }
+    const handleConfirmReject = async () => {
+        try {
+            const response = await fetch(
+                `${process.env.NEXT_PUBLIC_BACKEND_URL}/order/update-order-status`,
+                {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        orderId,
+                        statusId: 5, // Reject statusId
+                    }),
+                }
+            );
+
+            if (response.ok) {
+                const data = await response.json();
+                if (data.success) {
+                    toast.success("Order status updated successfully");
+                    setTimeout(() => {
+                        router.push("/request-order");
+                    }, 3000);
+                } else {
+                    console.error("Failed to update order status:", data.message);
+                }
+            } else {
+                console.error("Failed to update order status: HTTP error", response.status);
+            }
+        } catch (error) {
+            console.error("Error updating order status:", error);
+        }
+        setIsModalClose(false);
+    };
+
+    const [isOpen, setIsOpen] = useState(false);
+    const [selectedStatus, setSelectedStatus] = useState<number | null>(null);
+    const [description, setDescription] = useState("");
+
+    const handleReset = () => {
+        setDescription("");
+    };
+
+    const handleSave = () => {
+        console.log("Saving description:", description);
+        setIsOpen(false);
+    };
 
     const handleClose = () => {
         setIsModalOpens(false)
@@ -104,8 +190,8 @@ export default function CartRequestPage() {
                         "Content-Type": "application/json",
                     },
                     body: JSON.stringify({
-                        orderId, // Use extracted orderId
-                        statusId: selectedStatus, // Use dynamically selected statusId
+                        orderId, 
+                        statusId: selectedStatus,
                     }),
                 }
             );
@@ -127,92 +213,6 @@ export default function CartRequestPage() {
             console.error("Error updating order status: ", error);
         }
     };
-
-
-    const handleConfirm = async () => {
-        setIsModalOpen(false);
-        try {
-            const response = await fetch(
-                `${process.env.NEXT_PUBLIC_BACKEND_URL}/order/update-order-status`,
-                {
-                    method: "PUT",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({
-                        orderId: orderId, // Use the extracted orderId from the search params
-                        statusId: 2,      // Send statusId as 2
-                    }),
-                }
-            );
-
-            if (response.ok) {
-                const data = await response.json();
-                if (data.success) {
-                    toast.success("Order status updated successfully");
-                    setTimeout(() => {
-                        router.push("/request-order");
-                    }, 3000);
-                } else {
-                    console.error("Failed to update order status: ", data.message);
-                }
-            } else {
-                console.error("Failed to update order status: HTTP error", response.status);
-            }
-        } catch (error) {
-            console.error("Error updating order status: ", error);
-        }
-    };
-
-
-    const handleConfirmReject = async () => {
-        try {
-            const response = await fetch(
-                `${process.env.NEXT_PUBLIC_BACKEND_URL}/order/update-order-status`,
-                {
-                    method: "PUT",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({
-                        orderId: orderId,
-                        statusId: 5,
-                    }),
-                }
-            );
-
-            if (response.ok) {
-                const data = await response.json();
-                if (data.success) {
-                    toast.success("Order status updated successfully");
-                    setTimeout(() => {
-                        router.push("/request-order");
-                    }, 3000);
-                } else {
-                    console.error("Failed to update order status: ", data.message);
-                }
-            } else {
-                console.error("Failed to update order status: HTTP error", response.status);
-            }
-        } catch (error) {
-            console.error("Error updating order status: ", error);
-        }
-        setIsModalClose(false)
-    }
-
-    const [isOpen, setIsOpen] = useState(false)
-    const [selectedStatus, setSelectedStatus] = useState<number | null>(null)
-    const [description, setDescription] = useState("")
-
-    const handleReset = () => {
-        setDescription("")
-    }
-
-    const handleSave = () => {
-        // Handle save logic here
-        console.log("Saving description:", description)
-        setIsOpen(false)
-    }
 
     const totalAmount = orderDetails?.OrderProductDetails?.reduce(
         (sum: any, item: any) => sum + item.price * item.quantity,
@@ -591,3 +591,12 @@ export default function CartRequestPage() {
         </div>
     );
 }
+
+
+const CartRequestPageWrapper: React.FC = () => (
+  <Suspense fallback={<div>Loading...</div>}>
+    <CartRequestPage />
+  </Suspense>
+);
+
+export default CartRequestPageWrapper;

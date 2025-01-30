@@ -9,68 +9,62 @@ export default function ReviewsPage() {
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const userType = localStorage.getItem("userType");
-
+  const [userType, setUserType] = useState<string | null>(null);
+  const [customId, setCustomId] = useState<string | null>(null);
 
   useEffect(() => {
-    // Fetch user details and determine user type
-    const localData: any = JSON.parse(localStorage.getItem('userDetails') || '{}');
-    const customId = localData?.data?.customId;
+    // Retrieve user details from localStorage after component mounts
+    const localData = localStorage.getItem("userDetails");
+    if (localData) {
+      const parsedData = JSON.parse(localData);
 
-    let userType = "";
-    let payload = {};
+      // Get customId and userType from localStorage data
+      const customIdFromStorage = parsedData?.data?.customId;
+      const userTypeFromStorage = customIdFromStorage?.startsWith("RE")
+        ? "Retailer"
+        : customIdFromStorage?.startsWith("SU")
+        ? "Supplier"
+        : null;
 
-
-
-    if (customId?.startsWith("RE")) {
-      userType = "Retailer";
-      payload = {
-        retailerId: customId,
-        userType,
-      };
-    } else if (customId?.startsWith("SU")) {
-      userType = "Supplier";
-      payload = {
-        suplierId: customId,
-        userType,
-      };
-    } else {
-      console.error("Invalid customId:", customId);
-      setLoading(false);
-      return;
+      // Update state variables
+      setCustomId(customIdFromStorage);
+      setUserType(userTypeFromStorage);
     }
-
-    // Fetch reviews from the API
-    const fetchReviews = async () => {
-      try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/review/get-review`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(
-            payload
-          ),
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          setReviews(data?.data || []);
-        } else {
-          console.error("Failed to fetch reviews:", response.statusText);
-        }
-      } catch (error) {
-        console.error("Error fetching reviews:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchReviews();
   }, []);
 
+  useEffect(() => {
+    if (customId && userType) {
+      const fetchReviews = async () => {
+        try {
+          const payload =
+            userType === "Retailer"
+              ? { retailerId: customId, userType }
+              : { suplierId: customId, userType };
 
-  console.log("reviews", reviews)
+          const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/review/get-review`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(payload),
+          });
+
+          if (response.ok) {
+            const data = await response.json();
+            setReviews(data?.data || []);
+          } else {
+            console.error("Failed to fetch reviews:", response.statusText);
+          }
+        } catch (error) {
+          console.error("Error fetching reviews:", error);
+        } finally {
+          setLoading(false);
+        }
+      };
+
+      fetchReviews();
+    }
+  }, [customId, userType]);
 
   return (
     <>

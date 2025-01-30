@@ -11,29 +11,48 @@ export default function EditProductTable() {
     const router = useRouter();
 
     const [products, setProducts] = useState<any>([]);
-    const localData: any = JSON.parse(localStorage.getItem('userDetails') || '{}');
-    const customId = localData?.data?.customId;
+    const [customId, setCustomId] = useState<string | null>(null);
+
+    // Safe access to localStorage
+    useEffect(() => {
+        if (typeof window !== "undefined") {
+            const storedUserDetails = localStorage.getItem('userDetails');
+            if (storedUserDetails) {
+                try {
+                    const userDetails = JSON.parse(storedUserDetails);
+                    setCustomId(userDetails?.data?.customId || null);
+                } catch (error) {
+                    console.error("Error parsing user details:", error);
+                    toast.error("Failed to retrieve user details.");
+                }
+            } else {
+                toast.error("No user details found, please log in.");
+            }
+        }
+    }, []);
 
     // Fetch product list on component mount
     useEffect(() => {
-        const fetchProductList = async () => {
-            try {
-                const response = await fetch(
-                    `${process.env.NEXT_PUBLIC_BACKEND_URL}/product/get-product-list?sellerId=${customId}`
-                );
+        if (customId) {
+            const fetchProductList = async () => {
+                try {
+                    const response = await fetch(
+                        `${process.env.NEXT_PUBLIC_BACKEND_URL}/product/get-product-list?sellerId=${customId}`
+                    );
 
-                if (!response.ok) {
-                    throw new Error(`Error: ${response.status} ${response.statusText}`);
+                    if (!response.ok) {
+                        throw new Error(`Error: ${response.status} ${response.statusText}`);
+                    }
+
+                    const data = await response.json();
+                    setProducts(data?.data);
+                } catch (err: any) {
+                    console.error("Error fetching product list:", err.message);
                 }
+            };
 
-                const data = await response.json();
-                setProducts(data?.data);
-            } catch (err: any) {
-                console.error("Error fetching product list:", err.message);
-            }
-        };
-
-        fetchProductList();
+            fetchProductList();
+        }
     }, [customId]);
 
     // Handle price changes in the table
@@ -52,39 +71,6 @@ export default function EditProductTable() {
     };
 
     // Save changes to the backend
-    // const handleSave = async () => {
-    //     setEditMode(false);
-    //     console.log("Saving products:", products);
-
-    //     try {
-    //         const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/product/update-product`, {
-    //             method: "PUT",
-    //             headers: {
-    //                 "Content-Type": "application/json",
-    //             },
-    //             body: JSON.stringify({
-    //                 sellerId: customId,
-    //                 products: products.map(({ id, averagePrice, goodPrice, highPrice }) => ({
-    //                     id,
-    //                     averagePrice,
-    //                     goodPrice,
-    //                     highPrice,
-    //                 })),
-    //             }),
-    //         });
-
-    //         if (!response.ok) {
-    //             throw new Error(`Error: ${response.status} ${response.statusText}`);
-    //         }
-
-    //         const result = await response.json();
-    //         console.log("Update successful:", result);
-    //         alert("Products updated successfully!");
-    //     } catch (error: any) {
-    //         console.error("Error updating products:", error.message);
-    //     }
-    // };
-
     const handleSave = async () => {
         setEditMode(false);
         console.log("Saving products:", products);
@@ -120,7 +106,6 @@ export default function EditProductTable() {
             console.error("Error updating products:", error.message);
         }
     };
-
 
     return (
         <>

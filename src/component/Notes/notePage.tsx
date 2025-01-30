@@ -12,31 +12,40 @@ export default function BookReviewsPage() {
 
   const [notesData, setNotesData] = useState([]);
   const [error, setError] = useState<string | null>(null);
+  const [customId, setCustomId] = useState<string | null>(null);
+
+  // Fetch customId from localStorage only on the client-side
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      try {
+        const localData: any = JSON.parse(localStorage.getItem("userDetails") || "{}");
+        const userCustomId = localData?.data?.customId;
+
+        if (userCustomId) {
+          setCustomId(userCustomId);
+        } else {
+          throw new Error("User details not found in localStorage.");
+        }
+      } catch (error) {
+        console.error("Error accessing localStorage:", error);
+        setError("Unable to load user data.");
+      }
+    }
+  }, []);
 
   // Fetch notes data on page load using useEffect
   useEffect(() => {
-    const fetchNotes = async () => {
-      const localData: any = JSON.parse(localStorage.getItem("userDetails") || "{}");
-      const customId = localData?.data?.customId;
-      if (!customId) {
-        console.error("Neither sellerId nor retailerId is available.");
-        toast.error("Please provide valid seller or retailer details.");
-        return;
-      }
+    if (!customId) return;
 
+    const fetchNotes = async () => {
       try {
-        const response = await fetch(
-          `${process.env.NEXT_PUBLIC_BACKEND_URL}/notes/get-notes-list`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              customId,
-            }),
-          }
-        );
+        const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/notes/get-notes-list`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ customId }),
+        });
 
         const result = await response.json();
 
@@ -49,25 +58,23 @@ export default function BookReviewsPage() {
       } catch (error: any) {
         console.error("Error fetching notes:", error.message);
         setError(error.message);
+        toast.error("Failed to load notes");
       }
     };
 
     fetchNotes();
-  }, []);
+  }, [customId]);
 
   // Function to handle note deletion
   const handleDelete = async (id: string) => {
     try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/notes/delete-notes`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ id }),
-        }
-      );
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/notes/delete-notes`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ id }),
+      });
 
       const result = await response.json();
 
@@ -76,13 +83,20 @@ export default function BookReviewsPage() {
       }
 
       toast.success("Note deleted successfully");
-      setNotesData((prevNotes:any) => prevNotes.filter((note:any) => note.id !== id));
+      setNotesData((prevNotes: any) => prevNotes.filter((note: any) => note.id !== id));
     } catch (error: any) {
       console.error("Error deleting note:", error.message);
       toast.error("Failed to delete note");
     }
   };
 
+  if (error) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-[#FFEFD3]">
+        <p className="text-red-600">{error}</p>
+      </div>
+    );
+  }
   return (
     <>
       <Toaster />

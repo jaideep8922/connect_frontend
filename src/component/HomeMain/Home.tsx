@@ -126,41 +126,39 @@ const supplierMenuItems = [
     subtitle: 'Visit Your Website',
     bgColor: 'bg-purple-50',
     iconColor: 'text-purple-500',
-    href: '/order-track',
+    href: '/faq',
   }
 ]
 
 export default function MainHome() {
-  // const userType:any = "Retailer"
-
   const [userType, setUserType] = useState<string | null>(null);
   const [localData, setLocalData] = useState<any>({});
   const [menuItems, setMenuItems] = useState<any[]>([]);
-
-  
-  // const userType = localStorage.getItem("userType");
+  const [sellerData, setSellerData] = useState<any>([]);
+  const [error, setError] = useState<string | null>(null);
 
   const router = useRouter();
+  const isAdmin = false; // Set this based on your logic
 
-  // const menuItems = userType === "Supplier" ? supplierMenuItems : retailerMenuItem;
-
-  const isAdmin = false;
-
-
-  
   useEffect(() => {
-    // This effect runs only on client side
     if (typeof window !== "undefined") {
+      const storedUserType = localStorage.getItem("userType");
+      const storedUserDetails = localStorage.getItem('userDetails');
 
-    const userType = localStorage.getItem("userType");
-    const userDetails = JSON.parse(localStorage.getItem('userDetails') || '{}');
-    
-    setUserType(userType);
-    setLocalData(userDetails);
+      if (storedUserType && storedUserDetails) {
+        const userDetails = JSON.parse(storedUserDetails);
+        setUserType(storedUserType);
+        setLocalData(userDetails);
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!userType) return;
 
     // Calculate menu items
     const baseItems = userType === "Supplier" ? supplierMenuItems : retailerMenuItem;
-    const filteredItems = baseItems.filter((item) => 
+    const filteredItems = baseItems.filter((item) =>
       !(item.href === '/start-order' && !isAdmin)
     );
 
@@ -177,17 +175,7 @@ export default function MainHome() {
     }
 
     setMenuItems(filteredItems);
-  }
-  }, [isAdmin]);
-
-
-
-  const [sellerData, setSellerData] = useState<any>([]);
-  const [error, setError] = useState<string | null>(null);
-
-  // const localData: any = JSON.parse(localStorage.getItem('userDetails') || '{}');
-  // const localUserType: any = localStorage.getItem('userType') || null;
-  // const customId = localData?.data?.customId;
+  }, [userType, isAdmin]);
 
   useEffect(() => {
     const fetchSellerDetails = async () => {
@@ -221,48 +209,6 @@ export default function MainHome() {
 
     fetchSellerDetails();
   }, [localData, userType]);
-
-
-  // useEffect(() => {
-  //   const fetchSellerDetails = async () => {
-  //     try {
-  //       const response = await fetch(
-  //         `${process.env.NEXT_PUBLIC_BACKEND_URL}/users/getUserById`,
-  //         {
-  //           method: 'POST',
-  //           headers: {
-  //             'Content-Type': 'application/json',
-  //           },
-  //           body: JSON.stringify({
-  //             customId: customId,
-  //             userType: localUserType,
-  //           }),
-  //         }
-  //       );
-
-  //       const result = await response.json();
-
-  //       if (!response.ok) {
-  //         throw new Error(result.message || 'Failed to fetch seller details');
-  //       }
-
-  //       setSellerData(result?.data);
-  //       setError(null);
-  //     } catch (error: any) {
-  //       console.error('Error fetching seller details:', error.message);
-  //       setError(error.message);
-  //     }
-  //   };
-
-  //   if (customId) {
-  //     fetchSellerDetails();
-  //   }
-  // }, [customId]);
-
-
-  console.log("sellerData", sellerData)
-
-
   return (
     <div className="bg-[#FFEFD3] m-2">
       {/* Header */}
@@ -279,7 +225,7 @@ export default function MainHome() {
           </div>
 
           <div>
-            <h1 className="font-semibold">{sellerData?.businessName}</h1>
+            <h1 className="font-semibold text-black">{sellerData?.businessName}</h1>
             <p className="text-sm text-gray-500">{sellerData?.businessOwner}</p>
           </div>
         </div>
@@ -304,7 +250,7 @@ export default function MainHome() {
                   <item.icon className={`h-6 w-6 ${item.iconColor}`} />
                 </div>
                 <div>
-                  <h2 className="font-medium">{item.title}</h2>
+                  <h2 className="font-medium text-black">{item.title}</h2>
                   <p className="text-sm text-gray-500">{item.subtitle}</p>
                 </div>
               </div>

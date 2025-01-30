@@ -138,43 +138,44 @@ const UserProfile: React.FC = () => {
   const router = useRouter();
   const [userDetails, setUserDetails] = useState<any>(null);
   const [phoneNo, setPhoneNo] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true); // Add loading state
 
   useEffect(() => {
-    // Ensure this runs only on the client side
+    // Check for `localStorage` on the client side
     if (typeof window !== "undefined") {
       const storedDetails = localStorage.getItem('userDetails');
       const sellerPhone = localStorage.getItem('sellerPhone');
 
       if (storedDetails) {
         try {
-          const parsed = JSON.parse(storedDetails);
-          setUserDetails(parsed);
+          const parsedDetails = JSON.parse(storedDetails);
+          setUserDetails(parsedDetails); // Set the user details in state
         } catch (e) {
-          console.error("Error parsing userDetails", e);
+          console.error("Error parsing userDetails", e); // Handle parsing errors
         }
       }
 
-      setPhoneNo(sellerPhone);
+      setPhoneNo(sellerPhone); // Set the phone number
+      setLoading(false); // Set loading to false once the data is ready
     }
   }, []);
 
+  // Show a loading message or spinner while data is being fetched
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  // If userDetails or phoneNo is not available, show loading state
   if (!userDetails || !phoneNo) {
-    return <div>Loading...</div>; // Optionally replace with a spinner or message
+    return <div>Loading...</div>;
   }
 
   const { data } = userDetails;
-  const {
-    businessName,
-    businessOwner,
-    customId,
-    filePath,
-    qrCode
-  } = data;
+  const { businessName, businessOwner, customId, filePath, qrCode } = data;
 
   const handleClick = () => {
     router.push('/shop');
-  }
-
+  };
   return (
     <div className="flex flex-col items-center justify-between bg-[#FFEFD3] p-2">
       {/* Profile Section */}
@@ -188,8 +189,8 @@ const UserProfile: React.FC = () => {
             className="object-cover"
           />
         </div>
-        <h1 className="mt-4 text-lg font-semibold">{businessOwner}</h1>
-        <p className="text-sm text-gray-500">{businessName}</p>
+        <h1 className="mt-4 text-lg font-semibold text-black">{businessOwner}</h1>
+        <p className="text-sm text-gray-600">{businessName}</p>
       </div>
 
       {/* Action Buttons */}

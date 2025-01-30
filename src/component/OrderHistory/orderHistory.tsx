@@ -18,17 +18,32 @@ export default function OrdersHistoryPage() {
     4: "Cancelled",
   };
 
-  const localData: any = JSON.parse(localStorage.getItem('userDetails') || '{}');
-  const customId = localData?.data?.customId;
+  const [customId, setCustomId] = useState<string | null>(null);
+  const [userData, setUserData] = useState<string | null>(null);
 
-  const userData = localStorage.getItem("userType");
+  // Fetch localStorage data only on the client side
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const localData: any = JSON.parse(localStorage.getItem('userDetails') || '{}');
+      const customId = localData?.data?.customId || null;
+      setCustomId(customId);
+      
+      const userType = localStorage.getItem("userType");
+      setUserData(userType);
+    }
+  }, []);
 
   useEffect(() => {
     const fetchOrders = async () => {
+      if (!customId || !userData) {
+        return;
+      }
+
       try {
         setLoading(true);
-  
         let response;
+
+        // Fetch orders based on user type
         if (userData === "Retailer") {
           response = await fetch(
             `${process.env.NEXT_PUBLIC_BACKEND_URL}/order/get-order-history-by-retailer-id`,
@@ -52,19 +67,19 @@ export default function OrdersHistoryPage() {
             }
           );
         }
-  
+
         if (!response?.ok) {
           throw new Error(`Failed to fetch: ${response?.statusText}`);
         }
-  
+
         const data = await response.json();
-  
+
         // Map statusId to status labels in fetched orders
         const mappedOrders = data.data.map((order: { statusId: number }) => ({
           ...order,
           status: statusMapping[order.statusId],
         }));
-  
+
         setOrders(mappedOrders || []);
       } catch (err: any) {
         setError(err.message || "Something went wrong.");
@@ -72,8 +87,9 @@ export default function OrdersHistoryPage() {
         setLoading(false);
       }
     };
-  
-    if (userData === "Retailer" || userData === "Supplier") {
+
+    // Fetch orders if user type and customId are available
+    if (userData && customId) {
       fetchOrders();
     }
   }, [userData, customId]);
@@ -82,7 +98,7 @@ export default function OrdersHistoryPage() {
   const filteredOrders =
     selectedStatus === "All"
       ? orders
-      : orders.filter((order:any) => order.status === selectedStatus);
+      : orders.filter((order: any) => order.status === selectedStatus);
 
   return (
     <>

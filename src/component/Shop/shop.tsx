@@ -20,112 +20,134 @@ export default function ShopMain() {
     const [error, setError] = useState<string | null>(null);
     const [imageSlider, setImageSlider] = useState<any>([]);
 
-    const localData: any = JSON.parse(localStorage.getItem('userDetails') || '{}');
-    const sellerId = localData?.data?.sellerId;
+    const [sellerId, setSellerId] = useState<string | null>(null);
+    const [phoneNumber, setPhoneNumber] = useState<string | null>(null);
 
     useEffect(() => {
-        const fetchProductList = async () => {
-            try {
-                const response = await fetch(
-                    `${process.env.NEXT_PUBLIC_BACKEND_URL}/product/get-product-list?sellerId=${sellerId}`,
-                    {
-                        method: 'GET',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                    }
-                );
-
-                const result = await response.json();
-
-                if (!response.ok) {
-                    throw new Error(result.message || 'Failed to fetch product details');
+        // Check if localStorage is available and fetch the userDetails only on the client side
+        if (typeof window !== "undefined") {
+            const localData = localStorage.getItem('userDetails');
+            if (localData) {
+                const parsedData = JSON.parse(localData);
+                const sellerIdFromLocalStorage = parsedData?.data?.sellerId;
+                if (sellerIdFromLocalStorage) {
+                    setSellerId(sellerIdFromLocalStorage);
+                    setPhoneNumber(parsedData?.data?.phone || null);
                 }
-
-                setProductData(result);
-                setError(null);
-            } catch (error: any) {
-                console.error('Error fetching product list:', error.message);
-                setError(error.message);
             }
-        };
+        }
+    }, []); // Runs only once when the component is mounted
 
+    useEffect(() => {
+        // Check if sellerId is available and then fetch the product data
         if (sellerId) {
+            const fetchProductList = async () => {
+                try {
+                    const response = await fetch(
+                        `${process.env.NEXT_PUBLIC_BACKEND_URL}/product/get-product-list?sellerId=${sellerId}`,
+                        {
+                            method: 'GET',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                        }
+                    );
+
+                    const result = await response.json();
+
+                    if (!response.ok) {
+                        throw new Error(result.message || 'Failed to fetch product details');
+                    }
+
+                    setProductData(result);
+                    setError(null);
+                } catch (error: any) {
+                    console.error('Error fetching product list:', error.message);
+                    setError(error.message);
+                }
+            };
+
             fetchProductList();
         }
     }, [sellerId]);
 
     useEffect(() => {
-        const fetchSellerDetails = async () => {
-            try {
-                const response = await fetch(
-                    `${process.env.NEXT_PUBLIC_BACKEND_URL}/users/getUserById`,
-                    {
-                        method: 'POST', // Changed to POST for sending a body
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({
-                            customId: sellerId,
-                            userType: "Supplier",
-                        }),
-                    }
-                );
-
-                const result = await response.json();
-
-                if (!response.ok) {
-                    throw new Error(result.message || 'Failed to fetch seller details');
-                }
-
-                setSellerData(result);
-                setError(null);
-            } catch (error: any) {
-                console.error('Error fetching seller details:', error.message);
-                setError(error.message);
-            }
-        };
-
+        // Fetch seller details only if sellerId is available
         if (sellerId) {
+            const fetchSellerDetails = async () => {
+                try {
+                    const response = await fetch(
+                        `${process.env.NEXT_PUBLIC_BACKEND_URL}/users/getUserById`,
+                        {
+                            method: 'POST', 
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({
+                                customId: sellerId,
+                                userType: "Supplier",
+                            }),
+                        }
+                    );
+
+                    const result = await response.json();
+
+                    if (!response.ok) {
+                        throw new Error(result.message || 'Failed to fetch seller details');
+                    }
+
+                    setSellerData(result);
+                    setError(null);
+                } catch (error: any) {
+                    console.error('Error fetching seller details:', error.message);
+                    setError(error.message);
+                }
+            };
+
             fetchSellerDetails();
         }
     }, [sellerId]);
 
-    const phoneNumber = sellerData?.data?.phone;
-    localStorage.setItem('sellerPhone', phoneNumber);
+    // Use the fetched phoneNumber and store it to localStorage (if necessary)
+    useEffect(() => {
+        if (phoneNumber) {
+            localStorage.setItem('sellerPhone', phoneNumber);
+        }
+    }, [phoneNumber]);
 
     useEffect(() => {
-        const fetchBannerImages = async () => {
-            try {
-                const response = await fetch(
-                    `${process.env.NEXT_PUBLIC_BACKEND_URL}/get-banner-image?sellerId=${sellerId}`,
-                    {
-                        method: 'GET',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                    }
-                );
-
-                const result = await response.json();
-
-                if (!response.ok) {
-                    throw new Error(result.message || 'Failed to fetch banner images');
-                }
-
-                setImageSlider(result);
-                setError(null);
-            } catch (error: any) {
-                console.error('Error fetching banner images:', error.message);
-                setError(error.message);
-            }
-        };
-
+        // Fetch banner images if sellerId is available
         if (sellerId) {
+            const fetchBannerImages = async () => {
+                try {
+                    const response = await fetch(
+                        `${process.env.NEXT_PUBLIC_BACKEND_URL}/get-banner-image?sellerId=${sellerId}`,
+                        {
+                            method: 'GET',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                        }
+                    );
+
+                    const result = await response.json();
+
+                    if (!response.ok) {
+                        throw new Error(result.message || 'Failed to fetch banner images');
+                    }
+
+                    setImageSlider(result);
+                    setError(null);
+                } catch (error: any) {
+                    console.error('Error fetching banner images:', error.message);
+                    setError(error.message);
+                }
+            };
+
             fetchBannerImages();
         }
     }, [sellerId]);
-
+    
     return (
         <div className="bg-[#FFEFD3] m-2 overflow-hidden">
             {/* Search Header */}
@@ -152,8 +174,8 @@ export default function ShopMain() {
                         className="w-full h-full object-cover border-2 border-gray-200 rounded-full"
                     />
                 </div>
-                <h2 className="font-semibold text-xl">{sellerData?.data?.businessName}</h2>
-                <p className="text-md text-gray-500">{sellerData?.data?.businessOwner}</p>
+                <h2 className="font-semibold text-xl text-black">{sellerData?.data?.businessName}</h2>
+                <p className="text-md text-gray-700">{sellerData?.data?.businessOwner}</p>
             </div>
 
             {/* Promo Banner */}
@@ -186,7 +208,7 @@ export default function ShopMain() {
             </div>
 
             <div className="px-1">
-                <h2 className="text-2xl font-semibold my-5 ">Featured Products</h2>
+                <h2 className="text-2xl font-semibold my-5 text-black ">Featured Products</h2>
                 <div className="grid grid-cols-2 gap-2">
                     {productData?.data?.map((product: any) => (
                         // <Link href='/single-view'>

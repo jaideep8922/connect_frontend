@@ -136,12 +136,12 @@ const ProductCard = ({ product }: ProductCardProps) => {
         </div>
       </Link>
 
-      <h3 className="font-semibold mt-2">{product.productName}</h3>
+      <h3 className="font-semibold mt-2 text-black">{product.productName}</h3>
 
       {/* Price Radio Buttons */}
       {product?.averagePrice && (
         <div className="mt-2">
-          <label className="flex items-center text-xs">
+          <label className="flex items-center text-xs text-black">
             <input
               type="radio"
               name={`price-${product.productId}`}
@@ -150,14 +150,14 @@ const ProductCard = ({ product }: ProductCardProps) => {
               onChange={handlePriceChange}
               className="mr-2"
             />
-            Average: <span className="px-1 font-semibold">{product?.averagePrice}</span>
+            Average: <span className="px-1 font-semibold text-black">{product?.averagePrice}</span>
           </label>
         </div>
       )}
 
       {product?.goodPrice && (
         <div className="mt-2">
-          <label className="flex items-center text-xs">
+          <label className="flex items-center text-xs text-black">
             <input
               type="radio"
               name={`price-${product.productId}`}
@@ -166,14 +166,14 @@ const ProductCard = ({ product }: ProductCardProps) => {
               onChange={handlePriceChange}
               className="mr-2"
             />
-            Good: <span className="px-1 font-semibold">{product?.goodPrice}</span>
+            Good: <span className="px-1 font-semibold text-black">{product?.goodPrice}</span>
           </label>
         </div>
       )}
 
       {product?.highPrice && (
         <div className="mt-2">
-          <label className="flex items-center text-xs">
+          <label className="flex items-center text-xs text-black">
             <input
               type="radio"
               name={`price-${product.productId}`}
@@ -182,7 +182,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
               onChange={handlePriceChange}
               className="mr-2"
             />
-            High: <span className="px-1 font-semibold">{product?.highPrice}</span>
+            High: <span className="px-1 font-semibold text-black">{product?.highPrice}</span>
           </label>
         </div>
       )}

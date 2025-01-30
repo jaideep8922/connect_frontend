@@ -1,7 +1,7 @@
 'use client'
 
 import { ArrowLeft, Edit2, ImagePlus } from 'lucide-react'
-import { useState, useRef } from "react"
+import { useState, useRef, useEffect } from "react"
 import Image from "next/image"
 import { useFormik } from "formik"
 import axios from "axios"
@@ -11,9 +11,22 @@ import { useRouter } from 'next/navigation'
 
 export default function AddProduct() {
   const [selectedImage, setSelectedImage] = useState<string | null>(null)
-  const fileInputRef:any = useRef<HTMLInputElement>(null)
+  const [userDetails, setUserDetails] = useState<any>(null) // To store user details
+  const fileInputRef: any = useRef<HTMLInputElement>(null)
   const router = useRouter();
   const videoInputRef: any = useRef<HTMLInputElement>(null);
+
+  // Get user details from localStorage when the component mounts
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const storedUserDetails = localStorage.getItem('userDetails');
+      if (storedUserDetails) {
+        setUserDetails(JSON.parse(storedUserDetails));
+      } else {
+        toast.error("No user details found, please login.");
+      }
+    }
+  }, []);
 
   // Formik setup
   const formik = useFormik({
@@ -28,43 +41,41 @@ export default function AddProduct() {
 
     onSubmit: async (values) => {
       if (typeof window !== "undefined") {
+        // Make sure user details are available
+        if (!userDetails?.data?.customId || !userDetails.data.customId.startsWith("SU")) {
+          toast.error("Please provide valid seller details.");
+          return;
+        }
 
-      const localData = JSON.parse(localStorage.getItem('userDetails') || '{}');
-      const customId = localData?.data?.customId;
-    
-      if (!customId || !customId.startsWith("SU")) {
-        toast.error("Please provide valid seller details.");
-        return;
-      }
-    
-      const formData = new FormData();
-      formData.append('sellerId', customId);
-      formData.append('productName', values.productName);
-      formData.append('description', values.description);
-      formData.append('highPrice', values.highPrice);
-      formData.append('averagePrice', values.averagePrice);
-      formData.append('goodPrice', values.goodPrice);
-      if (fileInputRef.current?.files?.[0]) {
-        formData.append('productImage', fileInputRef.current.files[0]);
-      }
-      if (videoInputRef.current?.files?.[0]) {
-        formData.append('productVideo', videoInputRef.current.files[0]);
-      }
-    
-      try {
-        const response = await axios.post("http://localhost:4000/product/add-product", formData, {
-          headers: { 'Content-Type': 'multipart/form-data' },
-        });
-        toast.success(response.data.message || "Product added successfully!");
-        setTimeout(() => router.push('/manage'), 3000);
-      } catch (error:any) {
-        const errorMessage = error.response?.data?.message || "An unexpected error occurred";
-        console.error("Error adding product:", errorMessage);
-        toast.error(errorMessage);
+        const customId = userDetails?.data?.customId;
+        const formData = new FormData();
+        formData.append('sellerId', customId);
+        formData.append('productName', values.productName);
+        formData.append('description', values.description);
+        formData.append('highPrice', values.highPrice);
+        formData.append('averagePrice', values.averagePrice);
+        formData.append('goodPrice', values.goodPrice);
+        if (fileInputRef.current?.files?.[0]) {
+          formData.append('productImage', fileInputRef.current.files[0]);
+        }
+        if (videoInputRef.current?.files?.[0]) {
+          formData.append('productVideo', videoInputRef.current.files[0]);
+        }
+
+        try {
+          const response = await axios.post("http://localhost:4000/product/add-product", formData, {
+            headers: { 'Content-Type': 'multipart/form-data' },
+          });
+          toast.success(response.data.message || "Product added successfully!");
+          setTimeout(() => router.push('/manage'), 3000);
+        } catch (error: any) {
+          const errorMessage = error.response?.data?.message || "An unexpected error occurred";
+          console.error("Error adding product:", errorMessage);
+          toast.error(errorMessage);
+        }
       }
     }
-  }
-  })
+  });
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]

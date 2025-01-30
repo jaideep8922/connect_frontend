@@ -9,65 +9,53 @@ const OrderTracker = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-
-
-
   const [customId, setCustomId] = useState<string | null>(null); // State to store customId
 
+  // Fetch customId safely inside useEffect to ensure it runs client-side
   useEffect(() => {
-    // Ensure we're on the client-side
     if (typeof window !== "undefined") {
-        const localData: any = JSON.parse(localStorage.getItem('userDetails') || '{}');
-        setCustomId(localData?.data?.customId || null); // Set customId from localStorage
+      const localData: any = JSON.parse(localStorage.getItem('userDetails') || '{}');
+      setCustomId(localData?.data?.customId || null); // Set customId from localStorage
     }
-}, []); // Empty dependency array to run only once
+  }, []);
 
-// Fetch orders only when customId is available
-useEffect(() => {
-    if (customId) {
-        fetchOrders();
-    }
-}, [customId]);
-  // const localData: any = JSON.parse(localStorage.getItem('userDetails') || '{}');
-  // const customId = localData?.data?.customId;
-
-  const fetchOrders = async () => {
-    try {
-      setLoading(true);
-      setError("");
-
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/order/get-order-history-by-retailer-id`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ customId }),
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error(`Failed to fetch orders: ${response.statusText}`);
-      }
-
-      const data = await response.json();
-      setOrders(data.data || []);
-    } catch (err: any) {
-      setError(err.message || "Something went wrong.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
- 
-
+  // Fetch orders only when customId is available
   useEffect(() => {
-    fetchOrders()
-  }, [])
+    const fetchOrders = async () => {
+      if (!customId) return; // Don't fetch if customId is not available
 
-  console.log("orders", orders)
+      try {
+        setLoading(true);
+        setError("");
 
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/order/get-order-history-by-retailer-id`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ customId }),
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error(`Failed to fetch orders: ${response.statusText}`);
+        }
+
+        const data = await response.json();
+        setOrders(data.data || []);
+      } catch (err: any) {
+        setError(err.message || "Something went wrong.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchOrders();
+  }, [customId]); // Only fetch orders when customId is updated
+
+  console.log("orders", orders);
 
   return (
     <>

@@ -132,44 +132,59 @@ export default function CurrentCompleteddOrderMain() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(false);
 
-
   useEffect(() => {
-
     if (typeof window !== "undefined") {
-
-    const localData: any = JSON.parse(localStorage.getItem('userDetails') || '{}');
-    const customId = localData?.data?.customId;
-
-    const fetchOrders = async () => {
-      setLoading(true);
-      try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/order/get-order-history-by-supplier-id`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ customId }),
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          if (data.success) {
-            setOrders(data.data);
-          } else {
-            console.error("Failed to fetch orders: ", data.message);
-          }
-        } else {
-          console.error("Failed to fetch orders: HTTP error", response.status);
-        }
-      } catch (error) {
-        console.error("Error fetching orders: ", error);
-      } finally {
-        setLoading(false);
+      const localData = localStorage.getItem("userDetails");
+      if (!localData) {
+        console.error("No userDetails found in localStorage");
+        return;
       }
-    };
 
-    fetchOrders();
-  }
+      try {
+        const parsedData = JSON.parse(localData);
+        const customId = parsedData?.data?.customId;
+
+        if (!customId) {
+          console.error("No customId found in userDetails");
+          return;
+        }
+
+        const fetchOrders = async () => {
+          setLoading(true);
+          try {
+            const response = await fetch(
+              `${process.env.NEXT_PUBLIC_BACKEND_URL}/order/get-order-history-by-supplier-id`,
+              {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ customId }),
+              }
+            );
+
+            if (response.ok) {
+              const data = await response.json();
+              if (data.success) {
+                setOrders(data.data);
+              } else {
+                console.error("Failed to fetch orders: ", data.message);
+              }
+            } else {
+              console.error("Failed to fetch orders: HTTP error", response.status);
+            }
+          } catch (error) {
+            console.error("Error fetching orders: ", error);
+          } finally {
+            setLoading(false);
+          }
+        };
+
+        fetchOrders();
+      } catch (error) {
+        console.error("Error parsing userDetails from localStorage: ", error);
+      }
+    }
   }, []);
 
   const statusMap: Record<number, { label: string; bgColor: string }> = {

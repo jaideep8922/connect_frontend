@@ -17,17 +17,20 @@ import { useRouter } from "next/navigation";
 
 export default function CartPage() {
     const [activeTab, setActiveTab] = useState<"cart" | "bill">("cart");
-    const [isModalOpen, setIsModalOpen] = useState(false)
+    const [isModalOpen, setIsModalOpen] = useState(false);
     const [showSuccess, setShowSuccess] = useState(false);
-    const dispatch = useDispatch()
-    const router = useRouter()
-
-   
     const [userDetails, setUserDetails] = useState<any>(null);
+    const [description, setDescription] = useState("");
+    const [isOpen, setIsOpen] = useState(false)
+
+
+    const dispatch = useDispatch();
+    const router = useRouter();
+    const carts = useSelector((state: RootState) => state.cart.cart);
 
     useEffect(() => {
+        // Ensure code runs only in the browser (client side)
         if (typeof window !== "undefined") {
-            // Ensure this code runs only in the browser
             const localData = localStorage.getItem("userDetails");
             if (localData) {
                 setUserDetails(JSON.parse(localData));
@@ -35,29 +38,49 @@ export default function CartPage() {
         }
     }, []);
 
+    useEffect(() => {
+        // Sync cart data with localStorage when it changes
+        if (carts.length > 0) {
+            localStorage.setItem("cart", JSON.stringify(carts));
+        }
+    }, [carts]);
 
+    const handleIncrement = (item: any) => {
+        const updatedItem = {
+            ...item,
+            quantity: item.quantity + 1,
+        };
+        dispatch(addToCart(updatedItem));
+    };
 
-    const carts = useSelector((state: RootState) => state.cart.cart);
-
+    const handleDecrement = (item: any) => {
+        if (item.quantity > 1) {
+            const updatedItem = {
+                ...item,
+                quantity: item.quantity - 1,
+            };
+            dispatch(addToCart(updatedItem));
+        } else {
+            dispatch(removeFromCart({ productId: item.productId, selectedPrice: item.selectedPrice }));
+        }
+    };
 
     const sendCartData = async () => {
-        // const localData: any = JSON.parse(localStorage.getItem('userDetails') || '{}');
         const customId = userDetails?.data?.customId;
         const sellerId = userDetails?.data?.sellerId;
-    
+
         // If no userDetails or missing customId/sellerId
         if (!customId || !sellerId) {
             alert("User details are missing or invalid.");
             return;
         }
-    
+
         // If the cart is empty, return early
         if (carts.length === 0) {
             alert("Your cart is empty.");
             return;
         }
-    
-        // Prepare the payload
+
         const payload = {
             retailerId: customId,
             statusId: 1,
@@ -68,12 +91,11 @@ export default function CartPage() {
             orderProductDetails: carts.map((item: any) => ({
                 productId: item.productId,
                 quantity: item.quantity,
-                price: parseFloat(item.price) 
-            }))
+                price: parseFloat(item.price),
+            })),
         };
-    
+
         try {
-            // Make the API POST call using fetch
             const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/order/create-order`, {
                 method: "POST",
                 headers: {
@@ -81,81 +103,35 @@ export default function CartPage() {
                 },
                 body: JSON.stringify(payload),
             });
-    
+
             const result = await response.json();
-    
+
             if (response.ok) {
-                // Handle success
-                console.log("Enquiry sent successfully:", result);
                 toast.success("Enquiry sent successfully!");
-                localStorage.removeItem('cart');
-                router.push('/shop')
+                localStorage.removeItem("cart");
+                router.push("/shop");
             } else {
-                // Handle error with response from the API
-                console.error("Error sending enquiry:", result);
                 toast.error(result.message || "Failed to send enquiry. Please try again.");
             }
         } catch (error) {
-            console.error("Error sending enquiry:", error);
             toast.error("An error occurred. Please try again.");
         }
     };
+
+    const handleReset = () => {
+        setDescription("");
+    };
+
+    const handleSave = () => {
+        setIsModalOpen(false);
+    };
+
     
-
-
     const handleConfirm = () => {
-        // Handle the confirmation logic here
         sendCartData();
         setIsModalOpen(false)
         setShowSuccess(true);
     }
-
-    const [isOpen, setIsOpen] = useState(false)
-    const [description, setDescription] = useState("")
-
-    const handleReset = () => {
-        setDescription("")
-    }
-
-    const handleSave = () => {
-        // Handle save logic here
-        console.log("Saving description:", description)
-        setIsOpen(false)
-    }
-
-
-
-    const handleIncrement = (item: any) => {
-        const cartItem = {
-          productId: item.productId,
-          name: item.productName,
-          image: item.productImage,
-          price: item.price,
-          selectedPrice: item.selectedPrice,
-          quantity: item.quantity + 1, 
-        };
-      
-        dispatch(addToCart(cartItem)); 
-      };
-      
-      const handleDecrement = (item: any) => {
-        if (item.quantity > 1) {
-          const cartItem = {
-            productId: item.productId,
-            name: item.productName,
-            image: item.productImage,
-            price: item.price,
-            selectedPrice: item.selectedPrice,
-            quantity: item.quantity - 1, 
-          };
-      
-          dispatch(addToCart(cartItem)); 
-        } else {
-          dispatch(removeFromCart({ productId: item.productId, selectedPrice: item.selectedPrice }));
-        }
-      };
-      
-
 
     return (
         <div className="bg-white">

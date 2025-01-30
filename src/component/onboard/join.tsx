@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { Suspense, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Camera from '@/assets/camera-plus.svg';
@@ -27,15 +27,6 @@ interface FormData {
 
 
 const JoinPage: React.FC = () => {
-  // const [selectedImage, setSelectedImage] = useState<any>(null)
-  // const [otpVisible, setOtpVisible] = useState(false);
-  // const [phone, setPhone] = useState("");
-
-  // const [otp, setOtp] = useState("");
-  // const [showOtpBox, setShowOtpBox] = useState(false);
-  // const [error, setError] = useState("");
-  // const [isSubmitting, setIsSubmitting] = useState(false);
-
   const [selectedImage, setSelectedImage] = useState<any>(null);
   const [otpVisible, setOtpVisible] = useState(false);
   const [phone, setPhone] = useState("");
@@ -44,33 +35,6 @@ const JoinPage: React.FC = () => {
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-
-  // const handleSubmitOtp = async () => {
-  //   setError(""); // Reset error state
-
-  //   try {
-  //     // API call to verify OTP
-  //     const response = await axios.post("http://localhost:4000/api/guests/verify-otp", {
-  //       phone,
-  //       otp,
-  //     });
-  //     if (response.status === 200) {
-  //       // Redirect or handle successful login
-  //       alert("OTP verified successfully! Redirecting to shop...");
-  //       // Replace with actual redirection logic
-  //       window.location.href = "/shop";
-  //     }
-  //   } catch (err: any) {
-  //     setError(err.response?.data?.message || "Invalid OTP. Please try again.");
-  //   }
-  // };
-
-
-
-  // 
-  
-
- 
   const [formData, setFormData] = useState<FormData>({
     userType: "Retailer",
     businessOwner: "",
@@ -86,6 +50,7 @@ const JoinPage: React.FC = () => {
     fingerprintId: "",
     file: selectedImage
   });
+  
   const [step, setStep] = useState<number>(1);
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -93,15 +58,15 @@ const JoinPage: React.FC = () => {
 
   // Ensure localStorage is only accessed client-side
   useEffect(() => {
-    const supplierIdParam = searchParams.get("id");
-    if (supplierIdParam) {
-      setSupplierId(supplierIdParam);
-      // toast.success(`Supplier ID: ${supplierIdParam} captured successfully.`);
-    } else {
-      // toast.error("No Supplier ID found in the URL.");
+    if (typeof window !== 'undefined') {
+      const supplierIdParam = searchParams.get("id");
+      if (supplierIdParam) {
+        setSupplierId(supplierIdParam);
+      }
     }
   }, [searchParams]);
 
+  // Function to handle image upload
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
@@ -110,14 +75,16 @@ const JoinPage: React.FC = () => {
     }
   };
 
+  // Function to handle input change
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData((prevData: any) => ({
+    setFormData((prevData) => ({
       ...prevData,
       [name]: value,
     }));
   };
 
+  // Function for next step
   const handleNext = async () => {
     if (step < 5) {
       setStep(step + 1);
@@ -152,10 +119,12 @@ const JoinPage: React.FC = () => {
           const responseData = await response.json();
           if (responseData.success) {
             toast.success("Onboarded successfully!");
-            localStorage.setItem("userDetails", JSON.stringify(responseData.data.user));
-            localStorage.setItem("token", responseData.token);
-            localStorage.setItem("userType", formData.userType);
-
+            // Store the user details in localStorage only on the client-side
+            if (typeof window !== "undefined") {
+              localStorage.setItem("userDetails", JSON.stringify(responseData.data.user));
+              localStorage.setItem("token", responseData.token);
+              localStorage.setItem("userType", formData.userType);
+            }
             setTimeout(() => {
               if (formData.userType === "Retailer") {
                 router.push('/shop');
@@ -176,10 +145,12 @@ const JoinPage: React.FC = () => {
     }
   };
 
+  // Function for previous step
   const handlePrevious = () => {
     if (step > 1) setStep(step - 1);
   };
 
+  // Function for sending OTP
   const handleSendOtp = async () => {
     setError(""); // Reset error state
     setIsSubmitting(true);
@@ -196,6 +167,7 @@ const JoinPage: React.FC = () => {
     }
   };
 
+  // Function for handling phone submission
   const handlePhoneSubmit = () => {
     const phonePattern = /^[0-9]{10}$/;
     if (phonePattern.test(formData.phone)) {
@@ -205,6 +177,7 @@ const JoinPage: React.FC = () => {
     }
   };
 
+  // Function for handling OTP submission
   const handleOtpSubmit = () => {
     if (formData.otp === "1234") {
       setOtpVisible(false);
@@ -580,4 +553,10 @@ const JoinPage: React.FC = () => {
   );
 };
 
-export default JoinPage;
+const JoinPageWrapper: React.FC = () => (
+  <Suspense fallback={<div>Loading...</div>}>
+    <JoinPage />
+  </Suspense>
+);
+
+export default JoinPageWrapper;
