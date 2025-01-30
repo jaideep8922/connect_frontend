@@ -100,3 +100,8 @@ a {
   height: 16px; /* Adjust size if necessary */
   width: auto;
 }
+
+
+body {
+  @apply bg-[#FFEFD3]; /* Change the background globally */
+}

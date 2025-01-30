@@ -10,8 +10,26 @@ const OrderTracker = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const localData: any = JSON.parse(localStorage.getItem('userDetails') || '{}');
-  const customId = localData?.data?.customId;
+
+
+  const [customId, setCustomId] = useState<string | null>(null); // State to store customId
+
+  useEffect(() => {
+    // Ensure we're on the client-side
+    if (typeof window !== "undefined") {
+        const localData: any = JSON.parse(localStorage.getItem('userDetails') || '{}');
+        setCustomId(localData?.data?.customId || null); // Set customId from localStorage
+    }
+}, []); // Empty dependency array to run only once
+
+// Fetch orders only when customId is available
+useEffect(() => {
+    if (customId) {
+        fetchOrders();
+    }
+}, [customId]);
+  // const localData: any = JSON.parse(localStorage.getItem('userDetails') || '{}');
+  // const customId = localData?.data?.customId;
 
   const fetchOrders = async () => {
     try {
@@ -42,6 +60,8 @@ const OrderTracker = () => {
     }
   };
 
+ 
+
   useEffect(() => {
     fetchOrders()
   }, [])
@@ -69,7 +89,7 @@ const OrderTracker = () => {
           <span className="sr-only">Notifications</span>
         </div>
       </header>
-      <div className="flex min-h-screen flex-col items-center gap-4 bg-gray-50 p-4">
+      <div className="flex min-h-screen flex-col items-center gap-4 bg-[#FFEFD3] p-4">
         {/* <Link href='/order-track-single' className="w-full">
 
         {orders.map((order:any, index) => (

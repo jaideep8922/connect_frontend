@@ -116,7 +116,7 @@ export default function ReviewsPage() {
         <div className="flex items-center justify-center my-4">No review Found</div>
       )}
 
-      <div className="mx-auto bg-white pb-20">
+      <div className="mx-auto bg-white pb-">
         {/* <div className="divide-y divide-gray-100">
           {loading ? (
             <p className="text-center py-4">Loading reviews...</p>

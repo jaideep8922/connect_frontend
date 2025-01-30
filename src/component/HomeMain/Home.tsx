@@ -84,8 +84,8 @@ const supplierMenuItems = [
     icon: FileText,
     title: 'Order History',
     subtitle: 'Monitor your Order History',
-    bgColor: 'bg-emerald-50',
-    iconColor: 'text-emerald-500',
+    bgColor: 'bg-green-50',
+    iconColor: 'text-green-500',
     href: '/order-history',
 
   },
@@ -132,7 +132,13 @@ const supplierMenuItems = [
 
 export default function MainHome() {
   // const userType:any = "Retailer"
-  const userType = localStorage.getItem("userType");
+
+  const [userType, setUserType] = useState<string | null>(null);
+  const [localData, setLocalData] = useState<any>({});
+  const [menuItems, setMenuItems] = useState<any[]>([]);
+
+  
+  // const userType = localStorage.getItem("userType");
 
   const router = useRouter();
 
@@ -141,52 +147,69 @@ export default function MainHome() {
   const isAdmin = false;
 
 
-  const menuItems = (userType === "Supplier" ? supplierMenuItems : retailerMenuItem)
-    .filter((item) => !(item.href === '/start-order' && !isAdmin));
+  
+  useEffect(() => {
+    // This effect runs only on client side
+    if (typeof window !== "undefined") {
 
-  // Conditionally add "Start Order" for Retailer if isAdmin is true
-  if (userType === "Retailer" && isAdmin) {
-    menuItems.unshift({
-      id: 0, // Ensure unique ID
-      icon: ShoppingCart,
-      title: 'Start Ordering',
-      subtitle: 'Place your order',
-      bgColor: 'bg-yellow-50',
-      iconColor: 'text-yellow-500',
-      href: '/start-order',
-    });
+    const userType = localStorage.getItem("userType");
+    const userDetails = JSON.parse(localStorage.getItem('userDetails') || '{}');
+    
+    setUserType(userType);
+    setLocalData(userDetails);
+
+    // Calculate menu items
+    const baseItems = userType === "Supplier" ? supplierMenuItems : retailerMenuItem;
+    const filteredItems = baseItems.filter((item) => 
+      !(item.href === '/start-order' && !isAdmin)
+    );
+
+    if (userType === "Retailer" && isAdmin) {
+      filteredItems.unshift({
+        id: 0,
+        icon: ShoppingCart,
+        title: 'Start Ordering',
+        subtitle: 'Place your order',
+        bgColor: 'bg-yellow-50',
+        iconColor: 'text-yellow-500',
+        href: '/start-order',
+      });
+    }
+
+    setMenuItems(filteredItems);
   }
+  }, [isAdmin]);
+
+
 
   const [sellerData, setSellerData] = useState<any>([]);
   const [error, setError] = useState<string | null>(null);
 
-  const localData: any = JSON.parse(localStorage.getItem('userDetails') || '{}');
-  const localUserType: any = localStorage.getItem('userType') || null;
-  const customId = localData?.data?.customId;
-
+  // const localData: any = JSON.parse(localStorage.getItem('userDetails') || '{}');
+  // const localUserType: any = localStorage.getItem('userType') || null;
+  // const customId = localData?.data?.customId;
 
   useEffect(() => {
     const fetchSellerDetails = async () => {
       try {
+        if (!localData?.data?.customId) return;
+
         const response = await fetch(
           `${process.env.NEXT_PUBLIC_BACKEND_URL}/users/getUserById`,
           {
-            method: 'POST', 
+            method: 'POST',
             headers: {
               'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-              customId: customId,
-              userType:localUserType,
+              customId: localData.data.customId,
+              userType: userType,
             }),
           }
         );
 
         const result = await response.json();
-
-        if (!response.ok) {
-          throw new Error(result.message || 'Failed to fetch seller details');
-        }
+        if (!response.ok) throw new Error(result.message || 'Failed to fetch seller details');
 
         setSellerData(result?.data);
         setError(null);
@@ -196,17 +219,52 @@ export default function MainHome() {
       }
     };
 
-    if (customId) {
-      fetchSellerDetails();
-    }
-  }, [customId]);
+    fetchSellerDetails();
+  }, [localData, userType]);
+
+
+  // useEffect(() => {
+  //   const fetchSellerDetails = async () => {
+  //     try {
+  //       const response = await fetch(
+  //         `${process.env.NEXT_PUBLIC_BACKEND_URL}/users/getUserById`,
+  //         {
+  //           method: 'POST',
+  //           headers: {
+  //             'Content-Type': 'application/json',
+  //           },
+  //           body: JSON.stringify({
+  //             customId: customId,
+  //             userType: localUserType,
+  //           }),
+  //         }
+  //       );
+
+  //       const result = await response.json();
+
+  //       if (!response.ok) {
+  //         throw new Error(result.message || 'Failed to fetch seller details');
+  //       }
+
+  //       setSellerData(result?.data);
+  //       setError(null);
+  //     } catch (error: any) {
+  //       console.error('Error fetching seller details:', error.message);
+  //       setError(error.message);
+  //     }
+  //   };
+
+  //   if (customId) {
+  //     fetchSellerDetails();
+  //   }
+  // }, [customId]);
 
 
   console.log("sellerData", sellerData)
 
 
   return (
-    <div className="bg-gray-50">
+    <div className="bg-[#FFEFD3] m-2">
       {/* Header */}
       <header className="flex items-center justify-between bg-white p-4 shadow-sm mb-2">
         <div className="flex items-center gap-2">
@@ -239,7 +297,7 @@ export default function MainHome() {
             <Link
               key={item.id}
               href={item.href}
-              className="flex items-center border justify-between rounded-xl bg-white p-3 shadow-sm transition-colors hover:bg-gray-50"
+              className="flex items-center border justify-between rounded-xl bg-white p-3 shadow-sm transition-colors hover:bg-[#FFEFD3]"
             >
               <div className="flex items-center gap-3">
                 <div className={`rounded-xl ${item.bgColor} p-3`}>

@@ -17,41 +17,79 @@ export default function CurrentProcessedOrderMain() {
   const [orders, setOrders] = useState<any>([]);
   const [loading, setLoading] = useState(false);
 
-
   useEffect(() => {
-    const localData: any = JSON.parse(localStorage.getItem('userDetails') || '{}');
-    const customId = localData?.data?.customId;
+    // Ensure `localStorage` access happens only on the client side
+    if (typeof window !== "undefined") {
+      const localData: any = JSON.parse(localStorage.getItem('userDetails') || '{}');
+      const customId = localData?.data?.customId;
 
-    const fetchOrders = async () => {
-      setLoading(true);
-      try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/order/get-order-history-by-supplier-id`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ customId }),
-        });
+      const fetchOrders = async () => {
+        setLoading(true);
+        try {
+          const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/order/get-order-history-by-supplier-id`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ customId }),
+          });
 
-        if (response.ok) {
-          const data = await response.json();
-          if (data.success) {
-            setOrders(data.data);
+          if (response.ok) {
+            const data = await response.json();
+            if (data.success) {
+              setOrders(data.data);
+            } else {
+              console.error("Failed to fetch orders: ", data.message);
+            }
           } else {
-            console.error("Failed to fetch orders: ", data.message);
+            console.error("Failed to fetch orders: HTTP error", response.status);
           }
-        } else {
-          console.error("Failed to fetch orders: HTTP error", response.status);
+        } catch (error) {
+          console.error("Error fetching orders: ", error);
+        } finally {
+          setLoading(false);
         }
-      } catch (error) {
-        console.error("Error fetching orders: ", error);
-      } finally {
-        setLoading(false);
-      }
-    };
+      };
 
-    fetchOrders();
+      fetchOrders();
+    }
   }, []);
+
+
+  // useEffect(() => {
+  //   const localData: any = JSON.parse(localStorage.getItem('userDetails') || '{}');
+  //   const customId = localData?.data?.customId;
+
+  //   const fetchOrders = async () => {
+  //     setLoading(true);
+  //     try {
+  //       const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/order/get-order-history-by-supplier-id`, {
+  //         method: "POST",
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //         },
+  //         body: JSON.stringify({ customId }),
+  //       });
+
+  //       if (response.ok) {
+  //         const data = await response.json();
+  //         if (data.success) {
+  //           setOrders(data.data);
+  //         } else {
+  //           console.error("Failed to fetch orders: ", data.message);
+  //         }
+  //       } else {
+  //         console.error("Failed to fetch orders: HTTP error", response.status);
+  //       }
+  //     } catch (error) {
+  //       console.error("Error fetching orders: ", error);
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
+
+  //   fetchOrders();
+  // }, []);
 
   const statusMap: Record<number, { label: string; bgColor: string }> = {
     1: { label: "Pending", bgColor: "bg-yellow-100 text-yellow-700" },
@@ -104,7 +142,7 @@ export default function CurrentProcessedOrderMain() {
             .map((order: any, index: any) => (
               <Link href={`/request-cart?orderId=${order.orderId}`} key={index}>
 
-                <div key={index} className="p-4 border shadow-sm rounded-lg m-1">
+                <div key={index} className="p-4 border bg-white shadow-sm rounded-lg m-1">
                   <div className="flex items-start gap-3">
                     <div className="p-2 bg-blue-50 rounded-lg">
                       <Package className="h-5 w-5 text-green-500" />

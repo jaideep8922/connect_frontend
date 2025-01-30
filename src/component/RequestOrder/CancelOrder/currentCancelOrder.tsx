@@ -174,7 +174,7 @@ export default function CurrentCancelOrderMain() {
     1: { label: "Pending", bgColor: "bg-yellow-100 text-yellow-700" },
     2: { label: "Accepted", bgColor: "bg-blue-100 text-blue-700" },
     3: { label: "Completed", bgColor: "bg-green-100 text-green-700" },
-    4: { label: "Cancelled", bgColor: "bg-red-100 text-red-700" },
+    5: { label: "Cancelled", bgColor: "bg-red-100 text-red-700" },
   };
 
   return (
@@ -221,9 +221,9 @@ export default function CurrentCancelOrderMain() {
           </div>
           <hr className="my-4 border-dashed" />
           <div className="flex items-center justify-between">
-            <p className="text-lg font-medium text-gray-600">Total Received Order</p>
+            <p className="text-lg font-medium text-gray-600">Total Cancelled Order</p>
             <p className="text-3xl font-bold text-gray-800">
-            {orders.filter((order) => order.statusId === 4).length}
+            {orders.filter((order) => order.statusId === 5).length}
             </p>
           </div>
         </div>
@@ -233,20 +233,20 @@ export default function CurrentCancelOrderMain() {
         ) : (
           <div className="space-y-3">
             {orders.
-             filter((order) => order.statusId === 4).
+             filter((order) => order.statusId === 5).
             map((order, index) => (
               // <Link href="/request-cart" key={index}>
 
               <Link href={`/request-cart?orderId=${order.orderId}`} key={index}>
-                <div className="p-4 border shadow-sm rounded-lg m-1">
+                <div className="p-4 border bg-white shadow-sm rounded-lg m-1">
                   <div className="flex items-start gap-3">
                     <div className="p-2 bg-blue-50 rounded-lg">
-                      <Package className="h-5 w-5 text-blue-500" />
+                      <Package className="h-5 w-5 text-red-500" />
                     </div>
                     <div className="flex-1">
                       <div className="flex justify-between items-start">
                         <div>
-                          <h3 className="font-medium text-blue-700">Order Id: {order.orderId}</h3>
+                          <h3 className="font-medium text-red-700">Order Id: {order.orderId}</h3>
                           <p className="text-sm text-muted-foreground mt-1">
                             Items: {order.totalItem} · Quantity: {order.totalQuantity}
                           </p>
@@ -261,7 +261,7 @@ export default function CurrentCancelOrderMain() {
                       <div className="mt-2 text-sm">
                         <p className="text-muted-foreground mt-4">Created At: {new Date(order.createdAt).toLocaleString()}</p>
                         <br></br>
-                        <p className="text-muted-foreground"><span className="text-blue-600">Notes :</span> {order.notes}</p>
+                        <p className="text-muted-foreground"><span className="text-red-600">Notes :</span> {order.notes}</p>
                       </div>
                     </div>
                   </div>

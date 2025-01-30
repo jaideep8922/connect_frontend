@@ -27,15 +27,22 @@ interface FormData {
 
 
 const JoinPage: React.FC = () => {
-  const [selectedImage, setSelectedImage] = useState<any>(null)
+  // const [selectedImage, setSelectedImage] = useState<any>(null)
+  // const [otpVisible, setOtpVisible] = useState(false);
+  // const [phone, setPhone] = useState("");
+
+  // const [otp, setOtp] = useState("");
+  // const [showOtpBox, setShowOtpBox] = useState(false);
+  // const [error, setError] = useState("");
+  // const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const [selectedImage, setSelectedImage] = useState<any>(null);
   const [otpVisible, setOtpVisible] = useState(false);
   const [phone, setPhone] = useState("");
-
   const [otp, setOtp] = useState("");
   const [showOtpBox, setShowOtpBox] = useState(false);
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-
 
 
   // const handleSubmitOtp = async () => {
@@ -60,14 +67,10 @@ const JoinPage: React.FC = () => {
 
 
 
-  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0]
-    if (file) {
-      const imageUrl = URL.createObjectURL(file)
-      setSelectedImage(imageUrl)
-    }
-  }
+  // 
+  
 
+ 
   const [formData, setFormData] = useState<FormData>({
     userType: "Retailer",
     businessOwner: "",
@@ -83,11 +86,30 @@ const JoinPage: React.FC = () => {
     fingerprintId: "",
     file: selectedImage
   });
-
   const [step, setStep] = useState<number>(1);
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const [supplierId, setSupplierId] = useState<string | null>(null);
 
-  // Handle Input Change
+  // Ensure localStorage is only accessed client-side
+  useEffect(() => {
+    const supplierIdParam = searchParams.get("id");
+    if (supplierIdParam) {
+      setSupplierId(supplierIdParam);
+      // toast.success(`Supplier ID: ${supplierIdParam} captured successfully.`);
+    } else {
+      // toast.error("No Supplier ID found in the URL.");
+    }
+  }, [searchParams]);
+
+  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const imageUrl = URL.createObjectURL(file);
+      setSelectedImage(imageUrl);
+    }
+  };
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prevData: any) => ({
@@ -96,27 +118,10 @@ const JoinPage: React.FC = () => {
     }));
   };
 
-
-  const searchParams = useSearchParams();
-  const [supplierId, setSupplierId] = useState<string | null>(null);
-
-  useEffect(() => {
-    const supplierIdParam = searchParams.get("id");
-    if (supplierIdParam) {
-      setSupplierId(supplierIdParam);
-      toast.success(`Supplier ID: ${supplierIdParam} captured successfully.`);
-    } else {
-      toast.error("No Supplier ID found in the URL.");
-    }
-  }, [searchParams]);
-
-
-  // Handle Next Step
   const handleNext = async () => {
     if (step < 5) {
       setStep(step + 1);
     } else {
-
       const payload: any = {
         userType: formData.userType,
         businessName: formData.businessName,
@@ -129,11 +134,6 @@ const JoinPage: React.FC = () => {
         city: formData.city,
         state: formData.state,
       };
-
-      toast.success(supplierId)
-      // if (formData.userType === "Retailer") {
-      //   payload.sellerId = supplierId;
-      // } 
 
       if (formData.userType === "Retailer") {
         payload.sellerId = supplierId;
@@ -151,21 +151,20 @@ const JoinPage: React.FC = () => {
         if (response.ok) {
           const responseData = await response.json();
           if (responseData.success) {
-            toast.success("onboarded successfully")
+            toast.success("Onboarded successfully!");
             localStorage.setItem("userDetails", JSON.stringify(responseData.data.user));
             localStorage.setItem("token", responseData.token);
             localStorage.setItem("userType", formData.userType);
 
             setTimeout(() => {
               if (formData.userType === "Retailer") {
-                const userData = responseData.data.user;
-                router.push(`/initial-profile?userData=${encodeURIComponent(JSON.stringify(userData))}`);
+                router.push('/shop');
               } else if (formData.userType === "Supplier") {
                 router.push("/manage");
               }
-            }, 5000)
+            }, 5000);
           } else {
-            toast.error("onboarding error.")
+            toast.error("Onboarding error.");
           }
         } else {
           const errorData = await response.json();
@@ -175,10 +174,8 @@ const JoinPage: React.FC = () => {
         toast.error("Error submitting data:", error);
       }
     }
-
   };
 
-  // Handle Previous Step
   const handlePrevious = () => {
     if (step > 1) setStep(step - 1);
   };
@@ -188,11 +185,9 @@ const JoinPage: React.FC = () => {
     setIsSubmitting(true);
 
     try {
-      // API call to send OTP
       const response = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/guests/create`, { phone, sellerId: supplierId });
       if (response.status === 201) {
-        router.push(`/shop`)
-        // setShowOtpBox(true); // Show OTP box on success
+        router.push(`/shop`);
       }
     } catch (err: any) {
       setError(err.response?.data?.message || "Failed to send OTP. Please try again.");
@@ -200,7 +195,6 @@ const JoinPage: React.FC = () => {
       setIsSubmitting(false);
     }
   };
-
 
   const handlePhoneSubmit = () => {
     const phonePattern = /^[0-9]{10}$/;
@@ -222,11 +216,11 @@ const JoinPage: React.FC = () => {
 
 
   return (
-    <div className=" h-screen flex flex-col items-center justify-between bg-white">
+    <div className=" h-screen flex flex-col items-center justify-between bg-[#FFEFD3]">
       <Toaster />
       {/* Header */}
       <header className={`mt-14 transition-all duration-300 ${step === 1 ? 'w-[100%] ' : 'w-[100%]'}`}>
-        <div className={`w-full h-full bg-white rounded-full flex items-center justify-center`}>
+        <div className={`w-full h-full bg-[#FFEFD3] rounded-full flex items-center justify-center`}>
           <Image
             src={Logo}
             alt="Logo"
@@ -238,41 +232,41 @@ const JoinPage: React.FC = () => {
       {/* Main Content */}
       <main className="flex flex-col w-full px-6">
         {step === 1 && (
-          <div className="">
-            <h1 className="text-lg font-bold mb-6 border-b w-20 border-b-black">Join as</h1>
+          <div className="bg-[#FFEFD3]">
+            <h1 className="text-lg text-[#6D2323] font-bold mb-6 border-b border-[#6D2323] w-20 border-b-black">Join as</h1>
             <div className=" flex space-x-5 mb-10 w-30">
-              <label className="flex items-center space-x-2">
+              <label className="flex text-sm text-[#6D2323] items-center space-x-2">
                 <input
                   type="radio"
                   name="userType"
                   value="Retailer"
                   checked={formData.userType === "Retailer"}
                   onChange={() => setFormData({ ...formData, userType: "Retailer" })}
-                  className="form-radio text-blue-600"
+                  className="form-radio text-[#6D2323]"
                 />
                 <span className="text-MD">Retailer</span>
               </label>
 
-              <label className="flex items-center space-x-2">
+              <label className="flex text-sm items-center text-[#6D2323] space-x-2">
                 <input
                   type="radio"
                   name="userType"
                   value="Supplier"
                   checked={formData.userType === "Supplier"}
                   onChange={() => setFormData({ ...formData, userType: "Supplier" })}
-                  className="form-radio text-blue-600"
+                  className="form-radio text-[#6D2323]"
                 />
                 <span className="text-md">Supplier</span>
               </label>
 
-              <label className="flex items-center space-x-2">
+              <label className="flex text-sm items-center text-[#6D2323] space-x-2">
                 <input
                   type="radio"
                   name="userType"
                   value="Supplier"
                   checked={formData.userType === "Guest"}
                   onChange={() => setFormData({ ...formData, userType: "Guest" })}
-                  className="form-radio text-blue-600"
+                  className="form-radio text-[#6D2323]"
                 />
                 <span className="text-md">Guest User</span>
               </label>
@@ -286,7 +280,7 @@ const JoinPage: React.FC = () => {
             {/* Phone Input */}
             {!showOtpBox && (
               <div>
-                <label className="block mb-1 font-medium">Phone Number:</label>
+                <label className="block mb-1 text-sm items-center text-[#6D2323] font-medium">Phone Number:</label>
                 <input
                   type="text"
                   value={phone}
@@ -297,7 +291,7 @@ const JoinPage: React.FC = () => {
                 />
                 <button
                   onClick={handleSendOtp}
-                  className={`w-full bg-blue-500 text-white py-2 rounded mt-2 ${isSubmitting ? "opacity-50 cursor-not-allowed" : "hover:bg-blue-600"
+                  className={`w-full bg-[#6D2323] text-white py-2 rounded mt-2 ${isSubmitting ? "opacity-50 cursor-not-allowed" : "hover:bg-[#6D2323]"
                     }`}
                 >
                   Submit
@@ -332,9 +326,9 @@ const JoinPage: React.FC = () => {
 
         {step === 2 && (
           <div className="w-full max-w-md space-y-4">
-            <h1 className="text-2xl flex font-bold justify-center items-center mb-10">Complete profile !</h1>
+            <h1 className="text-2xl flex font-bold justify-center items-center mb-5 text-[#6D2323]">Complete profile !</h1>
             <div>
-              <h1 className="text-md font-bold py-2">Business Owner</h1>
+              <h1 className="text-md font-bold py-2 text-sm items-center text-[#6D2323]">Business Owner</h1>
               <input
                 type="text"
                 name="businessOwner"
@@ -347,7 +341,7 @@ const JoinPage: React.FC = () => {
             </div>
             <div>
 
-              <h1 className="text-md font-bold py-2">Business Name</h1>
+              <h1 className="text-md font-bold py-2 text-sm items-center text-[#6D2323]">Business Name</h1>
               <input
                 type="text"
                 name="businessName"
@@ -363,7 +357,7 @@ const JoinPage: React.FC = () => {
             </p> */}
 
             <div>
-              <h1 className="text-md font-bold py-2">GST NO.</h1>
+              <h1 className="text-md font-bold py-2 text-sm items-center text-[#6D2323]">GST NO.</h1>
               <input
                 type="gst"
                 name="gstNumber"
@@ -378,9 +372,9 @@ const JoinPage: React.FC = () => {
 
         {step === 3 && (
           <div className="w-full max-w-md space-y-4">
-            <h1 className="text-2xl flex font-bold justify-center items-center mb-10">Complete profile !</h1>
+            <h1 className="text-2xl flex font-bold justify-center items-center mb-5 mt-5 text-[#6D2323]">Complete profile !</h1>
             <div>
-              <h1 className="text-md font-bold py-2">Type your phone number</h1>
+              <h1 className="text-md font-bold py-2 text-sm items-center text-[#6D2323]">Type your phone number</h1>
               <input
                 type="phone"
                 name="phone"
@@ -392,7 +386,7 @@ const JoinPage: React.FC = () => {
               {!otpVisible && (
                 <button
                   onClick={handlePhoneSubmit}
-                  className="mt-3 w-full py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+                  className="mt-3 w-full py-2 bg-[#6D2323] text-white rounded-lg hover:bg-[#6D2323] transition"
                 >
                   Verify Phone
                 </button>
@@ -423,7 +417,7 @@ const JoinPage: React.FC = () => {
 
 
             <div>
-              <h1 className="text-md font-bold py-2">Shop Marka</h1>
+              <h1 className="text-md font-bold py-2 text-sm items-center text-[#6D2323]">Shop Marka</h1>
               <input
                 type="shopMarka"
                 name="shopMarka"
@@ -435,7 +429,7 @@ const JoinPage: React.FC = () => {
             </div>
 
             <div>
-              <h1 className="text-md font-bold py-2">Preferred Transport</h1>
+              <h1 className="text-md font-bold py-2 text-sm items-center text-[#6D2323]">Preferred Transport</h1>
               <input
                 type="transport"
                 name="transport"
@@ -454,7 +448,7 @@ const JoinPage: React.FC = () => {
 
 
             <div>
-              <h1 className="text-md font-bold py-2">Pin Code</h1>
+              <h1 className="text-md font-bold py-2 text-sm items-center text-[#6D2323]">Pin Code</h1>
               <input
                 type="pincode"
                 name="pincode"
@@ -467,7 +461,7 @@ const JoinPage: React.FC = () => {
             </div>
 
             <div>
-              <h1 className="text-md font-bold py-2">City / State</h1>
+              <h1 className="text-md font-bold py-2 text-sm items-center text-[#6D2323]">City / State</h1>
               <input
                 type="city"
                 name="city"
@@ -480,7 +474,7 @@ const JoinPage: React.FC = () => {
             </div>
 
             <div>
-              <h1 className="text-md font-bold py-2">State</h1>
+              <h1 className="text-md font-bold py-2 text-sm items-center text-[#6D2323]">State</h1>
               <input
                 type="state"
                 name="state"
@@ -503,7 +497,7 @@ const JoinPage: React.FC = () => {
                 htmlFor="profile-upload"
                 className="group relative cursor-pointer"
               >
-                <div className="flex h-32 w-32 flex-col items-center justify-center rounded-full bg-blue-100 transition-colors group-hover:bg-blue-200">
+                <div className="flex h-32 w-32 flex-col items-center justify-center rounded-full bg-[#6D2323] transition-colors group-hover:bg-[#6D2323]">
                   {selectedImage ? (
                     <div className="relative h-full w-full overflow-hidden rounded-full">
                       <Image
@@ -530,9 +524,9 @@ const JoinPage: React.FC = () => {
                   className="sr-only"
                 />
               </label>
-              <span className="text-sm font-semibold mt-2 text-black">Upload Profile photo</span>
+              <span className="text-sm font-semibold mt-2 text-[#6D2323]">Upload Profile photo</span>
 
-              <p className="mt-2 text-xs text-gray-500 ">
+              <p className="mt-2 text-xs text-[#6D2323]">
                 Please upload your profile photo to stay visible
               </p>
             </div>
@@ -553,7 +547,7 @@ const JoinPage: React.FC = () => {
             {/* Next/Submit Button */}
             <button
               onClick={handleNext}
-              className="w-full py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition duration-200"
+              className="w-full py-3 bg-[#6D2323] text-white rounded-xl hover:bg-[#6D2323] transition duration-200"
             >
               {step < 5 ? "Next" : "Submit"}
             </button>
@@ -575,7 +569,7 @@ const JoinPage: React.FC = () => {
             {[1, 2, 3, 4].map((page) => (
               <span
                 key={page}
-                className={`w-3 h-3 rounded-full ${step === page ? "bg-blue-600" : "bg-gray-300"
+                className={`w-3 h-3 rounded-full ${step === page ? "bg-[#6D2323]" : "bg-gray-300"
                   }`}
               ></span>
             ))}

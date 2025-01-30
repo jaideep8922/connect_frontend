@@ -13,43 +13,96 @@ export default function AddReviewPage() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
 
-    const localData: any = JSON.parse(localStorage.getItem('userDetails') || '{}');
-    const customId = localData?.data?.customId;
 
-    const fetchOrders = async () => {
-        try {
-            setLoading(true);
-            setError("");
+    const [customId, setCustomId] = useState<string | null>(null);
 
-            const response = await fetch(
-                `${process.env.NEXT_PUBLIC_BACKEND_URL}/order/get-order-history-by-retailer-id`,
-                {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({ customId }),
-                }
-            );
-
-            if (!response.ok) {
-                throw new Error(`Failed to fetch orders: ${response.statusText}`);
-            }
-
-            const data = await response.json();
-            setOrders(data.data || []);
-        } catch (err: any) {
-            setError(err.message || "Something went wrong.");
-        } finally {
-            setLoading(false);
-        }
-    };
-
+    // Fetch orders only after component is mounted (client-side)
     useEffect(() => {
-        fetchOrders()
-    }, [])
+      if (typeof window !== "undefined") {
+        // Access localStorage only on the client-side
+        const localData: any = JSON.parse(localStorage.getItem("userDetails") || "{}");
+        const customIdFromStorage = localData?.data?.customId;
+  
+        if (customIdFromStorage) {
+          setCustomId(customIdFromStorage);
+        }
+      }
+    }, []);
+  
+    const fetchOrders = async () => {
+      if (!customId) return; // Ensure customId is available before making the request
+  
+      try {
+        setLoading(true);
+        setError("");
+  
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/order/get-order-history-by-retailer-id`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ customId }),
+          }
+        );
+  
+        if (!response.ok) {
+          throw new Error(`Failed to fetch orders: ${response.statusText}`);
+        }
+  
+        const data = await response.json();
+        setOrders(data.data || []);
+      } catch (err: any) {
+        setError(err.message || "Something went wrong.");
+      } finally {
+        setLoading(false);
+      }
+    };
+  
+    useEffect(() => {
+      if (customId) {
+        fetchOrders();
+      }
+    }, [customId]);
 
-    console.log("orders", orders)
+    // const localData: any = JSON.parse(localStorage.getItem('userDetails') || '{}');
+    // const customId = localData?.data?.customId;
+
+
+    // const fetchOrders = async () => {
+    //     try {
+    //         setLoading(true);
+    //         setError("");
+
+    //         const response = await fetch(
+    //             `${process.env.NEXT_PUBLIC_BACKEND_URL}/order/get-order-history-by-retailer-id`,
+    //             {
+    //                 method: "POST",
+    //                 headers: {
+    //                     "Content-Type": "application/json",
+    //                 },
+    //                 body: JSON.stringify({ customId }),
+    //             }
+    //         );
+
+    //         if (!response.ok) {
+    //             throw new Error(`Failed to fetch orders: ${response.statusText}`);
+    //         }
+
+    //         const data = await response.json();
+    //         setOrders(data.data || []);
+    //     } catch (err: any) {
+    //         setError(err.message || "Something went wrong.");
+    //     } finally {
+    //         setLoading(false);
+    //     }
+    // };
+
+    // useEffect(() => {
+    //     fetchOrders()
+    // }, [])
+
 
     return (
         <>
@@ -72,7 +125,7 @@ export default function AddReviewPage() {
                     <span className="sr-only">Notifications</span>
                 </div>
             </header>
-            <div className="min-h-screen bg-gray-50 p-4">
+            <div className="min-h-screen bg-[#FFEFD3] p-4">
 
                 <div className="mx-auto max-w-2xl space-y-3" 
                 // onClick={() => router.push('/single-review')}
@@ -130,7 +183,7 @@ export default function AddReviewPage() {
 //                 </div>
 //                 <button
 //                     onClick={() => setIsOpen(!isOpen)}
-//                     className="rounded-full p-2 hover:bg-gray-50"
+//                     className="rounded-full p-2 hover:bg-[#FFEFD3]"
 //                 >
 //                     {isOpen ? (
 //                         <ChevronUp className="h-5 w-5 text-gray-400" />
@@ -168,7 +221,7 @@ export default function AddReviewPage() {
 
 //             {/* Review Modal */}
 //             {isReviewOpen && (
-//                 <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center z-50 p-3">
+//                 <div className="fixed inset-0 bg-[#FFEFD3]0 bg-opacity-50 flex justify-center items-center z-50 p-3">
 //                     <div className="bg-white p-6 rounded-lg w-96">
 //                         <h3 className="text-lg font-semibold">Leave a Review</h3>
 //                         <div className="flex justify-center space-x-1">
@@ -293,7 +346,7 @@ function OrderCard({ order }: any) {
                 </div>
                 <button
                     onClick={() => setIsOpen(!isOpen)}
-                    className="rounded-full p-2 hover:bg-gray-50"
+                    className="rounded-full p-2 hover:bg-[#FFEFD3]"
                 >
                     {isOpen ? (
                         <ChevronUp className="h-5 w-5 text-gray-400" />
@@ -331,7 +384,7 @@ function OrderCard({ order }: any) {
 
             {/* Review Modal */}
             {isReviewOpen && (
-                <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center z-50">
+                <div className="fixed inset-0 bg-[#FFEFD3]0 bg-opacity-50 flex justify-center items-center z-50">
                     <div className="bg-white p-6 rounded-lg w-96">
                         <h3 className="text-lg font-semibold">Leave a Review</h3>
                         <div className="flex justify-center space-x-1">

@@ -11,7 +11,7 @@ export default function StartOrderMain() {
   const [searchQuery, setSearchQuery] = useState('')
   const router = useRouter()
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-[#FFEFD3]">
       {/* Header */}
       <header className="fixed top-0 left-0 h-16 right-0 bg-white border-b px-4 py-3 flex items-center justify-between z-10">
         <div className="flex items-center gap-4 flex-1">

@@ -1,3 +1,4 @@
+"use client"
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 type CartItem = {
@@ -21,22 +22,39 @@ const cartSlice = createSlice({
   name: 'cart',
   initialState,
   reducers: {
+    // addToCart: (state, action: PayloadAction<CartItem>) => {
+    //   const existingItem = state.cart.find(
+    //     (item) => item.productId === action.payload.productId && item.selectedPrice === action.payload.selectedPrice
+    //   );
+
+    //   if (existingItem) {
+    //     // If the item exists, update the quantity
+    //     existingItem.quantity = action.payload.quantity;
+    //   } else {
+    //     // Add new item to the cart
+    //     state.cart.push(action.payload);
+    //   }
+
+    //   // Save the updated cart to localStorage
+    //   localStorage.setItem('cart', JSON.stringify(state.cart));
+    // },
     addToCart: (state, action: PayloadAction<CartItem>) => {
       const existingItem = state.cart.find(
         (item) => item.productId === action.payload.productId && item.selectedPrice === action.payload.selectedPrice
       );
-
+    
       if (existingItem) {
         // If the item exists, update the quantity
         existingItem.quantity = action.payload.quantity;
+        existingItem.price = action.payload.price; // Ensure price is updated if quantity changes
       } else {
         // Add new item to the cart
         state.cart.push(action.payload);
       }
-
+    
       // Save the updated cart to localStorage
       localStorage.setItem('cart', JSON.stringify(state.cart));
-    },
+    },    
     removeFromCart: (state, action: PayloadAction<{ productId: string; selectedPrice: string }>) => {
       state.cart = state.cart.filter(
         (item) =>

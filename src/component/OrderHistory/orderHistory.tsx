@@ -126,7 +126,7 @@ export default function OrdersHistoryPage() {
         </div>
       </header>
 
-      <div className="min-h-screen bg-gray-50 p-2">
+      <div className="min-h-screen bg-[#FFEFD3] p-2">
         <div className="mx-auto max-w-2xl space-y-4">
           <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-4 pt-2 border-b mb-4">
             {["All", "Pending", "Accepted", "Completed", "Cancelled"].map(
@@ -135,7 +135,7 @@ export default function OrdersHistoryPage() {
                   key={status}
                   className={`rounded-full px-4 py-2 text-sm font-medium ${
                     selectedStatus === status
-                      ? "bg-blue-600 text-white "
+                      ? "bg-[#6D2323] text-white "
                       : "bg-white text-gray-600 hover:bg-gray-100 border"
                   }`}
                   onClick={() => setSelectedStatus(status)}

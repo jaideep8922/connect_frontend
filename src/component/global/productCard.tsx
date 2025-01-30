@@ -111,12 +111,12 @@ const ProductCard = ({ product }: ProductCardProps) => {
 
   console.log("carts", carts)
   return (
-    <div className="border rounded-lg shadow-md p-2">
+    <div className="border bg-[#FEF9E1] rounded-lg shadow-md p-2">
       <Toaster />
       <Link href={`/single-view?id=${product.productId}`}>
         <div className="relative">
           {/* Date in the top-right corner */}
-          <span className="absolute top-2 right-2 text-[10px] bg-blue-600 text-white px-2 rounded-full">
+          <span className="absolute top-2 right-2 text-[10px] bg-[#6D2323] text-white px-2 rounded-full">
             Updated On: {formattedDate}
           </span>
 
@@ -190,7 +190,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
       <div className="relative">
         {isAddedToCart && (
           <div
-            className="absolute top-[-3rem] right-[0.1rem] bg-blue-600 text-white p-2 rounded-full cursor-pointer flex items-center"
+            className="absolute top-[-3rem] right-[0.1rem] bg-[#6D2323] text-white p-2 rounded-full cursor-pointer flex items-center"
             onClick={navigateToCart}
           >
             <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-shopping-cart"><circle cx="8" cy="21" r="1" /><circle cx="19" cy="21" r="1" /><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12" /></svg>
@@ -199,7 +199,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
 
         {/* Quantity Adjustments */}
         {isAddedToCart ? (
-          <div className="flex justify-between items-center bg-blue-500 w-full p-[6px] px-3 text-white rounded-xl mt-4">
+          <div className="flex justify-between items-center bg-[#6D2323] w-full p-[6px] px-3 text-white rounded-xl mt-4">
             <button
               onClick={handleDecrement}
               className="rounded-md"
@@ -217,7 +217,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
         ) : (
           <button
             onClick={handleAddToCart}
-            className="bg-blue-500 w-full items-center p-[6px] text-white rounded-xl mt-4"
+            className="bg-[#6D2323] w-full items-center p-[6px] text-white rounded-xl mt-4"
           >
             Add to Cart
           </button>

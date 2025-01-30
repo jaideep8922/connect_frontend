@@ -1,6 +1,6 @@
 "use client"
 import { ArrowLeft } from 'lucide-react'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import toast, { Toaster } from 'react-hot-toast';
 
 const AddNote = () => {
@@ -8,6 +8,17 @@ const AddNote = () => {
   const [text, setText] = useState("");
   const [showPopup, setShowPopup] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const [customId, setCustomId] = useState<string | null>(null);
+
+  useEffect(() => {
+    // This effect runs only on the client side after the component mounts
+    const localData: any = JSON.parse(localStorage.getItem('userDetails') || '{}');
+    const userCustomId = localData?.data?.customId;
+    if (userCustomId) {
+      setCustomId(userCustomId);
+    }
+  }, []);
 
   const handleSave = () => {
     setShowPopup(true);
@@ -17,8 +28,8 @@ const AddNote = () => {
     setShowPopup(false);
     setIsSubmitting(true);
 
-    const localData: any = JSON.parse(localStorage.getItem('userDetails') || '{}');
-    const customId = localData?.data?.customId;
+    // const localData: any = JSON.parse(localStorage.getItem('userDetails') || '{}');
+    // const customId = localData?.data?.customId;
     const notesText = text; 
 
     if (!customId) {
@@ -83,7 +94,7 @@ const AddNote = () => {
         </div>
       </header>
 
-      <div className="max-w-md mx-auto p-4 bg-gray-50 rounded-lg shadow">
+      <div className="max-w-md mx-auto p-4 bg-[#FFEFD3] rounded-lg shadow">
         <h1 className="text-xl font-bold mb-4">Enter Details</h1>
         {/* <input
           type="text"
@@ -96,11 +107,11 @@ const AddNote = () => {
           placeholder="Type something..."
           value={text}
           onChange={(e) => setText(e.target.value)}
-          className="w-full p-2 mb-4 h-60 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full p-2 mb-4 h-60 border rounded focus:outline-none"
         />
         <button
           onClick={handleSave}
-          className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 disabled:opacity-50"
+          className="w-full bg-[#6D2323] text-white py-2 rounded hover:bg-[#6D2323] disabled:opacity-50"
           disabled={isSubmitting}
         >
           {isSubmitting ? "Saving..." : "Save"}
@@ -119,7 +130,7 @@ const AddNote = () => {
                 </button>
                 <button
                   onClick={handleConfirm}
-                  className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                  className="px-4 py-2 bg-[#6D2323] text-white rounded hover:bg-[#6D2323]"
                 >
                   Yes, Save
                 </button>

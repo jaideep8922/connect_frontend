@@ -85,7 +85,7 @@ export function ManageCard({ product, onEdit }: ProductCardProps) {
                     <span className="font-medium">{product.price}</span>
                 </div> */}
                 <button
-                    className="w-full text-white flex justify-center gap-1 bg-blue-700 p-1 rounded-lg items-center mt-4"
+                    className="w-full text-white flex justify-center gap-1 bg-[#6D2323] p-1 rounded-lg items-center mt-4"
                     onClick={() => onEdit(product)}
                 >
                     <Pencil className="h-3 w-4 text-white" />

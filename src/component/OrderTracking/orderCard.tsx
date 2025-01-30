@@ -22,9 +22,9 @@ export default function OrderCard({ order }: { order: OrderCardProps }) {
   const statuses: OrderStatus[] = [
     { id: 1, label: "Order Placed", isCompleted: order.statusId >= 1 },
     { id: 2, label: "Order Confirmed", isCompleted: order.statusId >= 2 },
-    { id: 3, label: "Dispatched", isCompleted: order.statusId >= 3 },
-    { id: 4, label: "Out for Delivery", isCompleted: order.statusId >= 4 },
-    { id: 5, label: "Delivered", isCompleted: order.statusId === 5 },
+    { id: 3, label: "Processing", isCompleted: order.statusId >= 3 },
+    { id: 4, label: "Delivered", isCompleted: order.statusId >= 4 },
+    { id: 5, label: "Cancelled", isCompleted: order.statusId === 5 },
   ];
 
   return (

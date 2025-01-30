@@ -24,6 +24,8 @@ export default function CurrentReceivedOrderMain() {
 
 
   useEffect(() => {
+    if (typeof window !== "undefined") {
+
     const localData: any = JSON.parse(localStorage.getItem('userDetails') || '{}');
     const customId = localData?.data?.customId;
 
@@ -56,6 +58,7 @@ export default function CurrentReceivedOrderMain() {
     };
 
     fetchOrders();
+  }
   }, []);
 
   const statusMap: Record<number, { label: string; bgColor: string }> = {
@@ -126,7 +129,7 @@ export default function CurrentReceivedOrderMain() {
               // <Link href="/request-cart" key={index}>
 
               <Link href={`/request-cart?orderId=${order.orderId}`} key={index}>
-                <div className="p-4 border shadow-sm rounded-lg m-1">
+                <div className="p-4 border bg-white shadow-sm rounded-lg m-1">
                   <div className="flex items-start gap-3">
                     <div className="p-2 bg-blue-50 rounded-lg">
                       <Package className="h-5 w-5 text-blue-500" />

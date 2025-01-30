@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
 import { X, Upload, Check, ArrowLeft } from 'lucide-react';
 import toast, { Toaster } from 'react-hot-toast';
@@ -43,42 +43,49 @@ export default function BannerImageUpload() {
     }
   };
 
+  const [sellerId, setSellerId] = useState<string | null>(null);
+
+  // Fetch the sellerId only on the client-side (inside useEffect)
+  useEffect(() => {
+    const localData: any = JSON.parse(localStorage.getItem('userDetails') || '{}');
+    const customId = localData?.data?.customId;
+    setSellerId(customId);
+  }, []);
+
   const handleSubmit = async () => {
     if (images.length === 0) {
       toast.error('Please upload at least one image.');
       return;
     }
-  
+
+    if (!sellerId) {
+      toast.error('Seller ID is not available.');
+      return;
+    }
+
     const formData = new FormData();
     const inputElement = fileInputRef.current;
-    
-    
-    const localData:any = JSON.parse(localStorage.getItem('userDetails') || '{}'); 
-    const sellerId = localData?.data?.customId; 
 
-    console.log("sellerId", sellerId)
-  
-  
     if (inputElement && inputElement.files) {
       Array.from(inputElement.files).forEach((file) => {
         formData.append('images', file);
       });
     }
-    formData.append('sellerId', sellerId); // Replace with dynamic sellerId if required
-  
+    formData.append('sellerId', sellerId); // Attach sellerId
+
     try {
       setLoading(true);
       const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/upload-banner`, {
         method: 'POST',
         body: formData,
       });
-  
+
       const result = await response.json();
       if (response.ok) {
         toast.success('Images uploaded successfully!');
-        setImages([]);
+        setImages([]); // Clear the images after upload
       } else {
-        alert(result.error || 'Failed to upload images.');
+        toast.error(result.error || 'Failed to upload images.');
       }
     } catch (error) {
       console.error('Error uploading images:', error);
@@ -87,6 +94,52 @@ export default function BannerImageUpload() {
       setLoading(false);
     }
   };
+  
+
+  // const handleSubmit = async () => {
+  //   if (images.length === 0) {
+  //     toast.error('Please upload at least one image.');
+  //     return;
+  //   }
+  
+  //   const formData = new FormData();
+  //   const inputElement = fileInputRef.current;
+    
+    
+  //   const localData:any = JSON.parse(localStorage.getItem('userDetails') || '{}'); 
+  //   const sellerId = localData?.data?.customId; 
+
+  //   console.log("sellerId", sellerId)
+  
+  
+  //   if (inputElement && inputElement.files) {
+  //     Array.from(inputElement.files).forEach((file) => {
+  //       formData.append('images', file);
+  //     });
+  //   }
+  //   formData.append('sellerId', sellerId); // Replace with dynamic sellerId if required
+  
+  //   try {
+  //     setLoading(true);
+  //     const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/upload-banner`, {
+  //       method: 'POST',
+  //       body: formData,
+  //     });
+  
+  //     const result = await response.json();
+  //     if (response.ok) {
+  //       toast.success('Images uploaded successfully!');
+  //       setImages([]);
+  //     } else {
+  //       alert(result.error || 'Failed to upload images.');
+  //     }
+  //   } catch (error) {
+  //     console.error('Error uploading images:', error);
+  //     toast.error('An error occurred while uploading images.');
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
   
 
   return (
@@ -106,7 +159,7 @@ export default function BannerImageUpload() {
       </header>
 
       <div className="min-h-screen bg-gray-100">
-        <div className="max-w-4xl mx-auto bg-white rounded-lg shadow-lg overflow-hidden">
+        <div className="max-w-4xl mx-auto bg-[#FFEFD3] rounded-lg shadow-lg overflow-hidden">
           <div className="p-6">
             <div className="flex justify-between items-center mb-2">
               <h2 className="text-xl font-bold text-gray-800">Upload Banner Images</h2>

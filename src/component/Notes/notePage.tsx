@@ -96,7 +96,7 @@ export default function BookReviewsPage() {
         </button>
       </header>
 
-      <div className="min-h-screen bg-gray-50 p-4">
+      <div className="min-h-screen bg-[#FFEFD3] p-4">
         <div className="mx-auto max-w-md space-y-4">
           {notesData?.map((review: any, i) => (
             <BookReviewCard
@@ -112,7 +112,7 @@ export default function BookReviewsPage() {
 
         <button
           onClick={() => router.push("/add-note")}
-          className="fixed bottom-40 right-6 z-20 flex h-14 w-14 items-center justify-center rounded-full bg-blue-600 text-white shadow-lg hover:bg-blue-700"
+          className="fixed bottom-40 right-6 z-20 flex h-14 w-14 items-center justify-center rounded-full bg-[#6D2323] text-white shadow-lg hover:bg-[#6D2323]"
           aria-label="Add new review"
         >
           <Plus className="h-6 w-6" />

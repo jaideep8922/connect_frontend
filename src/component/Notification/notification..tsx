@@ -36,7 +36,7 @@ const Notification = () => {
             <li
               key={notification.id}
               className={`p-4 flex items-start space-x-4 ${
-                notification.read ? "bg-gray-50" : "bg-blue-50"
+                notification.read ? "bg-[#FFEFD3]" : "bg-blue-50"
               } border-b border-gray-200 last:border-b-0`}
             >
               <div className="flex-1">

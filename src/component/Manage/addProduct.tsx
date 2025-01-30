@@ -27,6 +27,8 @@ export default function AddProduct() {
     },
 
     onSubmit: async (values) => {
+      if (typeof window !== "undefined") {
+
       const localData = JSON.parse(localStorage.getItem('userDetails') || '{}');
       const customId = localData?.data?.customId;
     
@@ -61,7 +63,7 @@ export default function AddProduct() {
         toast.error(errorMessage);
       }
     }
-    
+  }
   })
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -78,7 +80,7 @@ export default function AddProduct() {
   }
 
   return (
-    <div className="mb-4 bg-gray-50">
+    <div className="mb-4 bg-[#FFEFD3]">
       <Toaster />
       {/* Header */}
       <div className="fixed top-0 left-0 h-16 right-0 bg-white border-b px-4 py-3 flex items-center gap-4 z-10">

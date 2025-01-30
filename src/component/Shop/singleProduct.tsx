@@ -22,10 +22,13 @@ export default function SingleProductCard() {
   const [productData, setProductData] = useState<any>([]);
   const [error, setError] = useState<string | null>(null);
 
+  const localData: any = JSON.parse(localStorage.getItem('userDetails') || '{}');
+  const sellerId = localData?.data?.sellerId;
+
   useEffect(() => {
     const fetchNotes = async () => {
       try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/product/get-product-list?sellerId=SU-3347`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/product/get-product-list?sellerId=${sellerId}`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -51,10 +54,12 @@ export default function SingleProductCard() {
 
   const [quantity, setQuantity] = useState<number>(1);  // Initialize with a default quantity of 1
   const [selectedPrice, setSelectedPrice] = useState<string>("");
+  
 
   const product = productData?.data?.filter((data: any) => data?.productId === id)
   const dispatch = useDispatch();
 
+  console.log("product", product)
 
   const [cart, setCart] = useState<any[]>([]); // Cart state
   const [isAddedToCart, setIsAddedToCart] = useState(false); // Tracks if the product is in the cart
@@ -64,71 +69,85 @@ export default function SingleProductCard() {
     setSelectedPrice(event.target.value);
   };
 
+  console.log("seeeee", selectedPrice)
+
   // Handle adding item to the cart
-  const handleAddToCart = () => {
-    if (selectedPrice) {
-      const price = product[selectedPrice as keyof typeof product];
+const handleAddToCart = () => {
+  if (selectedPrice) {
+    const selectedProduct = product; 
 
-      // Create the cart item
-      const cartItem = {
-        productId: product.productId,
-        name: product.productName,
-        image: product.productImage,
-        price: price,
-        selectedPrice: selectedPrice,
-        quantity: quantity,
-      };
+    // const price = selectedPrice[selectedPrice as keyof typeof selectedProduct];
+    // const price = selectedProduct?.[0]?.[selectedPrice]; 
 
-      setCart([cartItem])
-      toast.success("added successfull")
-      setIsAddedToCart(true);
-      dispatch(addToCart(cartItem));
+    const price = selectedProduct?.[0]?.[selectedPrice + 'Price'];  // Dynamically construct the key, e.g. "averagePrice"
 
-    } else {
-      toast.error("Please select a price option.");
-    }
-  };
+    console.log("price", price); 
 
-  // Increment quantity
-  const handleIncrement = () => {
+    console.log("price",price)
+
+    // Create the cart item
     const cartItem = {
-      productId: product.productId,
-      name: product.productName,
-      image: product.productImage,
-      price: product[selectedPrice as keyof typeof product],
+      productId: selectedProduct?.[0].productId,
+      name: selectedProduct?.[0].productName,
+      image: selectedProduct?.[0]?.productImage, 
+      price: price,
       selectedPrice: selectedPrice,
       quantity: quantity,
     };
 
+    // Update cart state
+    setCart([cartItem]);
 
-    setQuantity(quantity + 1);
+    // Dispatch to Redux
     dispatch(addToCart(cartItem));
 
+    // Set flag to indicate the product is added
+    setIsAddedToCart(true);
+    toast.success("Added successfully!");
+  } else {
+    toast.error("Please select a price option.");
+  }
+};
+
+// Increment quantity
+const handleIncrement = () => {
+  const selectedProduct = product;
+  // const price = selectedProduct[selectedPrice as keyof typeof selectedProduct];
+  const price = selectedProduct?.[0]?.[selectedPrice + 'Price'];
+  const cartItem = {
+    productId: selectedProduct?.[0].productId,
+    name: selectedProduct?.[0].productName,
+    image: selectedProduct?.[0].productImage,
+    price: price,
+    selectedPrice: selectedPrice,
+    quantity: quantity + 1,
   };
 
-  // Decrement quantity
-  const handleDecrement = () => {
-    if (quantity > 1) {
-      const cartItem = {
-        productId: product.productId,
-        name: product.productName,
-        image: product.productImage,
-        price: product[selectedPrice as keyof typeof product],
-        selectedPrice: selectedPrice,
-        quantity: quantity,
-      };
+  setQuantity(quantity + 1);
+  dispatch(addToCart(cartItem));
+};
 
-      setQuantity(quantity - 1);
-      console.log("Quantity decremented:", quantity - 1);
-      dispatch(removeFromCart(cartItem));
+// Decrement quantity
+const handleDecrement = () => {
+  if (quantity > 1) {
+    const selectedProduct = product;
+    const price = selectedProduct?.[0]?.[selectedPrice + 'Price'];
+    const cartItem = {
+      productId: selectedProduct?.[0].productId,
+      name: selectedProduct?.[0].productName,
+      image: selectedProduct?.[0].productImage,
+      price: price,
+      selectedPrice: selectedPrice,
+      quantity: quantity - 1,
+    };
 
+    setQuantity(quantity - 1);
+    dispatch(removeFromCart(cartItem));
+  } else {
+    setIsAddedToCart(false);
+  }
+};
 
-    } else {
-      // If quantity reaches 0, revert to "Add to Cart"
-      setIsAddedToCart(false);
-      console.log("Product removed from cart");
-    }
-  };
 
   const currentDate = new Date();
   const formattedDate = `${currentDate.getDate().toString().padStart(2, '0')}-${(currentDate.getMonth() + 1).toString().padStart(2, '0')}-${currentDate.getFullYear().toString().slice(2)}`;
@@ -170,7 +189,7 @@ export default function SingleProductCard() {
   return (
     <>
       <Toaster />
-      <header className="sticky top-0 z-10 flex h-20 items-center justify-between border-b bg-white px-4">
+      <header className="sticky top-0 z-10 flex h-20 items-center justify-between border-b bg-[#FFEFD3] px-4">
         <button
           className="flex items-center justify-center rounded-full p-2 hover:bg-gray-100"
           aria-label="Go back"
@@ -188,9 +207,9 @@ export default function SingleProductCard() {
 
       <div className="flex flex-wrap gap-4">
         {product?.map((product: any, index: any) => (
-          <div key={index} className="w-full bg-white overflow-hidden shadow-lg">
+          <div key={index} className="w-full bg-[#FFEFD3] overflow-hidden shadow-lg">
             <div className="relative">
-              <span className="absolute top-2 right-2 text-[10px] bg-blue-800 text-white px-4 py-1 rounded animate-pulse">
+              <span className="absolute top-2 right-2 text-[10px] bg-[#6D2323] text-white px-4 py-1 rounded animate-pulse">
                 Updated On: {formattedDate}
               </span>
               <Image
@@ -261,7 +280,7 @@ export default function SingleProductCard() {
                 {/* Cart Icon - Visible when item is added to cart */}
                 {isAddedToCart && (
                   <div
-                    className="absolute top-2 right-2 bg-blue-600 text-white p-2 rounded-full cursor-pointer flex items-center"
+                    className="absolute top-2 right-2 bg-[#6D2323] text-white p-2 rounded-full cursor-pointer flex items-center"
                     onClick={navigateToCart}
                   >
                     <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-shopping-cart"><circle cx="8" cy="21" r="1" /><circle cx="19" cy="21" r="1" /><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12" /></svg>
@@ -275,7 +294,7 @@ export default function SingleProductCard() {
 
                 {/* Quantity Controls or Add to Cart Button */}
                 {isAddedToCart ? (
-                  <div className="flex justify-between items-center bg-blue-500 w-full p-[6px] px-3 text-white rounded-xl mt-4">
+                  <div className="flex justify-between items-center bg-[#6D2323] w-full p-[6px] px-3 text-white rounded-full mt-4">
                     <button onClick={handleDecrement} className="rounded-md text-xl">
                       -
                     </button>
@@ -287,7 +306,7 @@ export default function SingleProductCard() {
                 ) : (
                   <button
                     onClick={handleAddToCart}
-                    className="bg-blue-500 w-full items-center p-[6px] text-white rounded-xl mt-4"
+                    className="bg-[#6D2323] w-full items-center p-[6px] text-white rounded-full mt-4"
                   >
                     Add to Cart
                   </button>

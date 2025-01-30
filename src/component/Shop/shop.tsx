@@ -53,7 +53,7 @@ export default function ShopMain() {
         if (sellerId) {
             fetchProductList();
         }
-    }, [sellerId]); 
+    }, [sellerId]);
 
     useEffect(() => {
         const fetchSellerDetails = async () => {
@@ -124,12 +124,12 @@ export default function ShopMain() {
         if (sellerId) {
             fetchBannerImages();
         }
-    }, [sellerId]); 
+    }, [sellerId]);
 
     return (
-        <div className="bg-white m-2 overflow-hidden">
+        <div className="bg-[#FFEFD3] m-2 overflow-hidden">
             {/* Search Header */}
-            <div className="flex items-center gap-3 mt-2 bg-white">
+            <div className="flex items-center gap-3 mt-2 bg-transparent m-2">
                 <div className="flex-1 flex items-center gap-2 px-4 py-2 bg-gray-100 rounded-full">
                     <Search className="w-4 h-4 text-gray-400" />
                     <input
@@ -173,12 +173,12 @@ export default function ShopMain() {
                                     src={slide?.imageLink}
                                     alt={slide?.imageLink}
                                     width={400}
-                                    height={150}
+                                    height={120}
                                     className="object-cover rounded-lg"
                                 />
-                                <div className="absolute bottom-8 left-4 bg-black bg-opacity-50 text-white p-2 text-sm rounded">
+                                {/* <div className="absolute bottom-8 left-4 bg-black bg-opacity-50 text-white p-2 text-sm rounded">
                                     {slide.sellerId}
-                                </div>
+                                </div> */}
                             </div>
                         </SwiperSlide>
                     ))}

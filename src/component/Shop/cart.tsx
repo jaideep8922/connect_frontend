@@ -22,13 +22,28 @@ export default function CartPage() {
     const dispatch = useDispatch()
     const router = useRouter()
 
+   
+    const [userDetails, setUserDetails] = useState<any>(null);
+
+    useEffect(() => {
+        if (typeof window !== "undefined") {
+            // Ensure this code runs only in the browser
+            const localData = localStorage.getItem("userDetails");
+            if (localData) {
+                setUserDetails(JSON.parse(localData));
+            }
+        }
+    }, []);
+
+
 
     const carts = useSelector((state: RootState) => state.cart.cart);
 
+
     const sendCartData = async () => {
-        const localData: any = JSON.parse(localStorage.getItem('userDetails') || '{}');
-        const customId = localData?.data?.customId;
-        const sellerId = localData?.data?.sellerId;
+        // const localData: any = JSON.parse(localStorage.getItem('userDetails') || '{}');
+        const customId = userDetails?.data?.customId;
+        const sellerId = userDetails?.data?.sellerId;
     
         // If no userDetails or missing customId/sellerId
         if (!customId || !sellerId) {
@@ -156,13 +171,13 @@ export default function CartPage() {
                             <p className="text-sm text-gray-500">{carts?.length} Item / {carts?.reduce((acc, item) => acc + item.quantity, 0)} Quantity</p>
                         </div>
                     </div>
-                    <button className="flex items-center gap-2 rounded-full bg-blue-50 px-4 py-2 text-blue-600" onClick={() => setIsOpen(true)}>
+                    <button className="flex items-center gap-2 rounded-full bg-orange-50 px-4 py-2 text-[#6D2323]" onClick={() => setIsOpen(true)}>
                         <NotebookPen className="h-5 w-5" />
                         <span>Note</span>
                     </button>
 
                     {isOpen && (
-                        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+                        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
                             <div className="w-full max-w-[500px] rounded-lg bg-white p-6 m-2">
                                 <div className="mb-4 flex items-center justify-between">
                                     <h2 className="text-lg font-semibold">Add Description</h2>
@@ -175,13 +190,11 @@ export default function CartPage() {
                                     </button>
                                 </div>
 
-
-
                                 <textarea
                                     value={description}
                                     onChange={(e) => setDescription(e.target.value)}
                                     placeholder="Type here..."
-                                    className="mb-4 min-h-[200px] w-full resize-none rounded border border-gray-300 p-2 focus:border-blue-500 focus:outline-none"
+                                    className="mb-4 min-h-[200px] w-full resize-none rounded border border-gray-300 p-2 focus:outline-none"
                                 />
 
                                 <div className="flex justify-end gap-2">
@@ -193,7 +206,7 @@ export default function CartPage() {
                                     </button>
                                     <button
                                         onClick={handleSave}
-                                        className="rounded-full bg-blue-600 px-6 py-2 text-white hover:bg-blue-700"
+                                        className="rounded-full bg-[#6D2323] px-6 py-2 text-white hover:bg-[#6D2323]"
                                     >
                                         Save
                                     </button>
@@ -202,15 +215,15 @@ export default function CartPage() {
                         </div>
                     )}
                 </div>
-                <div className="mt-3 flex border-b ">
+                <div className="mt-3 flex border-b  border-t border-t-[#6D2323]">
                     <button
-                        className={`px-6 w-1/2 py-2 ${activeTab === "cart" ? "border-b-2 border-blue-600 text-blue-600" : "text-gray-500"}`}
+                        className={`px-6 w-1/2 py-2 ${activeTab === "cart" ? "border-b-2 border-[#6D2323] text-[#6D2323]" : "text-gray-500"}`}
                         onClick={() => setActiveTab("cart")}
                     >
                         Cart
                     </button>
                     <button
-                        className={`px-6 w-1/2 py-2 ${activeTab === "bill" ? "border-b-2 border-blue-600 text-blue-600" : "text-gray-500"}`}
+                        className={`px-6 w-1/2 py-2 ${activeTab === "bill" ? "border-b-2 border-[#6D2323] text-[#6D2323]" : "text-gray-500"}`}
                         onClick={() => setActiveTab("bill")}
                     >
                         Bill
@@ -218,13 +231,13 @@ export default function CartPage() {
                 </div>
             </header>
 
-            <main className="p-4">
+            <main className="p-4 bg-[#FFEFD3]">
                 {activeTab === "cart" ? (
                     <div className="grid grid-cols-2 gap-4">
                         {carts.map((product: any) => (
                             <div
                                 key={product.productId}
-                                className="overflow-hidden rounded-xl bg-white shadow-sm p-2 border"
+                                className="overflow-hidden rounded-xl bg-[#FEF9E1] shadow-sm p-2 border border-[#FEF9E1]"
                             >
                                 <div className="relative aspect-square">
                                     <Image
@@ -254,8 +267,8 @@ export default function CartPage() {
                     </div>
                 ) : (
                     <div className="text-center text-gray-700">
-                        <div className="min-h-screen bg-gray-50">
-                            <div className=" rounded-lg bg-white shadow-sm">
+                        <div className="min-h-screen bg-[#FFEFD3]">
+                            <div className=" rounded-lg bg-transparent shadow-sm">
                                 <div className="">
                                     <div className="bg-white shadow-lg rounded-lg p-4 border">
 
@@ -296,7 +309,7 @@ export default function CartPage() {
                                                     <span>₹{carts.discount.toFixed(2)}</span>
                                                 </div> */}
                                             </div>
-                                            <div className="flex justify-between border-t pt-2 font-medium">
+                                            <div className="flex justify-between font-medium">
                                                 <span>Total Amount :</span>
                                                 <span>₹{carts?.reduce((acc, item:any) => acc + (item.price * item.quantity), 0)}</span>
                                             </div>
@@ -311,7 +324,7 @@ export default function CartPage() {
                                     </div>
                                     {/* Action Buttons */}
                                     <div className="mt-6 flex gap-4">
-                                        <button onClick={() => setIsModalOpen(true)} className="flex flex-1 items-center justify-center gap-2 rounded-md bg-blue-600 py-2 text-white hover:bg-blue-700">
+                                        <button onClick={() => setIsModalOpen(true)} className="flex flex-1 items-center justify-center gap-2 rounded-md bg-[#6D2323] py-2 text-white hover:bg-[#6D2323]">
                                             <MessageSquare className="h-4 w-4" />
                                             Send Enquiry
                                         </button>
@@ -323,6 +336,7 @@ export default function CartPage() {
                                         onClose={() => setIsModalOpen(false)}
                                         onConfirm={handleConfirm}
                                         title="Send Enquiry ?"
+                                        message="Are you sure want to send Enquiry ?"
 
                                     />
 

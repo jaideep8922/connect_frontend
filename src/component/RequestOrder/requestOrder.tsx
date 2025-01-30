@@ -1,6 +1,7 @@
 "use client"
 import { ArrowLeft, ChevronRight } from 'lucide-react'
 import Link from 'next/link'
+import { useEffect, useState } from 'react'
 
 interface OrderStatus {
     title: string
@@ -23,26 +24,38 @@ const orderStatuses: OrderStatus[] = [
         link: '/process-order'
     },
     {
+        title: "Pending Order",
+        subtitle: "Enquiry rejected by me",
+        color: "text-red-500",
+        link: '/pending-order'
+    },
+    {
         title: "Order Completed",
         subtitle: "Customer order completed by me",
         color: "text-green-500",
         link: '/completed-order'
     },
     {
-        title: "Customer Cancelled",
-        subtitle: "Customer cancelled the enquiry",
+        title: "Order Cancelled",
+        subtitle: "Customer / Seller cancelled the enquiry",
         color: "text-pink-500",
         link: '/cancel-order'
     },
-    // {
-    //     title: "Enquiry Rejected",
-    //     subtitle: "Enquiry rejected by me",
-    //     color: "text-red-500",
-    //     link: '/rejected-order'
-    // },
+    
 ]
 
 export default function RequestOrderStatusList() {
+
+    const [isClient, setIsClient] = useState(false);
+
+    useEffect(() => {
+        setIsClient(true);
+    }, []);
+
+    if (!isClient) {
+        return <div>Loading...</div>;
+    }
+
     return (
         <>
             <header className="sticky top-0 z-10 flex h-20 items-center justify-between border-b bg-white px-4">
@@ -61,11 +74,11 @@ export default function RequestOrderStatusList() {
                 </div>
             </header>
 
-            <div className="flex flex-col gap-3 p-4 bg-gray-50 min-h-screen">
+            <div className="flex flex-col gap-3 p-4 bg-[#FFEFD3] min-h-screen">
                 {orderStatuses.map((status, index) => (
                     <Link href={status.link} key={index}>
                         <div
-                            className="flex items-center justify-between p-4 border rounded-lg shadow-sm cursor-pointer hover:bg-gray-50 transition-colors"
+                            className="flex items-center bg-white justify-between p-4 border rounded-lg shadow-sm cursor-pointer hover:bg-[#FFEFD3] transition-colors"
                         >
                             <div className="space-y-1">
                                 <h3 className="font-medium">{status.title}</h3>

@@ -134,6 +134,8 @@ export default function CurrentCompleteddOrderMain() {
 
 
   useEffect(() => {
+    if (typeof window !== "undefined") {
+
     const localData: any = JSON.parse(localStorage.getItem('userDetails') || '{}');
     const customId = localData?.data?.customId;
 
@@ -166,13 +168,14 @@ export default function CurrentCompleteddOrderMain() {
     };
 
     fetchOrders();
+  }
   }, []);
 
   const statusMap: Record<number, { label: string; bgColor: string }> = {
-    1: { label: "Pending", bgColor: "bg-yellow-100 text-yellow-700" },
+    3: { label: "Pending", bgColor: "bg-yellow-100 text-yellow-700" },
     2: { label: "Accepted", bgColor: "bg-blue-100 text-blue-700" },
-    3: { label: "Completed", bgColor: "bg-green-100 text-green-700" },
-    4: { label: "Cancelled", bgColor: "bg-red-100 text-red-700" },
+    4: { label: "Completed", bgColor: "bg-green-100 text-green-700" },
+    5: { label: "Cancelled", bgColor: "bg-red-100 text-red-700" },
   };
 
   return (
@@ -219,9 +222,9 @@ export default function CurrentCompleteddOrderMain() {
           </div>
           <hr className="my-4 border-dashed" />
           <div className="flex items-center justify-between">
-            <p className="text-lg font-medium text-gray-600">Total Received Order</p>
+            <p className="text-lg font-medium text-gray-600">Total Completed Order</p>
             <p className="text-3xl font-bold text-gray-800">
-            {orders.filter((order) => order.statusId === 3).length}
+            {orders.filter((order) => order.statusId === 4).length}
             </p>
           </div>
         </div>
@@ -231,12 +234,12 @@ export default function CurrentCompleteddOrderMain() {
         ) : (
           <div className="space-y-3">
             {orders.
-             filter((order) => order.statusId === 3).
+             filter((order) => order.statusId === 4).
             map((order, index) => (
               // <Link href="/request-cart" key={index}>
 
               <Link href={`/request-cart?orderId=${order.orderId}`} key={index}>
-                <div className="p-4 border shadow-sm rounded-lg m-1">
+                <div className="p-4 border bg-white shadow-sm rounded-lg m-1">
                   <div className="flex items-start gap-3">
                     <div className="p-2 bg-blue-50 rounded-lg">
                       <Package className="h-5 w-5 text-blue-500" />

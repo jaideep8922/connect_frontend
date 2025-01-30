@@ -48,7 +48,7 @@ export default function ProductListing() {
 
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-[#FFEFD3]">
       {/* Header */}
       <header className="fixed h-16 top-0 left-0 right-0 bg-white border-b px-3 py-1 flex items-center justify-between z-10">
         <div className="flex items-center gap-4 flex-1">

@@ -17,7 +17,7 @@ export function ReviewCard({ data }: ReviewCardProps) {
     : "Unknown date";
 
   return (
-    <div className="flex gap-3 border border-gray-100 p-4 shadow-md rounded-md m-2">
+    <div className="flex gap-3 bg-white border border-gray-100 p-4 shadow-md rounded-md m-2">
       <div className="flex-1">
         <div className="flex items-center justify-between">
           <h3 className="font-medium text-gray-900">{reviewData?.review || "No review provided"}</h3>

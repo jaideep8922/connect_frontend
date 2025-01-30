@@ -8,152 +8,126 @@ import { AlertTriangle, ShoppingCart, MessageSquare } from 'lucide-react'
 import SendEnquiryModal from "@/component/global/sendEnquiryPopup";
 import SuccessMessage from "@/component/global/successEnquiry";
 import { useRouter, useSearchParams } from "next/navigation";
+import toast, { Toaster } from 'react-hot-toast';
 
-const products = [
-    {
-        id: 1,
-        name: "Almonds",
-        image: Pista,
-        moq: "100 meters",
-        quantity: 1,
-    },
-    {
-        id: 2,
-        name: "Red Apples",
-        image: Pista,
-        moq: "100 meters",
-        quantity: 1,
-    },
-    {
-        id: 3,
-        name: "Pistachios",
-        image: Pista,
-        moq: "100 meters",
-        quantity: 1,
-    },
-    {
-        id: 4,
-        name: "White Stones",
-        image: Pista,
-        moq: "100 meters",
-        quantity: 1,
-    },
-];
-
-const orderDetails = {
-    id: 1,
-    orderId: "475121",
-    status: "Pending",
-    date: "06-07-2024",
-    time: "10:15 am",
-    totalItems: 33,
-    totalQuantity: 108,
-    subtotal: 0,
-    shipping: 0,
-    others: 0,
-    discount: 0,
-    products: [
-        {
-            name: "Almonds",
-            image: Pista,
-            moq: "50 Kg",
-            mrp: 1000,
-            quantity: "50 Kg",
-            totalQty: "50 x 1000 = 50000",
-            totalAmount: 49999.5,
-            id: 1
-        },
-        {
-            name: "Apple",
-            image: Pista,
-            moq: "50 Kg",
-            mrp: 1000,
-            quantity: "50 Kg",
-            totalQty: "50 x 1000 = 50000",
-            totalAmount: 49999.5,
-            id: 2
-        },
-        {
-            name: "Cashew",
-            image: Pista,
-            moq: "50 Kg",
-            mrp: 750,
-            quantity: "50 Kg",
-            totalQty: "50 x 750 = 37500",
-            totalAmount: 37499.5,
-            id: 3
-        }
-    ]
-}
 
 export default function CartRequestPage() {
     const [activeTab, setActiveTab] = useState<"cart" | "bill">("cart");
     const [isModalOpen, setIsModalOpen] = useState(false)
+    const [isModalOpens, setIsModalOpens] = useState(false)
+
     const [isModalClose, setIsModalClose] = useState(false)
+    const [isModalCloses, setIsModalCloses] = useState(false)
     const [showSuccess, setShowSuccess] = useState(false);
-    
-      const router = useRouter()
-      const searchParams = useSearchParams()
-      const orderId = searchParams.get('orderId')
 
-      console.log("orderId",orderId)
+    const router = useRouter()
+    const searchParams = useSearchParams()
+    const orderId = searchParams.get('orderId')
+
+    console.log("orderId", orderId)
 
 
-        const [orders, setOrders] = useState<any>([]);
-        const [loading, setLoading] = useState(false);
-      
-      
-        useEffect(() => {
-          const localData: any = JSON.parse(localStorage.getItem('userDetails') || '{}');
-          const customId = localData?.data?.customId;
-      
-          const fetchOrders = async () => {
+    const [orders, setOrders] = useState<any>([]);
+    const [loading, setLoading] = useState(false);
+
+
+    useEffect(() => {
+        if (typeof window !== "undefined") {
+
+        const localData: any = JSON.parse(localStorage.getItem('userDetails') || '{}');
+        const customId = localData?.data?.customId;
+
+        const fetchOrders = async () => {
             setLoading(true);
             try {
-              const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/order/get-order-history-by-supplier-id`, {
-                method: "POST",
-                headers: {
-                  "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ customId }),
-              });
-      
-              if (response.ok) {
-                const data = await response.json();
-                if (data.success) {
-                  setOrders(data.data);
+                const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/order/get-order-history-by-supplier-id`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({ customId }),
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.success) {
+                        setOrders(data.data);
+                    } else {
+                        console.error("Failed to fetch orders: ", data.message);
+                    }
                 } else {
-                  console.error("Failed to fetch orders: ", data.message);
+                    console.error("Failed to fetch orders: HTTP error", response.status);
                 }
-              } else {
-                console.error("Failed to fetch orders: HTTP error", response.status);
-              }
             } catch (error) {
-              console.error("Error fetching orders: ", error);
+                console.error("Error fetching orders: ", error);
             } finally {
-              setLoading(false);
+                setLoading(false);
             }
-          };
-      
-          fetchOrders();
-        }, []);
+        };
 
-        console.log("orders",orders)
+        fetchOrders();
+    }
+    }, []);
 
-        const [orderDetails, setOrderDetails] = useState<any>(null)
+    console.log("orders", orders)
+
+    const [orderDetails, setOrderDetails] = useState<any>(null)
 
 
-        useEffect(() => {
-            if (orderId && orders) {
-              // Find the order matching the orderId
-              const order = orders.find((order:any) => order.orderId === orderId)
-              setOrderDetails(order)
-            }
-          }, [orderId, orders])
+    useEffect(() => {
+        if (orderId && orders) {
+            // Find the order matching the orderId
+            const order = orders.find((order: any) => order.orderId === orderId)
+            setOrderDetails(order)
+        }
+    }, [orderId, orders])
 
     // const handleConfirm = () => {
     //     setIsModalOpen(false)
     // }
+
+    const handleClose = () => {
+        setIsModalOpens(false)
+    }
+
+    const handleConfirms = async () => {
+        if (!selectedStatus) return; // Ensure status is selected
+
+        setIsModalOpens(false);
+
+        try {
+            const response = await fetch(
+                `${process.env.NEXT_PUBLIC_BACKEND_URL}/order/update-order-status`,
+                {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        orderId, // Use extracted orderId
+                        statusId: selectedStatus, // Use dynamically selected statusId
+                    }),
+                }
+            );
+
+            if (response.ok) {
+                const data = await response.json();
+                if (data.success) {
+                    toast.success("Order status updated successfully");
+                    setTimeout(() => {
+                        router.push("/request-order");
+                    }, 3000);
+                } else {
+                    console.error("Failed to update order status: ", data.message);
+                }
+            } else {
+                console.error("Failed to update order status: HTTP error", response.status);
+            }
+        } catch (error) {
+            console.error("Error updating order status: ", error);
+        }
+    };
+
 
     const handleConfirm = async () => {
         setIsModalOpen(false);
@@ -171,13 +145,13 @@ export default function CartRequestPage() {
                     }),
                 }
             );
-    
+
             if (response.ok) {
                 const data = await response.json();
                 if (data.success) {
-                    setShowSuccess(true);
+                    toast.success("Order status updated successfully");
                     setTimeout(() => {
-                        router.push("/current-received");
+                        router.push("/request-order");
                     }, 3000);
                 } else {
                     console.error("Failed to update order status: ", data.message);
@@ -189,13 +163,45 @@ export default function CartRequestPage() {
             console.error("Error updating order status: ", error);
         }
     };
-    
 
-    const handleConfirmReject = () => {
+
+    const handleConfirmReject = async () => {
+        try {
+            const response = await fetch(
+                `${process.env.NEXT_PUBLIC_BACKEND_URL}/order/update-order-status`,
+                {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        orderId: orderId,
+                        statusId: 5,
+                    }),
+                }
+            );
+
+            if (response.ok) {
+                const data = await response.json();
+                if (data.success) {
+                    toast.success("Order status updated successfully");
+                    setTimeout(() => {
+                        router.push("/request-order");
+                    }, 3000);
+                } else {
+                    console.error("Failed to update order status: ", data.message);
+                }
+            } else {
+                console.error("Failed to update order status: HTTP error", response.status);
+            }
+        } catch (error) {
+            console.error("Error updating order status: ", error);
+        }
         setIsModalClose(false)
     }
 
     const [isOpen, setIsOpen] = useState(false)
+    const [selectedStatus, setSelectedStatus] = useState<number | null>(null)
     const [description, setDescription] = useState("")
 
     const handleReset = () => {
@@ -208,10 +214,15 @@ export default function CartRequestPage() {
         setIsOpen(false)
     }
 
-    console.log("orderDetails?.statusId", orderDetails?.statusId)
+    const totalAmount = orderDetails?.OrderProductDetails?.reduce(
+        (sum: any, item: any) => sum + item.price * item.quantity,
+        0
+    );
+
 
     return (
-        <div className="bg-white">
+        <div className="bg-[#FFEFD3]">
+            <Toaster />
             <header className="sticky top-0 z-10 bg-white px-4 py-3 shadow-sm">
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
@@ -265,13 +276,13 @@ export default function CartRequestPage() {
                 </div>
                 <div className="mt-3 flex border-b ">
                     <button
-                        className={`px-6 w-1/2 py-2 ${activeTab === "cart" ? "border-b-2 border-blue-600 text-blue-600" : "text-gray-500"}`}
+                        className={`px-6 w-1/2 py-2 ${activeTab === "cart" ? "border-b-2 border-[#6D2323] text-[#6D2323]" : "text-gray-500"}`}
                         onClick={() => setActiveTab("cart")}
                     >
                         Cart
                     </button>
                     <button
-                        className={`px-6 w-1/2 py-2 ${activeTab === "bill" ? "border-b-2 border-blue-600 text-blue-600" : "text-gray-500"}`}
+                        className={`px-6 w-1/2 py-2 ${activeTab === "bill" ? "border-b-2 border-[#6D2323] text-[#6D2323]" : "text-gray-500"}`}
                         onClick={() => setActiveTab("bill")}
                     >
                         Bill
@@ -282,10 +293,10 @@ export default function CartRequestPage() {
             <main className="p-4">
                 {activeTab === "cart" ? (
                     <div className="grid grid-cols-2 gap-4">
-                        {orderDetails?.OrderProductDetails.map((product:any) => (
+                        {orderDetails?.OrderProductDetails.map((product: any) => (
                             <div
                                 key={product.id}
-                                className="overflow-hidden rounded-xl bg-white shadow-sm p-2 border"
+                                className="overflow-hidden rounded-xl bg-[#FFEFD3] shadow-sm p-2 border"
                             >
                                 <div className="relative aspect-square">
                                     <Image
@@ -315,8 +326,8 @@ export default function CartRequestPage() {
                     </div>
                 ) : (
                     <div className="text-center text-gray-700">
-                        <div className="min-h-screen bg-gray-50">
-                            <div className=" rounded-lg bg-white shadow-sm">
+                        <div className="min-h-screen bg-[#FFEFD3]">
+                            <div className=" rounded-lg bg-[#FFEFD3] shadow-sm">
                                 <div className="">
                                     <div className="bg-white shadow-lg rounded-lg p-4 border">
                                         {/* Header */}
@@ -365,7 +376,7 @@ export default function CartRequestPage() {
                                             </div> */}
                                             <div className="flex justify-between border-t pt-2 font-medium">
                                                 <span>Total Amount :</span>
-                                                {/* <span>₹{orderDetails.}</span> */}
+                                                <span>{totalAmount}</span>
                                             </div>
                                         </div>
 
@@ -378,41 +389,162 @@ export default function CartRequestPage() {
                                     </div>
                                     {/* Action Buttons */}
                                     {orderDetails?.statusId === 1 ? (
-                                                                    <div className="mt-6 flex gap-4">
-                                                                    <button onClick={() => setIsModalClose(true)} className="flex flex-1 items-center justify-center gap-2 rounded-md bg-red-600 py-3 text-white">
-                                                                        Reject
-                                                                    </button>
-                                                                    <button onClick={() => setIsModalOpen(true)} className="flex flex-1 items-center justify-center gap-2 rounded-md bg-green-500 py-3 text-white">
-                                                                        Accept
-                                                                    </button>
-                                                                </div>
-                                    ):(
+                                        <div className="mt-6 flex gap-4">
+                                            <button onClick={() => setIsModalClose(true)} className="flex flex-1 items-center justify-center gap-2 rounded-md bg-red-600 py-3 text-white">
+                                                Reject
+                                            </button>
+                                            <button onClick={() => setIsModalOpen(true)} className="flex flex-1 items-center justify-center gap-2 rounded-md bg-green-500 py-3 text-white">
+                                                Accept
+                                            </button>
+                                        </div>
+                                    ) : (
                                         <></>
                                     )}
+
+                                    {(orderDetails?.statusId === 2 || orderDetails?.statusId === 3 || orderDetails?.statusId === 4) && (
+
+
+                                        <div className="mt-6 flex gap-4">
+                                            <button onClick={() => setIsModalClose(true)} className="flex flex-1 items-center justify-center gap-2 rounded-md bg-red-600 py-3 text-white">
+                                                Cancel
+                                            </button>
+                                            <button onClick={() => setIsModalOpens(true)} className="flex flex-1 items-center justify-center gap-2 rounded-md bg-blue-500 py-3 text-white">
+                                                Confirm
+                                            </button>
+                                        </div>
+                                    )}
+
+                                    {isModalOpens && (
+                                        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+                                            <div className="max-w-md mx-auto p-6 bg-white rounded-lg shadow-lg">
+                                                <h1 className="text-2xl font-bold mb-6">Change Status!</h1>
+
+                                                {/* Status Options */}
+                                                <div className="space-y-3 mb-8">
+                                                    {[
+                                                        { id: "reject", label: "Reject", statusId: 5 },
+                                                        { id: "accept", label: "Accept", statusId: 2 },
+                                                        { id: "pending", label: "Mark Pending", statusId: 3 },
+                                                        { id: "complete", label: "Mark Complete", statusId: 4 },
+                                                    ].map((option) => (
+                                                        <label
+                                                            key={option.id}
+                                                            className="flex items-center justify-between p-4 rounded-lg border border-gray-100 bg-white shadow-sm cursor-pointer hover:bg-[#FFEFD3]"
+                                                        >
+                                                            <span className="text-gray-600">{option.label}</span>
+                                                            <input
+                                                                type="radio"
+                                                                name="status"
+                                                                value={option.statusId} // Store actual numeric statusId
+                                                                checked={selectedStatus === option.statusId}
+                                                                onChange={(e) => setSelectedStatus(Number(e.target.value))} // Ensure it's a number
+                                                                className="h-5 w-5 rounded-full border-2 border-gray-300 text-blue-600 focus:ring-blue-500"
+                                                            />
+                                                        </label>
+                                                    ))}
+                                                </div>
+
+                                                {/* Action Buttons */}
+                                                <div className="flex gap-4">
+                                                    <button
+                                                        className="flex-1 px-6 py-3 rounded-lg border border-gray-200 text-gray-700 hover:bg-[#FFEFD3]"
+                                                        onClick={handleClose}
+                                                    >
+                                                        Cancel
+                                                    </button>
+                                                    <button
+                                                        className="flex-1 px-6 py-3 rounded-lg bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50"
+                                                        onClick={handleConfirms} // Call function to send selected status
+                                                        disabled={!selectedStatus} // Disable if no selection
+                                                    >
+                                                        Confirm
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
+
+
+                                    {/* {isModalOpens && (
+                                        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+                                            <div className="max-w-md mx-auto p-6 bg-white rounded-lg shadow-lg">
+                                                <h1 className="text-2xl font-bold mb-6">Change Status!</h1>
+
+                                                <div className="space-y-3 mb-8">
+                                                    {[
+                                                        { id: 'reject', label: 'Reject' },
+                                                        { id: 'accept', label: 'Accept' },
+                                                        { id: 'pending', label: 'Mark Pending' },
+                                                        { id: 'complete', label: 'Mark Complete' },
+                                                    ].map((option) => (
+                                                        <label
+                                                            key={option.id}
+                                                            className="flex items-center justify-between p-4 rounded-lg border border-gray-100 bg-white shadow-sm cursor-pointer hover:bg-[#FFEFD3]"
+                                                        >
+                                                            <span className="text-gray-600">{option.label}</span>
+                                                            <input
+                                                                type="radio"
+                                                                name="status"
+                                                                value={option.id}
+                                                                checked={selectedStatus === option.id}
+                                                                onChange={(e) => {
+                                                                    setSelectedStatus(e.target.value as any);
+                                                                    if (e.target.value === 'complete') setIsModalOpens(true);
+                                                                }}
+                                                                className="h-5 w-5 rounded-full border-2 border-gray-300 text-blue-600 focus:ring-blue-500"
+                                                            />
+                                                        </label>
+                                                    ))}
+                                                </div>
+
+                                                <div className="flex gap-4">
+                                                    <button
+                                                        className="flex-1 px-6 py-3 rounded-lg border border-gray-200 text-gray-700 hover:bg-[#FFEFD3]"
+                                                        onClick={() => setSelectedStatus(null)}
+                                                    >
+                                                        Cancel
+                                                    </button>
+                                                    <button
+                                                        className="flex-1 px-6 py-3 rounded-lg bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50"
+                                                        onClick={() => {
+                                                            if (selectedStatus) {
+                                                                setIsModalOpens(false);
+                                                            }
+                                                        }}
+                                                        disabled={!selectedStatus}
+                                                    >
+                                                        Confirm
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+
+
+                                    )} */}
 
 
                                     <SendEnquiryModal
                                         isOpen={isModalOpen}
                                         onClose={() => setIsModalOpen(false)}
                                         onConfirm={handleConfirm}
-                                        title="Accept Order ?"
+                                        title="Accept Order?"
+                                        message="Are you sure you want to accept this order?" // ✅ Custom message
                                     />
 
                                     <SendEnquiryModal
                                         isOpen={isModalClose}
                                         onClose={() => setIsModalClose(false)}
                                         onConfirm={handleConfirmReject}
-                                        title="Reject Order ?"
-
+                                        title="Reject Order?"
+                                        message="Are you sure you want to reject this order?" // ✅ Different message for rejection
                                     />
 
 
-
-                                    {showSuccess && (
+                                    {/* {showSuccess && (
                                         <>
                                             <SuccessMessage />
                                         </>
-                                    )}
+                                    )} */}
 
 
                                     {/* Product List */}

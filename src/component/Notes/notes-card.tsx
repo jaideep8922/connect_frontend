@@ -12,7 +12,7 @@ interface BookReviewProps {
 export function BookReviewCard({ id, text, timestamp, colorClass, onDelete }: BookReviewProps) {
 
   return (
-    <div className={`relative group ${colorClass} rounded-lg p-4 shadow-sm overflow-hidden`}>
+    <div className={`relative bg-white group ${colorClass} rounded-lg p-4 shadow-sm overflow-hidden`}>
       <div className="space-y-2">
         <h2 className="font-medium text-gray-900">Notes :</h2>
         <p className="text-sm text-gray-700">{text}</p>

@@ -144,14 +144,14 @@ export default function EditProductTable() {
                 <div className="flex justify-end items-end mb-6 mt-3">
                     <div className="space-x-2">
                         <button
-                            className="px-2 py-2 bg-blue-700 text-white text-xs rounded-md hover:bg-gray-800"
+                            className="px-2 py-2 bg-[#6D2323] text-white text-xs rounded-md hover:bg-gray-800"
                             onClick={() => setEditMode(!editMode)}
                         >
                             {editMode ? "Cancel" : "Edit Products"}
                         </button>
                         {editMode && (
                             <button
-                                className="px-2 py-2 bg-blue-500 text-xs text-white rounded-md hover:bg-blue-600"
+                                className="px-2 py-2 bg-[#6D2323] text-xs text-white rounded-md hover:bg-[#6D2323]"
                                 onClick={handleSave}
                             >
                                 Save Changes
@@ -173,7 +173,7 @@ export default function EditProductTable() {
                         </thead>
                         <tbody>
                             {products.map((product: any) => (
-                                <tr key={product.id} className="hover:bg-gray-50 cursor-pointer">
+                                <tr key={product.id} className="hover:bg-[#FFEFD3] cursor-pointer">
                                     <td className="border border-gray-200 px-4 py-5">
                                         <img
                                             src={product.productImage}
