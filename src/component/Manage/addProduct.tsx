@@ -63,7 +63,7 @@ export default function AddProduct() {
         }
 
         try {
-          const response = await axios.post("http://localhost:4000/product/add-product", formData, {
+          const response = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/product/add-product`, formData, {
             headers: { 'Content-Type': 'multipart/form-data' },
           });
           toast.success(response.data.message || "Product added successfully!");
