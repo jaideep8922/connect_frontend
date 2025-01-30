@@ -62,6 +62,7 @@ export default function AddProduct() {
           formData.append('productVideo', videoInputRef.current.files[0]);
         }
 
+        // sadasd
         try {
           const response = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/product/add-product`, formData, {
             headers: { 'Content-Type': 'multipart/form-data' },
