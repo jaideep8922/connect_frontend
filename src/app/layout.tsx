@@ -4,13 +4,13 @@ import ClientProvider from "./clientProvider";
 import { Poppins } from 'next/font/google';
 import LanguageSelector from "@/component/language";
 import { Provider } from 'react-redux';
-import {store} from '../store/store'
+import { store } from '../store/store'
 import ReduxProvider from "@/component/global/reduxProvider";
 
 const poppins = Poppins({
-  subsets: ['latin'], 
-  weight: ['300', '400', '500', '600', '700'], 
-  display: 'swap', 
+  subsets: ['latin'],
+  weight: ['300', '400', '500', '600', '700'],
+  display: 'swap',
 });
 
 export const metadata: Metadata = {
@@ -25,12 +25,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${poppins.className} `}>
-      <LanguageSelector />
-<ReduxProvider>
-        <ClientProvider>
-          {children}
-        </ClientProvider>
+      <body className={`${poppins.className} className="block lg:hidden" `}>
+        <LanguageSelector />
+        <ReduxProvider>
+          <ClientProvider>
+            {children}
+          </ClientProvider>
         </ReduxProvider>
       </body>
     </html>

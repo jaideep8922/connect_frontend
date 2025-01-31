@@ -243,7 +243,7 @@ export default function MainHome() {
             <Link
               key={item.id}
               href={item.href}
-              className="flex items-center border justify-between rounded-xl bg-white p-3 shadow-sm transition-colors hover:bg-[#FFEFD3]"
+              className="flex items-center border justify-between rounded-xl bg-white p-3 shadow-sm"
             >
               <div className="flex items-center gap-3">
                 <div className={`rounded-xl ${item.bgColor} p-3`}>

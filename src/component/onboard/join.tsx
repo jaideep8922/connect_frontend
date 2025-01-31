@@ -119,10 +119,11 @@ const JoinPage: React.FC = () => {
           const responseData = await response.json();
           if (responseData.success) {
             toast.success("Onboarded successfully!");
+            console.log("responseData", responseData)
             // Store the user details in localStorage only on the client-side
             if (typeof window !== "undefined") {
               localStorage.setItem("userDetails", JSON.stringify(responseData.data.user));
-              localStorage.setItem("token", responseData.token);
+              localStorage.setItem("token", responseData.data.token);
               localStorage.setItem("userType", formData.userType);
             }
             setTimeout(() => {
