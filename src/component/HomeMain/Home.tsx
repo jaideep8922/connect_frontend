@@ -214,7 +214,7 @@ export default function MainHome() {
       {/* Header */}
       <header className="flex items-center justify-between bg-white p-4 shadow-sm mb-2">
         <div className="flex items-center gap-2">
-          <div className="flex h-[2rem] w-[2rem] items-center justify-center rounded-full text-white overflow-hidden">
+          <div className="flex h-[3rem] w-[3rem] items-center justify-center border rounded-full text-white overflow-hidden">
             <Image
               src={sellerData?.filePath ? sellerData.filePath : Profile}
               alt="Seller avatar"

@@ -48,7 +48,7 @@ const JoinPage: React.FC = () => {
     city: "",
     state: "",
     fingerprintId: "",
-    file: selectedImage
+    file: null
   });
   
   const [step, setStep] = useState<number>(1);
@@ -70,6 +70,10 @@ const JoinPage: React.FC = () => {
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
+      setFormData(prevData => ({
+        ...prevData,
+        file: file
+      }));
       const imageUrl = URL.createObjectURL(file);
       setSelectedImage(imageUrl);
     }
@@ -89,30 +93,33 @@ const JoinPage: React.FC = () => {
     if (step < 5) {
       setStep(step + 1);
     } else {
-      const payload: any = {
-        userType: formData.userType,
-        businessName: formData.businessName,
-        businessOwner: formData.businessOwner,
-        phone: formData.phone,
-        gstNumber: formData.gstNumber,
-        shopMarka: formData.shopMarka,
-        transport: formData.transport,
-        pincode: formData.pincode,
-        city: formData.city,
-        state: formData.state,
-      };
+      const formDataToSend:any = new FormData();
+    
+      // Append all form data to FormData
+      Object.keys(formData).forEach(key => {
+        const value = formData[key as keyof FormData];
+        if (key === 'file' && value instanceof File) {
+          formDataToSend.append('file', value);
+        } else if (value !== null && value !== undefined) {
+          formDataToSend.append(key, value.toString());
+        }
+      });
+      // Object.keys(formData).forEach(key => {
+      //   if (key === 'file' && formData.file) {
+      //     formDataToSend.append('file', formData.file);
+      //   } else {
+      //     formDataToSend.append(key, formData[key as keyof FormData].toString());
+      //   }
+      // });
 
       if (formData.userType === "Retailer") {
-        payload.sellerId = supplierId;
+        formDataToSend.append('sellerId', supplierId || '');
       }
 
       try {
         const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/users/create`, {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(payload),
+          body: formDataToSend,
         });
 
         if (response.ok) {
@@ -187,7 +194,6 @@ const JoinPage: React.FC = () => {
       alert("Invalid OTP. Please try again.");
     }
   };
-
 
   return (
     <div className=" h-screen flex flex-col items-center justify-between bg-[#FFEFD3]">
@@ -387,8 +393,6 @@ const JoinPage: React.FC = () => {
                 </button>
               </div>
             )}
-
-
 
             <div>
               <h1 className="text-md font-bold py-2 text-sm items-center text-[#6D2323]">Shop Marka</h1>

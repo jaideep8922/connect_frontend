@@ -179,7 +179,7 @@ const UserProfile: React.FC = () => {
   return (
     <div className="flex flex-col items-center justify-between bg-[#FFEFD3] p-2">
       {/* Profile Section */}
-      <div className="flex flex-col items-center mt-8" onClick={handleClick}>
+      <div className="flex flex-col items-center mt-8">
         <div className="w-20 h-20 rounded-full overflow-hidden border border-[#6D2323]">
           <Image
             src={filePath || Profile}
@@ -194,6 +194,8 @@ const UserProfile: React.FC = () => {
       </div>
 
       {/* Action Buttons */}
+      {customId?.startsWith('RE') ? 
+
       <div className="flex absolute right-4 space-x-4 mt-2 justify-self-end">
         <a
           href={`tel:${phoneNo}`}
@@ -215,6 +217,9 @@ const UserProfile: React.FC = () => {
           </svg>
         </a>
       </div>
+
+      
+      :<></> }
 
       <span className="text-[10px] bg-[#6D2323] text-white px-2 py-1 m-2 rounded-full">
         {customId?.startsWith('RE') ? 'retailer' : 'supplier'}
