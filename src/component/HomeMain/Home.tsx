@@ -220,8 +220,8 @@ export default function MainHome() {
               alt="Seller avatar"
               width={50}
               height={50}
-              className="rounded-full object-cover"
-            />
+              className="w-full h-full object-cover"
+              />
           </div>
 
           <div>

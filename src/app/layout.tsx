@@ -6,6 +6,7 @@ import LanguageSelector from "@/component/language";
 import { Provider } from 'react-redux';
 import { store } from '../store/store'
 import ReduxProvider from "@/component/global/reduxProvider";
+import AuthCheck from "@/component/global/authCheck";
 
 const poppins = Poppins({
   subsets: ['latin'],
@@ -25,7 +26,8 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${poppins.className} className="block lg:hidden" `}>
+      <body className={`${poppins.className} block lg:hidden`}>
+        <AuthCheck />
         <LanguageSelector />
         <ReduxProvider>
           <ClientProvider>

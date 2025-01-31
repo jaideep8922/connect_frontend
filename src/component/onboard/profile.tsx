@@ -186,8 +186,8 @@ const UserProfile: React.FC = () => {
             alt="Profile"
             width={80}
             height={80}
-            className="object-cover"
-          />
+            className="w-full h-full object-cover"
+            />
         </div>
         <h1 className="mt-4 text-lg font-semibold text-black">{businessOwner}</h1>
         <p className="text-sm text-gray-600">{businessName}</p>

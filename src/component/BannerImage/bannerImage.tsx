@@ -190,7 +190,7 @@ export default function BannerImageUpload() {
               {[...Array(5)].map((_, index) => (
                 <div
                   key={index}
-                  className={`aspect-video bg-gray-200 rounded-lg overflow-hidden relative ${previewImages[index] ? 'border-2 border-blue-500' : 'border-2 border-dashed border-gray-400'
+                  className={`aspect-video bg-gray-200 rounded-lg overflow-hidden relative ${previewImages[index] ? 'border-2 border-[#6D2323]' : 'border-2 border-dashed border-gray-400'
                     }`}
                   onDragOver={handleDragOver}
                   onDrop={handleDrop}

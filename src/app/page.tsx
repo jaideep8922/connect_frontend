@@ -4,7 +4,9 @@ import React from 'react'
 
 const page = () => {
   return (
-    <div className='block lg:hidden'><JoinPage /> </div>
+    <div className=" items-center justify-center">
+      
+      <JoinPage /> </div>
   )
 }
 

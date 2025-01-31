@@ -222,7 +222,7 @@ export default function AddProduct() {
             </button>
             <button
               type="submit"
-              className="flex-1 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 text-center"
+              className="flex-1 bg-[#6D2323] text-white px-4 py-2 rounded-lg hover:bg-[#6D2323] text-center"
             >
               Save
             </button>

@@ -24,7 +24,6 @@ export default function ShopMain() {
     const [phoneNumber, setPhoneNumber] = useState<string | null>(null);
 
     useEffect(() => {
-        // Check if localStorage is available and fetch the userDetails only on the client side
         if (typeof window !== "undefined") {
             const localData = localStorage.getItem('userDetails');
             if (localData) {
@@ -79,7 +78,7 @@ export default function ShopMain() {
                     const response = await fetch(
                         `${process.env.NEXT_PUBLIC_BACKEND_URL}/users/getUserById`,
                         {
-                            method: 'POST', 
+                            method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json',
                             },
@@ -147,17 +146,64 @@ export default function ShopMain() {
             fetchBannerImages();
         }
     }, [sellerId]);
-    
+
+    const [search, setSearch] = useState("");
+    const [searchResults, setSearchResults] = useState<any>([]);
+
+    useEffect(() => {
+        if (!search) {
+            setSearchResults([]);
+            return;
+        }
+
+        const searchData = async () => {
+            try {
+                const response = await fetch(
+                    `${process.env.NEXT_PUBLIC_BACKEND_URL}/product/search-product?productName=${search}`,
+                    {
+                        method: "GET",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                    }
+                );
+
+                if (!response.ok) {
+                    throw new Error("Failed to fetch products");
+                }
+
+                const result = await response.json();
+                setSearchResults(result);
+            } catch (error) {
+                console.error("Error fetching products:", error);
+            }
+        };
+
+        // Add delay for debounce functionality
+        const delaySearch = setTimeout(() => {
+            searchData();
+        }, 500);
+
+        return () => clearTimeout(delaySearch);
+
+    }, [search]);
+
+
+    console.log("searchResults", searchResults)
+
     return (
         <div className="bg-[#FFEFD3] m-2 overflow-hidden">
+
+
             {/* Search Header */}
             <div className="flex items-center gap-3 mt-2 bg-transparent m-2">
                 <div className="flex-1 flex items-center gap-2 px-4 py-2 bg-gray-100 rounded-full">
                     <Search className="w-4 h-4 text-gray-400" />
                     <input
                         type="text"
-                        placeholder="Search keywords.."
+                        placeholder="Search keywords..."
                         className="w-full bg-transparent outline-none text-sm"
+                        onChange={(e) => setSearch(e.target.value)}
                     />
                 </div>
                 {/* <button className="p-2">
@@ -165,12 +211,47 @@ export default function ShopMain() {
                 </button> */}
             </div>
 
+            {searchResults?.data?.length > 0 && (
+                <div className="absolute top-20 left-0 w-80 mx-4 bg-white shadow-lg rounded-lg p-2 z-50 border border-gray-200">
+                    {searchResults.data.map((item: any) => (
+                              <Link href={`/single-view?id=${item.productId}`}>
+
+                        <div
+                            key={item.id}
+                            className="flex items-center gap-3 p-2 hover:bg-gray-100 rounded-md cursor-pointer"
+                        >
+                            {/* Product Image */}
+                            <img
+                                src={item.productImage || "/placeholder-image.jpg"} // Fallback image
+                                alt={item.productName || "Product"}
+                                className="w-12 h-12 object-cover rounded-md border"
+                            />
+                            {/* Product Details */}
+                            <div>
+                                <p className="text-sm font-semibold text-gray-800">
+                                    {item.productName || "Unnamed Product"}
+                                </p>
+                                <p className="text-xs text-gray-500">
+                                    Price: ₹{item.averagePrice || "N/A"}
+                                </p>
+                            </div>
+                        </div>
+                        </Link>
+
+                    ))}
+                </div>
+            )}
+
+
+
             {/* Profile Section */}
             <div className="flex flex-col items-center gap-2 p-4">
                 <div className="w-20 h-20 rounded-full overflow-hidden">
                     <Image
-                        src={Logo}
+                        src={sellerData?.data?.filePath}
                         alt="Profile"
+                        width={80}
+                        height={80}
                         className="w-full h-full object-cover border-2 border-gray-200 rounded-full"
                     />
                 </div>
