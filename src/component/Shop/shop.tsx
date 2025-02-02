@@ -35,10 +35,9 @@ export default function ShopMain() {
                 }
             }
         }
-    }, []); // Runs only once when the component is mounted
+    }, []); 
 
     useEffect(() => {
-        // Check if sellerId is available and then fetch the product data
         if (sellerId) {
             const fetchProductList = async () => {
                 try {
@@ -71,7 +70,6 @@ export default function ShopMain() {
     }, [sellerId]);
 
     useEffect(() => {
-        // Fetch seller details only if sellerId is available
         if (sellerId) {
             const fetchSellerDetails = async () => {
                 try {

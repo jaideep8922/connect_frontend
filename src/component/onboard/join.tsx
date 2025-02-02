@@ -88,11 +88,15 @@ const JoinPage: React.FC = () => {
     }));
   };
 
+  const [loading, setLoading] = useState<boolean>(false);
+
+
   // Function for next step
   const handleNext = async () => {
     if (step < 5) {
       setStep(step + 1);
     } else {
+      setLoading(true); 
       const formDataToSend:any = new FormData();
     
       // Append all form data to FormData
@@ -139,7 +143,7 @@ const JoinPage: React.FC = () => {
               } else if (formData.userType === "Supplier") {
                 router.push("/manage");
               }
-            }, 5000);
+            }, 2000);
           } else {
             toast.error("Onboarding error.");
           }
@@ -149,6 +153,8 @@ const JoinPage: React.FC = () => {
         }
       } catch (error: any) {
         toast.error("Error submitting data:", error);
+      } finally {
+        setLoading(false); 
       }
     }
   };
@@ -523,12 +529,33 @@ const JoinPage: React.FC = () => {
           <div className="flex flex-col w-full max-w-md space-y-4">
 
             {/* Next/Submit Button */}
-            <button
+            {/* <button
               onClick={handleNext}
               className="w-full py-3 bg-[#6D2323] text-white rounded-xl hover:bg-[#6D2323] transition duration-200"
             >
               {step < 5 ? "Next" : "Submit"}
-            </button>
+            </button> */}
+
+<button
+  onClick={handleNext}
+  disabled={loading}
+  className={`w-full py-3 text-white rounded-xl transition duration-200 ${
+    loading ? "bg-gray-400 cursor-not-allowed" : "bg-[#6D2323] hover:bg-[#6D2323]"
+  }`}
+>
+  {loading ? (
+    <div className="flex items-center justify-center">
+      <svg className="animate-spin h-5 w-5 mr-2 text-white" viewBox="0 0 24 24">
+        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="white" strokeWidth="4"></circle>
+        <path className="opacity-75" fill="white" d="M4 12a8 8 0 018-8v8H4z"></path>
+      </svg>
+      Processing...
+    </div>
+  ) : (
+    step < 5 ? "Next" : "Submit"
+  )}
+</button>
+
 
             {/* Back Button */}
             {step > 1 && (

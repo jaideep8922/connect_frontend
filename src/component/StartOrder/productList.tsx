@@ -138,7 +138,7 @@ export default function ProductListing() {
                 </label>
               </div>
 
-                <button className="mt-3 w-full py-1.5 bg-blue-500 text-white text-sm rounded-lg hover:bg-blue-600 flex items-center justify-center gap-2">
+                <button className="mt-3 w-full py-1.5 bg-[#6D2323] text-white text-sm rounded-lg hover:bg-blue-600 flex items-center justify-center gap-2">
                   <ShoppingCart className="w-4 h-4" />
                   Add to Order
                 </button>

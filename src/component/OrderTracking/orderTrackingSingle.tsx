@@ -84,7 +84,7 @@ export default function OrderTrackingSingle() {
                 className={`rounded-full p-1 
                   ${
                     step.isCompleted
-                      ? "bg-blue-500 text-white"
+                      ? "bg-[#6D2323] text-white"
                       : step.isPending
                       ? "bg-gray-100 text-gray-400"
                       : "bg-gray-200 text-gray-500"

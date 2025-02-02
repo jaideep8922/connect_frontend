@@ -35,7 +35,7 @@ export default function StartOrderMain() {
             placeholder="Search in here"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 border rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full pl-10 pr-4 py-2 border rounded-full focus:outline-none focus:ring-2 focus:ring-[#6D2323]"
           />
         </div>
 
@@ -53,7 +53,7 @@ export default function StartOrderMain() {
                 className="w-full h-full object-contain"
               />
               {/* Scanning Animation Line */}
-              <div className="absolute left-0 right-0 h-0.5 bg-blue-500 animate-[scan_2s_linear_infinite]"></div>
+              <div className="absolute left-0 right-0 h-0.5 bg-[#6D2323] animate-[scan_2s_linear_infinite]"></div>
             </div>
           </div>
         </div>
@@ -61,7 +61,7 @@ export default function StartOrderMain() {
         {/* Bottom Navigation */}
         <div className="fixed bottom-0 left-0 right-0 bg-white border-t">
           <div className="flex justify-around py-2">
-            <button className="flex flex-col items-center p-2 text-blue-500">
+            <button className="flex flex-col items-center p-2 text-[#6D2323]">
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-image"><rect width="18" height="18" x="3" y="3" rx="2" ry="2" /><circle cx="9" cy="9" r="2" /><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" /></svg>              <span className="text-xs mt-1">Library</span>
             </button>
             <button className="flex flex-col items-center p-2 text-gray-400">

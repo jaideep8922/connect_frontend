@@ -1,5 +1,6 @@
 "use client"
 import { ArrowLeft } from 'lucide-react'
+import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react'
 import toast, { Toaster } from 'react-hot-toast';
 
@@ -10,6 +11,7 @@ const AddNote = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [customId, setCustomId] = useState<string | null>(null);
 
+  const router = useRouter()
   useEffect(() => {
     // This effect runs only on the client side after the component mounts
     if (typeof window !== 'undefined') {
@@ -73,6 +75,7 @@ const AddNote = () => {
         toast.success("Data saved successfully!");
         setTitle("");
         setText("");
+        router.push('/notes')
       } else {
         toast.error("Failed to save data.");
       }
@@ -112,7 +115,7 @@ const AddNote = () => {
           placeholder="Title"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          className="w-full p-2 mb-4 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full p-2 mb-4 border rounded focus:outline-none focus:ring-2 focus:ring-[#6D2323]"
         /> */}
         <textarea
           placeholder="Type something..."
@@ -135,7 +138,7 @@ const AddNote = () => {
               <div className="flex justify-end gap-4">
                 <button
                   onClick={() => setShowPopup(false)}
-                  className="px-4 py-2 bg-gray-600 rounded hover:bg-gray-400"
+                  className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-400"
                 >
                   Cancel
                 </button>

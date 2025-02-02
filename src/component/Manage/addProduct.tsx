@@ -151,7 +151,7 @@ export default function AddProduct() {
               name="tax"
               value={formik.values.tax}
               onChange={formik.handleChange}
-              className="border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#6D2323]"
             >
               <option value="">Select Tax</option>
               <option value="5%">5%</option>
@@ -168,7 +168,7 @@ export default function AddProduct() {
               name="highPrice"
               value={formik.values.highPrice}
               onChange={formik.handleChange}
-              className="w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#6D2323]"
             />
 
             <input
@@ -177,7 +177,7 @@ export default function AddProduct() {
               name="averagePrice"
               value={formik.values.averagePrice}
               onChange={formik.handleChange}
-              className="w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#6D2323]"
             />
 
             <input
@@ -186,7 +186,7 @@ export default function AddProduct() {
               name="goodPrice"
               value={formik.values.goodPrice}
               onChange={formik.handleChange}
-              className="w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#6D2323]"
             />
           </div>
 
@@ -198,7 +198,7 @@ export default function AddProduct() {
               name="productName"
               value={formik.values.productName}
               onChange={formik.handleChange}
-              className="w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#6D2323]"
             />
 
             <textarea
@@ -207,7 +207,7 @@ export default function AddProduct() {
               name="description"
               value={formik.values.description}
               onChange={formik.handleChange}
-              className="w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#6D2323]"
             />
           </div>
 

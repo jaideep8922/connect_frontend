@@ -14,7 +14,7 @@ const orderStatuses: OrderStatus[] = [
     {
         title: "Current Received Order",
         subtitle: "Received Customer order",
-        color: "text-blue-500",
+        color: "text-[#6D2323]",
         link: '/current-received', 
     },
     {

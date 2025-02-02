@@ -77,7 +77,7 @@
 //             <div key={index} className="p-4 border shadow-sm rounded-lg m-1">
 //               <div className="flex items-start gap-3">
 //                 <div className="p-2 bg-blue-50 rounded-lg">
-//                   <Package className="h-5 w-5 text-blue-500" />
+//                   <Package className="h-5 w-5 text-[#6D2323]" />
 //                 </div>
 //                 <div className="flex-1">
 //                   <div className="flex justify-between items-start">
@@ -87,7 +87,7 @@
 //                         Items: {order.items} · Items: ${order.price.toFixed(2)}
 //                       </p>
 //                     </div>
-//                     <button className="text-white bg-blue-500 rounded-full text-xs px-4 py-1">
+//                     <button className="text-white bg-[#6D2323] rounded-full text-xs px-4 py-1">
 //                       <span className="sr-only">View order details</span>
 //                       {order.status}
 //                     </button>

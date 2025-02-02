@@ -47,7 +47,7 @@ const Notification = () => {
                 <span className="text-xs text-gray-400">{notification.time}</span>
               </div>
               {!notification.read && (
-                <span className="inline-block w-2.5 h-2.5 bg-blue-500 rounded-full"></span>
+                <span className="inline-block w-2.5 h-2.5 bg-[#6D2323] rounded-full"></span>
               )}
             </li>
           ))}

@@ -146,7 +146,7 @@ export default function CurrentReceivedOrderMain() {
                 <div className="p-4 border bg-white shadow-sm rounded-lg m-1">
                   <div className="flex items-start gap-3">
                     <div className="p-2 bg-blue-50 rounded-lg">
-                      <Package className="h-5 w-5 text-blue-500" />
+                      <Package className="h-5 w-5 text-[#6D2323]" />
                     </div>
                     <div className="flex-1">
                       <div className="flex justify-between items-start">

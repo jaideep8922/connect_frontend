@@ -150,7 +150,7 @@
 //                                     value={description}
 //                                     onChange={(e) => setDescription(e.target.value)}
 //                                     placeholder="Type here..."
-//                                     className="mb-4 min-h-[200px] w-full resize-none rounded border border-gray-300 p-2 focus:border-blue-500 focus:outline-none"
+//                                     className="mb-4 min-h-[200px] w-full resize-none rounded border border-gray-300 p-2 focus:border-[#6D2323] focus:outline-none"
 //                                 />
 
 //                                 <div className="flex justify-end gap-2">
@@ -321,7 +321,7 @@
 //                 setSelectedStatus(e.target.value as Status);
 //                 if (e.target.value === 'complete') setIsImageModalOpen(true);
 //               }}
-//               className="h-5 w-5 rounded-full border-2 border-gray-300 text-blue-600 focus:ring-blue-500"
+//               className="h-5 w-5 rounded-full border-2 border-gray-300 text-blue-600 focus:ring-[#6D2323]"
 //             />
 //           </label>
 //         ))}

@@ -108,7 +108,7 @@ export default function SingleDetailsCard() {
                     <span className="px-1 font-semibold">{value.price}</span>
                   </label>
                   <button
-                    className="text-blue-500 text-xs underline ml-6"
+                    className="text-[#6D2323] text-xs underline ml-6"
                     onClick={() =>
                       setShowTrends(showTrends === key ? null : key)
                     }

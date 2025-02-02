@@ -32,7 +32,7 @@ export default function OrderCard({ order }: { order: OrderCardProps }) {
       {/* Order Header */}
       <div className="flex items-center justify-between gap-3">
         <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-50">
-          <Package className="h-5 w-5 text-blue-500" />
+          <Package className="h-5 w-5 text-[#6D2323]" />
         </div>
         <div className="flex-1">
           <h3 className="text-sm font-medium">Order Id: {order.orderId}</h3>
@@ -45,14 +45,14 @@ export default function OrderCard({ order }: { order: OrderCardProps }) {
       {/* Status Timeline */}
       <div className="mt-4">
         {statuses.map((status, index) => (
-          <div key={index} className="relative flex items-start gap-3 mb-4">
+          <div key={index} className="relative  flex items-start gap-3 mb-4">
             {/* Status Dot */}
             <div className="relative flex flex-col items-center">
               <div className="relative flex items-center">
                 {/* Circle with blinking border animation */}
                 <div
-                  className={`h-4 w-4 rounded-full z-10 mt-[3px] border-2 ${status.isCompleted
-                    ? "animate-border-blink border-sky-400"
+                  className={`h-4 w-4 rounded-full text-[#6D2323] z-10 mt-[3px] border-2 ${status.isCompleted
+                    ? "animate-border-blink  border-sky-400"
                     : "bg-gray-300"
                     }`}
                 ></div>
@@ -60,8 +60,8 @@ export default function OrderCard({ order }: { order: OrderCardProps }) {
                 {/* Vertical line with blinking border */}
                 {index < statuses.length - 1 && (
                   <div
-                    className={`absolute top-4 bottom-0 w-[2px] ${statuses[index + 1].isCompleted
-                      ? "animate-border-blink border-sky-400"
+                    className={`absolute top-4 bottom-0  text-[#6D2323] w-[2px] ${statuses[index + 1].isCompleted
+                      ? "animate-border-blink text-[#6D2323] border-sky-400"
                       : "bg-gray-300"
                       }`}
                   ></div>
@@ -79,7 +79,7 @@ export default function OrderCard({ order }: { order: OrderCardProps }) {
               >
                 {status.label}
               </p>
-              <p className="text-xs text-blue-600">
+              <p className="text-xs text-[#6D2323]">
                 {status.isCompleted ? "Completed" : "Pending"}
               </p>
             </div>

@@ -126,7 +126,7 @@ export default function ReviewsPage() {
         {userType === 'Retailer' && (
           <div className="fixed bottom-0 left-0 right-0 bg-white p-4">
             <button
-              className="w-full flex items-center justify-center gap-x-2 rounded-lg bg-blue-600 px-4 py-3 text-sm font-medium text-white hover:bg-blue-700"
+              className="w-full flex items-center justify-center gap-x-2 rounded-lg bg-[#6D2323] px-4 py-3 text-sm font-medium text-white hover:bg-[#6D2323]"
               onClick={() => router.push("/add-review")}
             >
               Add Review

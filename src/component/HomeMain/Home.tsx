@@ -34,7 +34,7 @@ const retailerMenuItem = [
     icon: Star,
     href: '/review',
     bgColor: 'bg-blue-50',
-    iconColor: 'text-blue-500'
+    iconColor: 'text-[#6D2323]'
   },
   {
     id: 4,
@@ -95,7 +95,7 @@ const supplierMenuItems = [
     title: 'Reviews / Ratings',
     subtitle: 'Manage product details',
     bgColor: 'bg-blue-50',
-    iconColor: 'text-blue-500',
+    iconColor: 'text-[#6D2323]',
     href: '/review',
 
   },

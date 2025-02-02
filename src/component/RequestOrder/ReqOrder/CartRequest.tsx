@@ -253,7 +253,7 @@ const CartRequestPage: React.FC = () => {
                                     value={description}
                                     onChange={(e) => setDescription(e.target.value)}
                                     placeholder="Type here..."
-                                    className="mb-4 min-h-[200px] w-full resize-none rounded border border-gray-300 p-2 focus:border-blue-500 focus:outline-none"
+                                    className="mb-4 min-h-[200px] w-full resize-none rounded border border-gray-300 p-2 focus:border-[#6D2323] focus:outline-none"
                                 />
 
                                 <div className="flex justify-end gap-2">
@@ -408,7 +408,7 @@ const CartRequestPage: React.FC = () => {
                                             <button onClick={() => setIsModalClose(true)} className="flex flex-1 items-center justify-center gap-2 rounded-md bg-red-600 py-3 text-white">
                                                 Cancel
                                             </button>
-                                            <button onClick={() => setIsModalOpens(true)} className="flex flex-1 items-center justify-center gap-2 rounded-md bg-blue-500 py-3 text-white">
+                                            <button onClick={() => setIsModalOpens(true)} className="flex flex-1 items-center justify-center gap-2 rounded-md bg-[#6D2323] py-3 text-white">
                                                 Confirm
                                             </button>
                                         </div>
@@ -438,7 +438,7 @@ const CartRequestPage: React.FC = () => {
                                                                 value={option.statusId} // Store actual numeric statusId
                                                                 checked={selectedStatus === option.statusId}
                                                                 onChange={(e) => setSelectedStatus(Number(e.target.value))} // Ensure it's a number
-                                                                className="h-5 w-5 rounded-full border-2 border-gray-300 text-blue-600 focus:ring-blue-500"
+                                                                className="h-5 w-5 rounded-full border-2 border-gray-300 text-blue-600 focus:ring-[#6D2323]"
                                                             />
                                                         </label>
                                                     ))}
@@ -491,7 +491,7 @@ const CartRequestPage: React.FC = () => {
                                                                     setSelectedStatus(e.target.value as any);
                                                                     if (e.target.value === 'complete') setIsModalOpens(true);
                                                                 }}
-                                                                className="h-5 w-5 rounded-full border-2 border-gray-300 text-blue-600 focus:ring-blue-500"
+                                                                className="h-5 w-5 rounded-full border-2 border-gray-300 text-blue-600 focus:ring-[#6D2323]"
                                                             />
                                                         </label>
                                                     ))}

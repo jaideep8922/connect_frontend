@@ -9,7 +9,7 @@ import SendEnquiryModal from "../global/sendEnquiryPopup";
 import SuccessMessage from "../global/successEnquiry";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/store/store";
-import { addToCart, removeFromCart } from "@/store/slices/cartSlice";
+import { addToCart, clearCart, removeFromCart } from "@/store/slices/cartSlice";
 import toast, { Toaster } from 'react-hot-toast';
 import { useRouter } from "next/navigation";
 
@@ -109,6 +109,7 @@ export default function CartPage() {
             if (response.ok) {
                 toast.success("Enquiry sent successfully!");
                 localStorage.removeItem("cart");
+                dispatch(clearCart())
                 router.push("/shop");
             } else {
                 toast.error(result.message || "Failed to send enquiry. Please try again.");
@@ -120,13 +121,15 @@ export default function CartPage() {
 
     const handleReset = () => {
         setDescription("");
+        setIsModalOpen(false);
+
     };
 
     const handleSave = () => {
-        setIsModalOpen(false);
+        setIsOpen(false);
     };
 
-    
+  
     const handleConfirm = () => {
         sendCartData();
         setIsModalOpen(false)

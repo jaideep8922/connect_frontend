@@ -9,7 +9,7 @@ export default function VerificationSuccess() {
         <div className="absolute h-20 w-20 rounded-full bg-blue-200" />
         
         {/* Icon container */}
-        <div className="relative flex h-16 w-16 items-center justify-center rounded-full bg-blue-500">
+        <div className="relative flex h-16 w-16 items-center justify-center rounded-full bg-[#6D2323]">
           <FontAwesomeIcon 
             icon="check" 
             className="h-8 w-8 text-white"
