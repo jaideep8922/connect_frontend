@@ -8,6 +8,7 @@ import Logo from '@/assets/logo.png';
 import toast, { Toaster } from 'react-hot-toast';
 import { useSearchParams } from "next/navigation";
 import axios from "axios";
+import { useRef } from "react";
 
 interface FormData {
   userType: "Retailer" | "Supplier" | "Guest";
@@ -56,6 +57,10 @@ const JoinPage: React.FC = () => {
   const searchParams = useSearchParams();
   const [supplierId, setSupplierId] = useState<string | null>(null);
 
+
+const supplierIdRef = useRef<string | null>(null);
+
+
   // Ensure localStorage is only accessed client-side
   // useEffect(() => {
   //   if (typeof window !== 'undefined') {
@@ -69,22 +74,39 @@ const JoinPage: React.FC = () => {
   // Ensure supplierId is set correctly when page loads
 
   useEffect(() => {
-    const fetchSupplierId = () => {
-      const supplierIdFromUrl = searchParams.get("id");
-      if (supplierIdFromUrl) {
-        setSupplierId(supplierIdFromUrl);
-        toast.success(`Supplier ID: ${supplierIdFromUrl} has been added.`);
-      } else {
-        setTimeout(() => {
-          if (!supplierId) {
-            toast.error("No Supplier ID found in the URL.");
-          }
-        }, 1000);
-      }
-    };
-
-    fetchSupplierId();
+    const supplierIdFromUrl = searchParams.get("id");
+  
+    if (supplierIdFromUrl) {
+      setSupplierId(supplierIdFromUrl);
+      supplierIdRef.current = supplierIdFromUrl; 
+      toast.success(`Supplier ID: ${supplierIdFromUrl} has been added.`);
+    } else {
+      setTimeout(() => {
+        if (!supplierIdRef.current) {
+          toast.error("No Supplier ID found in the URL.");
+        }
+      }, 1000); // Ensure state updates before checking
+    }
   }, [searchParams]);
+  
+
+  // useEffect(() => {
+  //   const fetchSupplierId = () => {
+  //     const supplierIdFromUrl = searchParams.get("id");
+  //     if (supplierIdFromUrl) {
+  //       setSupplierId(supplierIdFromUrl);
+  //       toast.success(`Supplier ID: ${supplierIdFromUrl} has been added.`);
+  //     } else {
+  //       setTimeout(() => {
+  //         if (!supplierId) {
+  //           toast.error("No Supplier ID found in the URL.");
+  //         }
+  //       }, 1000);
+  //     }
+  //   };
+
+  //   fetchSupplierId();
+  // }, [searchParams]);
 
 
   // useEffect(() => {
@@ -296,11 +318,10 @@ const JoinPage: React.FC = () => {
                 />
                 <span className="text-md">Guest User</span>
               </label>
-              <br></br>
-
+{/* 
               <button onClick={() => setSupplierId(searchParams.get("id") || null)}>
                 Retry Fetching Supplier ID
-              </button>
+              </button> */}
 
             </div>
           </div>
