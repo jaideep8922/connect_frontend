@@ -129,7 +129,7 @@
 
 "use client"
 import React, { useEffect, useState } from "react";
-import Profile from '@/assets/profile_user.jpg'
+import Profile from '@/assets/profile_user.jpg';
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import BottomNavigation from "../global/bottomNavigation";
@@ -137,45 +137,66 @@ import BottomNavigation from "../global/bottomNavigation";
 const UserProfile: React.FC = () => {
   const router = useRouter();
   const [userDetails, setUserDetails] = useState<any>(null);
-  const [phoneNo, setPhoneNo] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true); // Add loading state
+  const [loading, setLoading] = useState(true);
+
+  const [id, setId] = useState<string | null>(null);
 
   useEffect(() => {
-    // Check for `localStorage` on the client side
     if (typeof window !== "undefined") {
-      const storedDetails = localStorage.getItem('userDetails');
-      const sellerPhone = localStorage.getItem('sellerPhone');
+      const storedDetails = localStorage.getItem("userDetails");
 
       if (storedDetails) {
-        try {
-          const parsedDetails = JSON.parse(storedDetails);
-          setUserDetails(parsedDetails); // Set the user details in state
-        } catch (e) {
-          console.error("Error parsing userDetails", e); // Handle parsing errors
-        }
+        const parsedDetails = JSON.parse(storedDetails);
+        console.log("customId:", parsedDetails.data?.customId);
+        setId(parsedDetails.data?.customId); // Set ID
       }
-
-      setPhoneNo(sellerPhone); // Set the phone number
-      setLoading(false); // Set loading to false once the data is ready
     }
   }, []);
 
-  // Show a loading message or spinner while data is being fetched
+  useEffect(() => {
+    if (!id) return; // Prevent API call if id is null
+
+    const fetchUserData = async () => {
+        
+      try {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/users/getUserById`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            customId: id,
+            userType: "Supplier",
+          }),
+        });
+        
+        const result = await response.json();
+        if (result.success) {
+          setUserDetails(result.data);
+        }
+      } catch (error) {
+        console.error("Error fetching user details:", error);
+      } finally {
+        setLoading(false);
+      }
+    
+    };
+    
+    fetchUserData();
+  }, [id]);
+
   if (loading) {
     return <div>Loading...</div>;
   }
 
-  // If userDetails or phoneNo is not available, show loading state
-  if (!userDetails || !phoneNo) {
-    return <div>Loading...</div>;
+  if (!userDetails) {
+    return <div>Error loading user details</div>;
   }
 
-  const { data } = userDetails;
-  const { businessName, businessOwner, customId, filePath, qrCode } = data;
+  const { businessName, businessOwner, customId, filePath, qrCode } = userDetails;  
 
-  const handleClick = () => {
-    router.push('/shop');
-  };
+  console.log("qr ", qrCode)
+
   return (
     <div className="flex flex-col items-center justify-between bg-[#FFEFD3] p-2">
       {/* Profile Section */}
@@ -187,44 +208,13 @@ const UserProfile: React.FC = () => {
             width={80}
             height={80}
             className="w-full h-full object-cover"
-            />
+          />
         </div>
         <h1 className="mt-4 text-lg font-semibold text-black">{businessOwner}</h1>
         <p className="text-sm text-gray-600">{businessName}</p>
       </div>
 
-      {/* Action Buttons */}
-      {customId?.startsWith('RE') ? 
-
-      <div className="flex absolute right-4 space-x-4 mt-2 justify-self-end">
-        <a
-          href={`tel:${phoneNo}`}
-          className="w-12 h-12 flex items-center justify-center bg-[#FFEFD3] text-[#6D2323] rounded-full border border-[#6D2323]"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className="lucide lucide-phone"
-          >
-            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
-          </svg>
-        </a>
-      </div>
-
-      
-      :<></> }
-
-      <span className="text-[10px] bg-[#6D2323] text-white px-2 py-1 m-2 rounded-full">
-        {customId?.startsWith('RE') ? 'retailer' : 'supplier'}
-      </span>
-
+      {/* QR Code */}
       {qrCode && (
         <div className="mt-4">
           <img src={qrCode} alt="QR Code" className="w-60 h-60" />
@@ -234,8 +224,7 @@ const UserProfile: React.FC = () => {
       {/* Help Section */}
       <div className="mt-5 mb-2">
         <a href="#" className="text-sm text-gray-500 hover:underline flex items-center">
-          Need Help/Support
-          {/* Arrow icon */}
+          Need Help/Supportdsf
         </a>
       </div>
 
@@ -247,7 +236,6 @@ const UserProfile: React.FC = () => {
 };
 
 export default UserProfile;
-
 
 
 // "use client"
@@ -283,17 +271,17 @@ export default UserProfile;
 //     }
 //   }, []);
 
-//   // // Show a loading message or spinner while data is being fetched
-//   // if (loading) {
-//   //   return <div>Loading...</div>;
-//   // }
+//   // Show a loading message or spinner while data is being fetched
+//   if (loading) {
+//     return <div>Loading...</div>;
+//   }
 
-//   // // If userDetails or phoneNo is not available, show loading state
-//   // if (!userDetails || !phoneNo) {
-//   //   return <div>Loading...</div>;
-//   // }
+//   // If userDetails or phoneNo is not available, show loading state
+//   if (!userDetails || !phoneNo) {
+//     return <div>Loading...</div>;
+//   }
 
-//   const { data }:any = userDetails;
+//   const { data } = userDetails;
 //   const { businessName, businessOwner, customId, filePath, qrCode } = data;
 
 //   const handleClick = () => {
@@ -302,21 +290,23 @@ export default UserProfile;
 //   return (
 //     <div className="flex flex-col items-center justify-between bg-[#FFEFD3] p-2">
 //       {/* Profile Section */}
-//       <div className="flex flex-col items-center mt-8" onClick={handleClick}>
+//       <div className="flex flex-col items-center mt-8">
 //         <div className="w-20 h-20 rounded-full overflow-hidden border border-[#6D2323]">
 //           <Image
 //             src={filePath || Profile}
 //             alt="Profile"
 //             width={80}
 //             height={80}
-//             className="object-cover"
-//           />
+//             className="w-full h-full object-cover"
+//             />
 //         </div>
 //         <h1 className="mt-4 text-lg font-semibold text-black">{businessOwner}</h1>
 //         <p className="text-sm text-gray-600">{businessName}</p>
 //       </div>
 
 //       {/* Action Buttons */}
+//       {customId?.startsWith('RE') ? 
+
 //       <div className="flex absolute right-4 space-x-4 mt-2 justify-self-end">
 //         <a
 //           href={`tel:${phoneNo}`}
@@ -338,6 +328,9 @@ export default UserProfile;
 //           </svg>
 //         </a>
 //       </div>
+
+      
+//       :<></> }
 
 //       <span className="text-[10px] bg-[#6D2323] text-white px-2 py-1 m-2 rounded-full">
 //         {customId?.startsWith('RE') ? 'retailer' : 'supplier'}
@@ -365,3 +358,4 @@ export default UserProfile;
 // };
 
 // export default UserProfile;
+
