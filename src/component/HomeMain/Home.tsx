@@ -208,7 +208,8 @@ export default function MainHome() {
     };
 
     fetchSellerDetails();
-  }, [localData, userType]);
+  }, [ userType]);
+
   return (
     <div className="bg-[#FFEFD3] m-2">
       {/* Header */}
@@ -225,7 +226,7 @@ export default function MainHome() {
           </div>
 
           <div>
-            <h1 className="font-semibold text-black">{sellerData?.businessName}</h1>
+            <h1 className="font-semibold text-black">sdf{sellerData?.businessName}</h1>
             <p className="text-sm text-gray-500">{sellerData?.businessOwner}</p>
           </div>
         </div>

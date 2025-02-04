@@ -82,7 +82,7 @@ export default function ManageMainPage() {
 
       <div className=" bg-[#FFEFD3]">
         <div className="flex h-16 items-center overflow-y-hidden justify-between p-4 border-b border-[#6D2323]">
-          <h1 className="text-xl font-semibold">Manage Products</h1>
+          <h1 className="text-xl font-semibold text-black">Manage Products</h1>
           <button>
             <Pencil className="h-4 w-4 text-black" onClick={handleAdd} />
           </button>

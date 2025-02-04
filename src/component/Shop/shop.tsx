@@ -1,10 +1,7 @@
 "use client"
 import { Search, Menu } from 'lucide-react'
-import { Leaf, Apple, Coffee, ShoppingBag, Droplet, SprayCanIcon as Spray } from 'lucide-react'
-import Logo from '@/assets/logo.png'
 import Image from 'next/image'
 import ProductCard from '../global/productCard';
-import Pista from '@/assets/pista.jpg'
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Pagination, Autoplay } from 'swiper/modules';
 import 'swiper/css';
@@ -13,6 +10,8 @@ import 'swiper/css/pagination';
 import Link from 'next/link'
 import BottomNavigation from '../global/bottomNavigation'
 import { useEffect, useState } from 'react'
+import Profile from "@/assets/profile_user.jpg";
+
 
 export default function ShopMain() {
     const [productData, setProductData] = useState<any>([]);
@@ -35,7 +34,7 @@ export default function ShopMain() {
                 }
             }
         }
-    }, []); 
+    }, []);
 
     useEffect(() => {
         if (sellerId) {
@@ -195,12 +194,12 @@ export default function ShopMain() {
 
             {/* Search Header */}
             <div className="flex items-center gap-3 mt-2 bg-transparent m-2">
-                <div className="flex-1 flex items-center gap-2 px-4 py-2 bg-gray-100 rounded-full">
-                    <Search className="w-4 h-4 text-gray-400" />
+                <div className="flex-1 flex items-center gap-2 px-4 py-2 bg-white rounded-lg border border-[#6D2323]">
+                    <Search className="w-4 h-4 text-[#6D2323]" />
                     <input
                         type="text"
                         placeholder="Search keywords..."
-                        className="w-full bg-transparent outline-none text-sm"
+                        className="w-full bg-transparent outline-none text-sm text-[#6D2323]"
                         onChange={(e) => setSearch(e.target.value)}
                     />
                 </div>
@@ -212,28 +211,28 @@ export default function ShopMain() {
             {searchResults?.data?.length > 0 && (
                 <div className="absolute top-20 left-0 w-80 mx-4 bg-white shadow-lg rounded-lg p-2 z-50 border border-gray-200">
                     {searchResults.data.map((item: any) => (
-                              <Link href={`/single-view?id=${item.productId}`}>
+                        <Link href={`/single-view?id=${item.productId}`}>
 
-                        <div
-                            key={item.id}
-                            className="flex items-center gap-3 p-2 hover:bg-gray-100 rounded-md cursor-pointer"
-                        >
-                            {/* Product Image */}
-                            <img
-                                src={item.productImage || "/placeholder-image.jpg"} // Fallback image
-                                alt={item.productName || "Product"}
-                                className="w-12 h-12 object-cover rounded-md border"
-                            />
-                            {/* Product Details */}
-                            <div>
-                                <p className="text-sm font-semibold text-gray-800">
-                                    {item.productName || "Unnamed Product"}
-                                </p>
-                                <p className="text-xs text-gray-500">
-                                    Price: ₹{item.averagePrice || "N/A"}
-                                </p>
+                            <div
+                                key={item.id}
+                                className="flex items-center gap-3 p-2 hover:bg-gray-100 rounded-md cursor-pointer"
+                            >
+                                {/* Product Image */}
+                                <img
+                                    src={item.productImage || "/placeholder-image.jpg"} // Fallback image
+                                    alt={item.productName || "Product"}
+                                    className="w-12 h-12 object-cover rounded-md border"
+                                />
+                                {/* Product Details */}
+                                <div>
+                                    <p className="text-sm font-semibold text-gray-800">
+                                        {item.productName || "Unnamed Product"}
+                                    </p>
+                                    <p className="text-xs text-gray-500">
+                                        Price: ₹{item.averagePrice || "N/A"}
+                                    </p>
+                                </div>
                             </div>
-                        </div>
                         </Link>
 
                     ))}
@@ -246,7 +245,8 @@ export default function ShopMain() {
             <div className="flex flex-col items-center gap-2 p-4">
                 <div className="w-20 h-20 rounded-full overflow-hidden">
                     <Image
-                        src={sellerData?.data?.filePath}
+
+                        src={sellerData?.data?.filePath || Profile}
                         alt="Profile"
                         width={80}
                         height={80}

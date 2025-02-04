@@ -108,12 +108,12 @@ export default function OrdersHistoryPage() {
           aria-label="Go back"
         >
           <ArrowLeft
-            className="h-5 w-5 cursor-pointer"
+            className="h-5 w-5 cursor-pointer text-black"
             onClick={() => window.history.back()}
           />
         </button>
 
-        <h1 className="text-lg font-medium">Order History</h1>
+        <h1 className="text-lg font-medium text-black">Order History</h1>
 
         <div className="relative flex h-8 w-8 items-center justify-center rounded-full bg-emerald-500 text-white">
           <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-yellow-400 text-[10px] font-bold">

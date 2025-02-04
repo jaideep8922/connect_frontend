@@ -73,7 +73,7 @@ const JoinPage: React.FC = () => {
       const supplierIdFromUrl = searchParams.get("id");
       if (supplierIdFromUrl) {
         setSupplierId(supplierIdFromUrl);
-        toast.success(`Supplier ID: ${supplierIdFromUrl} has been added.`);
+        // toast.success(`Supplier ID: ${supplierIdFromUrl} has been added.`);
       } else {
         toast.error("No Supplier ID found in the URL.");
       }
@@ -105,11 +105,8 @@ const JoinPage: React.FC = () => {
 
   const [loading, setLoading] = useState<boolean>(false);
 
-
-
   // Function for next step
   const handleNext = async () => {
-    toast.success(supplierId)
     if (step < 5) {
       setStep(step + 1);
     } else {
@@ -135,7 +132,7 @@ const JoinPage: React.FC = () => {
 
       if (formData.userType === "Retailer") {
         formDataToSend.append('sellerId', supplierId || '');
-        toast.success(`supplierId: ${supplierId}`)
+        // toast.success(`supplierId: ${supplierId}`)
 
       }
 

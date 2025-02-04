@@ -10,6 +10,7 @@ const UserProfile: React.FC = () => {
   const [userDetails, setUserDetails] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [id, setId] = useState<string | null>(null);
+  const [userType, setUserType] = useState<string | null>(null);
 
   // Fetch user ID from localStorage
   useEffect(() => {
@@ -18,15 +19,27 @@ const UserProfile: React.FC = () => {
 
       if (storedDetails) {
         const parsedDetails = JSON.parse(storedDetails);
-        console.log("customId:", parsedDetails.data?.customId);
-        setId(parsedDetails.data?.customId);
+        const customId = parsedDetails.data?.customId;
+
+        if (customId) {
+          console.log("customId:", customId);
+          setId(customId);
+
+          // Determine userType based on customId prefix
+          if (customId.startsWith("SU")) {
+            setUserType("Supplier");
+          } else if (customId.startsWith("RE")) {
+            setUserType("Retailer");
+          } else {
+            setUserType(null); 
+          }
+        }
       }
     }
-  }, []); // Run only once when the component mounts
+  }, []);
 
-  // Fetch user data after `id` is set
   useEffect(() => {
-    if (!id) return; // Don't fetch if id is null
+    if (!id || !userType) return;
 
     const fetchUserData = async () => {
       try {
@@ -38,10 +51,7 @@ const UserProfile: React.FC = () => {
             headers: {
               "Content-Type": "application/json",
             },
-            body: JSON.stringify({
-              customId: id,
-              userType: "Supplier",
-            }),
+            body: JSON.stringify({ customId: id, userType }),
           }
         );
 
@@ -61,14 +71,12 @@ const UserProfile: React.FC = () => {
     };
 
     fetchUserData();
-  }, [id]); // Runs when `id` is updated
+  }, [id, userType]);
 
   if (loading) return <div>Loading...</div>;
   if (!userDetails) return <div>Error loading user details</div>;
 
-  const { businessName, businessOwner, customId, filePath, qrCode } = userDetails;
-
-  console.log("QR Code:", qrCode);
+  const { businessName, businessOwner, filePath, qrCode } = userDetails;
 
   return (
     <div className="flex flex-col items-center justify-between bg-[#FFEFD3] p-2">
@@ -87,6 +95,9 @@ const UserProfile: React.FC = () => {
         <p className="text-sm text-gray-600">{businessName}</p>
       </div>
 
+<span className="bg-[#fadfb0] text-sm rounded-full px-3 py-1 text-black my-3">{userType}
+</span>
+      
       {/* QR Code */}
       {qrCode && (
         <div className="mt-4">
