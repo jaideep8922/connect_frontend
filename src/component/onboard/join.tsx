@@ -78,16 +78,33 @@ const supplierIdRef = useRef<string | null>(null);
   
     if (supplierIdFromUrl) {
       setSupplierId(supplierIdFromUrl);
-      supplierIdRef.current = supplierIdFromUrl; 
       toast.success(`Supplier ID: ${supplierIdFromUrl} has been added.`);
     } else {
       setTimeout(() => {
-        if (!supplierIdRef.current) {
+        // Re-check if supplierId is still null after delay
+        if (!supplierIdFromUrl && !supplierId) {
           toast.error("No Supplier ID found in the URL.");
         }
-      }, 1000); // Ensure state updates before checking
+      }, 1000); // Delay to ensure URL params are fully loaded
     }
-  }, [searchParams]);
+  }, [searchParams, supplierId]);
+  
+
+  // useEffect(() => {
+  //   const supplierIdFromUrl = searchParams.get("id");
+  
+  //   if (supplierIdFromUrl) {
+  //     setSupplierId(supplierIdFromUrl);
+  //     supplierIdRef.current = supplierIdFromUrl; 
+  //     toast.success(`Supplier ID: ${supplierIdFromUrl} has been added.`);
+  //   } else {
+  //     setTimeout(() => {
+  //       if (!supplierIdRef.current) {
+  //         toast.error("No Supplier ID found in the URL.");
+  //       }
+  //     }, 1000); // Ensure state updates before checking
+  //   }
+  // }, [searchParams]);
   
 
   // useEffect(() => {
