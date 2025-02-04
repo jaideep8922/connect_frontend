@@ -50,7 +50,7 @@ const JoinPage: React.FC = () => {
     fingerprintId: "",
     file: null
   });
-  
+
   const [step, setStep] = useState<number>(1);
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -96,9 +96,9 @@ const JoinPage: React.FC = () => {
     if (step < 5) {
       setStep(step + 1);
     } else {
-      setLoading(true); 
-      const formDataToSend:any = new FormData();
-    
+      setLoading(true);
+      const formDataToSend: any = new FormData();
+
       // Append all form data to FormData
       Object.keys(formData).forEach(key => {
         const value = formData[key as keyof FormData];
@@ -149,12 +149,16 @@ const JoinPage: React.FC = () => {
           }
         } else {
           const errorData = await response.json();
-          toast.error("Error Response:", errorData);
+          console.log("errorData", errorData)
+          toast.error(`Error ${errorData.statusCode}: ${errorData.message}`);
+          // toast.error("Error Response:", errorData);
         }
       } catch (error: any) {
-        toast.error("Error submitting data:", error);
+        console.log("error", error)
+        toast.error(`Unexpected Error: ${error.message}`);
+        // toast.error("Error submitting data:", error);
       } finally {
-        setLoading(false); 
+        setLoading(false);
       }
     }
   };
@@ -536,25 +540,24 @@ const JoinPage: React.FC = () => {
               {step < 5 ? "Next" : "Submit"}
             </button> */}
 
-<button
-  onClick={handleNext}
-  disabled={loading}
-  className={`w-full py-3 text-white rounded-xl transition duration-200 ${
-    loading ? "bg-gray-400 cursor-not-allowed" : "bg-[#6D2323] hover:bg-[#6D2323]"
-  }`}
->
-  {loading ? (
-    <div className="flex items-center justify-center">
-      <svg className="animate-spin h-5 w-5 mr-2 text-white" viewBox="0 0 24 24">
-        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="white" strokeWidth="4"></circle>
-        <path className="opacity-75" fill="white" d="M4 12a8 8 0 018-8v8H4z"></path>
-      </svg>
-      Processing...
-    </div>
-  ) : (
-    step < 5 ? "Next" : "Submit"
-  )}
-</button>
+            <button
+              onClick={handleNext}
+              disabled={loading}
+              className={`w-full py-3 text-white rounded-xl transition duration-200 ${loading ? "bg-gray-400 cursor-not-allowed" : "bg-[#6D2323] hover:bg-[#6D2323]"
+                }`}
+            >
+              {loading ? (
+                <div className="flex items-center justify-center">
+                  <svg className="animate-spin h-5 w-5 mr-2 text-white" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="white" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="white" d="M4 12a8 8 0 018-8v8H4z"></path>
+                  </svg>
+                  Processing...
+                </div>
+              ) : (
+                step < 5 ? "Next" : "Submit"
+              )}
+            </button>
 
 
             {/* Back Button */}
