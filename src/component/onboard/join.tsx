@@ -89,23 +89,17 @@ const supplierIdRef = useRef<string | null>(null);
   //   }
   // }, [searchParams, supplierId]);
 
+  
   useEffect(() => {
     const supplierIdFromUrl = searchParams.get("id");
-  
+
     if (supplierIdFromUrl) {
       setSupplierId(supplierIdFromUrl);
       toast.success(`Supplier ID: ${supplierIdFromUrl} has been added.`);
-    } 
-    // else {
-    //   setTimeout(() => {
-    //     if (!supplierIdFromUrl) {
-    //       toast.error("No Supplier ID found in the URL. Redirecting...");
-    //       router.push(`/onboard?id=${supplierId}`); 
-    //     }
-    //   }, 1000);
-    // }
-  }, [searchParams, supplierId]);
-  
+    } else {
+      toast.error("No Supplier ID found in the URL.");
+    }
+  }, [searchParams]);
   
 
   // useEffect(() => {
@@ -309,14 +303,16 @@ const supplierIdRef = useRef<string | null>(null);
             alt="Logo"
             className={`transition-all duration-300 ${step === 1 ? 'w-full h-full' : 'w-24 h-18'}`}
           />
+             
         </div>
+     
       </header>
 
       {/* Main Content */}
       <main className="flex flex-col w-full px-6">
         {step === 1 && (
           <div className="bg-[#FFEFD3]">
-            <h1 className="text-lg text-[#6D2323] font-bold mb-6 border-b border-[#6D2323] w-20 border-b-black">Join as</h1>
+            <h1 className="text-lg text-[#6D2323] font-bold mb-6 border-b border-[#6D2323] w-20 border-b-black">Join as- {supplierId && <p>{supplierId}</p>}</h1>
             <div className=" flex space-x-5 mb-10 w-30">
               <label className="flex text-sm text-[#6D2323] items-center space-x-2">
                 <input
