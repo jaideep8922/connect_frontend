@@ -73,21 +73,39 @@ const supplierIdRef = useRef<string | null>(null);
 
   // Ensure supplierId is set correctly when page loads
 
+  // useEffect(() => {
+  //   const supplierIdFromUrl = searchParams.get("id");
+  
+  //   if (supplierIdFromUrl) {
+  //     setSupplierId(supplierIdFromUrl);
+  //     toast.success(`Supplier ID: ${supplierIdFromUrl} has been added.`);
+  //   } else {
+  //     setTimeout(() => {
+  //       // Re-check if supplierId is still null after delay
+  //       if (!supplierIdFromUrl && !supplierId) {
+  //         toast.error("No Supplier ID found in the URL.");
+  //       }
+  //     }, 1000); // Delay to ensure URL params are fully loaded
+  //   }
+  // }, [searchParams, supplierId]);
+
   useEffect(() => {
     const supplierIdFromUrl = searchParams.get("id");
   
     if (supplierIdFromUrl) {
       setSupplierId(supplierIdFromUrl);
       toast.success(`Supplier ID: ${supplierIdFromUrl} has been added.`);
-    } else {
-      setTimeout(() => {
-        // Re-check if supplierId is still null after delay
-        if (!supplierIdFromUrl && !supplierId) {
-          toast.error("No Supplier ID found in the URL.");
-        }
-      }, 1000); // Delay to ensure URL params are fully loaded
-    }
+    } 
+    // else {
+    //   setTimeout(() => {
+    //     if (!supplierIdFromUrl) {
+    //       toast.error("No Supplier ID found in the URL. Redirecting...");
+    //       router.push(`/onboard?id=${supplierId}`); 
+    //     }
+    //   }, 1000);
+    // }
   }, [searchParams, supplierId]);
+  
   
 
   // useEffect(() => {
