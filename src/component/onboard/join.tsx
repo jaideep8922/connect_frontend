@@ -54,100 +54,77 @@ const JoinPage: React.FC = () => {
 
   const [step, setStep] = useState<number>(1);
   const router = useRouter();
-  const searchParams = useSearchParams();
   const [supplierId, setSupplierId] = useState<string | null>(null);
 
-
-const supplierIdRef = useRef<string | null>(null);
-
-
-  // Ensure localStorage is only accessed client-side
-  // useEffect(() => {
-  //   if (typeof window !== 'undefined') {
-  //     const supplierIdParam = searchParams.get("id");
-  //     if (supplierIdParam) {
-  //       setSupplierId(supplierIdParam);
-  //     }
-  //   }
-  // }, [searchParams]);
-
-  // Ensure supplierId is set correctly when page loads
-
-  // useEffect(() => {
-  //   const supplierIdFromUrl = searchParams.get("id");
-  
-  //   if (supplierIdFromUrl) {
-  //     setSupplierId(supplierIdFromUrl);
-  //     toast.success(`Supplier ID: ${supplierIdFromUrl} has been added.`);
-  //   } else {
-  //     setTimeout(() => {
-  //       // Re-check if supplierId is still null after delay
-  //       if (!supplierIdFromUrl && !supplierId) {
-  //         toast.error("No Supplier ID found in the URL.");
-  //       }
-  //     }, 1000); // Delay to ensure URL params are fully loaded
-  //   }
-  // }, [searchParams, supplierId]);
+  const searchParams = useSearchParams();
+  const supplierIdRef = useRef<string | null>(null);
 
   
-  useEffect(() => {
-    const supplierIdFromUrl = searchParams.get("id");
 
-    if (supplierIdFromUrl) {
-      setSupplierId(supplierIdFromUrl);
-      toast.success(`Supplier ID: ${supplierIdFromUrl} has been added.`);
-    } else {
-      toast.error("No Supplier ID found in the URL.");
+//   // Add this useEffect to verify URL parameters
+// useEffect(() => {
+//   console.log('Full URL:', window.location.href);
+//   console.log('Current query params:', searchParams.toString());
+// }, [searchParams]);
+
+// // Add this at the top of your component
+// const initialSupplierId = typeof window !== 'undefined' 
+//   ? new URLSearchParams(window.location.search).get('id')
+//   : null;
+
+//   console.log("initialSupplierId", initialSupplierId)
+
+const [id, setId] = useState<string | null>(null);
+
+useEffect(() => {
+  if (typeof window !== "undefined") {
+    const storedId = sessionStorage.getItem("id");
+    const idParam = searchParams.get("id");
+    const idToUse = idParam || storedId;
+    setId(idToUse);
+    if (idParam) {
+      sessionStorage.setItem("id", idParam);
     }
-  }, [searchParams]);
-  
+  }
+}, [searchParams]);
+
+
+// useEffect(() => {
+//   if (typeof window !== "undefined") { // Check if it's client-side
+//     const storedId = sessionStorage.getItem("id");
+//     setId(storedId || null);
+//   }
+// }, []);
+
+// useEffect(() => {
+//   if (typeof window !== "undefined") {
+//     const idParam = searchParams.get("id");
+//     console.log("✅ Retrieved ID Param:", idParam);
+//     if (idParam) {
+//       setId(idParam);
+//       sessionStorage.setItem("id", idParam);
+//     }
+//   }
+// }, [searchParams]);
+
+
+
+  // const [id, setId] = useState<string | null>(
+  //   () => sessionStorage.getItem("id") || null
+  // );
 
   // useEffect(() => {
-  //   const supplierIdFromUrl = searchParams.get("id");
-  
-  //   if (supplierIdFromUrl) {
-  //     setSupplierId(supplierIdFromUrl);
-  //     supplierIdRef.current = supplierIdFromUrl; 
-  //     toast.success(`Supplier ID: ${supplierIdFromUrl} has been added.`);
-  //   } else {
-  //     setTimeout(() => {
-  //       if (!supplierIdRef.current) {
-  //         toast.error("No Supplier ID found in the URL.");
-  //       }
-  //     }, 1000); // Ensure state updates before checking
+  //   const idParam = searchParams.get("id");
+  //   console.log("✅ Retrieved ID Param:", idParam);
+  //   if (idParam) {
+  //     setId(idParam);
+  //     sessionStorage.setItem("id", idParam);
   //   }
   // }, [searchParams]);
-  
 
   // useEffect(() => {
-  //   const fetchSupplierId = () => {
-  //     const supplierIdFromUrl = searchParams.get("id");
-  //     if (supplierIdFromUrl) {
-  //       setSupplierId(supplierIdFromUrl);
-  //       toast.success(`Supplier ID: ${supplierIdFromUrl} has been added.`);
-  //     } else {
-  //       setTimeout(() => {
-  //         if (!supplierId) {
-  //           toast.error("No Supplier ID found in the URL.");
-  //         }
-  //       }, 1000);
-  //     }
-  //   };
-
-  //   fetchSupplierId();
-  // }, [searchParams]);
-
-
-  // useEffect(() => {
-  //   console.log("URL:", window.location.href); 
-  //   const supplierIdFromUrl = searchParams.get("id");
-  //   if (supplierIdFromUrl) {
-  //     setSupplierId(supplierIdFromUrl);
-  //     toast.success(`Supplier ID: ${supplierIdFromUrl} has been added.`);
-  //   } else {
-  //     toast.error("No Supplier ID found in the URL.");
-  //   }
-  // }, [searchParams]);
+  //   console.log("🔄 Updated ID state:", id);
+  // }, [id]);
 
 
 
@@ -200,11 +177,15 @@ const supplierIdRef = useRef<string | null>(null);
       //   }
       // });
 
-      if (formData.userType === "Retailer" && supplierId) {
-        formDataToSend.append('sellerId', supplierId);
-        // toast.success(`supplierId: ${supplierId}`)
-
+      if (formData.userType === "Retailer" && id) {
+        formDataToSend.append('sellerId', id);
       }
+
+      // if (formData.userType === "Retailer" && supplierId) {
+      //   formDataToSend.append('sellerId', supplierId);
+      //   // toast.success(`supplierId: ${supplierId}`)
+
+      // }
 
 
       try {
@@ -312,7 +293,8 @@ const supplierIdRef = useRef<string | null>(null);
       <main className="flex flex-col w-full px-6">
         {step === 1 && (
           <div className="bg-[#FFEFD3]">
-            <h1 className="text-lg text-[#6D2323] font-bold mb-6 border-b border-[#6D2323] w-20 border-b-black">Join as- {supplierId && <p>{supplierId}</p>}</h1>
+            <h1 className="text-lg text-[#6D2323] font-bold mb-6 border-b border-[#6D2323] w-20 border-b-black">Join as-       {id ? <p>ID: {id}</p> : <p>Loading...</p>}
+            </h1>
             <div className=" flex space-x-5 mb-10 w-30">
               <label className="flex text-sm text-[#6D2323] items-center space-x-2">
                 <input

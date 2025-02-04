@@ -5,8 +5,8 @@ export function middleware(request: NextRequest) {
   const userAgent = request.headers.get("user-agent")
   const isMobile = userAgent && /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent)
 
-  if (!isMobile && !request.nextUrl.pathname.startsWith("/")) {
-    return NextResponse.redirect(new URL("/", request.url))
+  if (!isMobile && !request.nextUrl.pathname.startsWith("/onboard")) {
+    return NextResponse.redirect(new URL("/onboard", request.url))
   }
 
   return NextResponse.next()

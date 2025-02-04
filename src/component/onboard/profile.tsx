@@ -31,7 +31,7 @@ const UserProfile: React.FC = () => {
           } else if (customId.startsWith("RE")) {
             setUserType("Retailer");
           } else {
-            setUserType(null); 
+            setUserType(null);
           }
         }
       }
@@ -95,9 +95,9 @@ const UserProfile: React.FC = () => {
         <p className="text-sm text-gray-600">{businessName}</p>
       </div>
 
-<span className="bg-[#fadfb0] text-sm rounded-full px-3 py-1 text-black my-3">{userType}
-</span>
-      
+      <span className="bg-[#fadfb0] text-sm rounded-full px-3 py-1 text-black my-3">{userType}
+      </span>
+
       {/* QR Code */}
       {qrCode && (
         <div className="mt-4">
