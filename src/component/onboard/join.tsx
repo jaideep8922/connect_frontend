@@ -66,20 +66,39 @@ const JoinPage: React.FC = () => {
   //   }
   // }, [searchParams]);
 
-    // Ensure supplierId is set correctly when page loads
-    
-    useEffect(() => {
-      console.log("URL:", window.location.href); 
+  // Ensure supplierId is set correctly when page loads
+
+  useEffect(() => {
+    const fetchSupplierId = () => {
       const supplierIdFromUrl = searchParams.get("id");
       if (supplierIdFromUrl) {
         setSupplierId(supplierIdFromUrl);
-        // toast.success(`Supplier ID: ${supplierIdFromUrl} has been added.`);
+        toast.success(`Supplier ID: ${supplierIdFromUrl} has been added.`);
       } else {
-        toast.error("No Supplier ID found in the URL.");
+        setTimeout(() => {
+          if (!supplierId) {
+            toast.error("No Supplier ID found in the URL.");
+          }
+        }, 1000);
       }
-    }, [searchParams]);
-    
-  
+    };
+
+    fetchSupplierId();
+  }, [searchParams]);
+
+
+  // useEffect(() => {
+  //   console.log("URL:", window.location.href); 
+  //   const supplierIdFromUrl = searchParams.get("id");
+  //   if (supplierIdFromUrl) {
+  //     setSupplierId(supplierIdFromUrl);
+  //     toast.success(`Supplier ID: ${supplierIdFromUrl} has been added.`);
+  //   } else {
+  //     toast.error("No Supplier ID found in the URL.");
+  //   }
+  // }, [searchParams]);
+
+
 
   // Function to handle image upload
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -130,8 +149,8 @@ const JoinPage: React.FC = () => {
       //   }
       // });
 
-      if (formData.userType === "Retailer") {
-        formDataToSend.append('sellerId', supplierId || '');
+      if (formData.userType === "Retailer" && supplierId) {
+        formDataToSend.append('sellerId', supplierId);
         // toast.success(`supplierId: ${supplierId}`)
 
       }
@@ -277,6 +296,12 @@ const JoinPage: React.FC = () => {
                 />
                 <span className="text-md">Guest User</span>
               </label>
+              <br></br>
+
+              <button onClick={() => setSupplierId(searchParams.get("id") || null)}>
+                Retry Fetching Supplier ID
+              </button>
+
             </div>
           </div>
         )}

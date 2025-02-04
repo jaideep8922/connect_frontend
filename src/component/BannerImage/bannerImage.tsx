@@ -150,9 +150,9 @@ export default function BannerImageUpload() {
           className="flex items-center justify-center rounded-full p-2 hover:bg-gray-100"
           aria-label="Go back"
         >
-          <ArrowLeft className="h-5 w-5 cursor-pointer" onClick={() => window.history.back()} />
+          <ArrowLeft className="h-5 w-5 cursor-pointer text-black" onClick={() => window.history.back()} />
         </button>
-        <h1 className="text-lg font-medium">Banner List</h1>
+        <h1 className="text-lg font-medium text-black">Banner List</h1>
         <div className="relative flex h-8 w-8 items-center justify-center rounded-full bg-emerald-500 text-white">
           <Upload />
         </div>

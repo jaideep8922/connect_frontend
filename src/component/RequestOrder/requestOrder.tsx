@@ -81,8 +81,8 @@ export default function RequestOrderStatusList() {
                             className="flex items-center bg-white justify-between p-4 border rounded-lg shadow-sm cursor-pointer hover:bg-[#FFEFD3] transition-colors"
                         >
                             <div className="space-y-1">
-                                <h3 className="font-medium">{status.title}</h3>
-                                <p className="text-sm text-muted-foreground">{status.subtitle}</p>
+                                <h3 className="font-medium text-black">{status.title}</h3>
+                                <p className="text-sm text-muted-foreground text-black">{status.subtitle}</p>
                             </div>
                             <div
                                 className={`h-8 w-8 flex items-center justify-center rounded-full border ${status.color}`}
