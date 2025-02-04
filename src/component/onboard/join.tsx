@@ -57,14 +57,29 @@ const JoinPage: React.FC = () => {
   const [supplierId, setSupplierId] = useState<string | null>(null);
 
   // Ensure localStorage is only accessed client-side
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const supplierIdParam = searchParams.get("id");
-      if (supplierIdParam) {
-        setSupplierId(supplierIdParam);
+  // useEffect(() => {
+  //   if (typeof window !== 'undefined') {
+  //     const supplierIdParam = searchParams.get("id");
+  //     if (supplierIdParam) {
+  //       setSupplierId(supplierIdParam);
+  //     }
+  //   }
+  // }, [searchParams]);
+
+    // Ensure supplierId is set correctly when page loads
+    
+    useEffect(() => {
+      console.log("URL:", window.location.href); 
+      const supplierIdFromUrl = searchParams.get("id");
+      if (supplierIdFromUrl) {
+        setSupplierId(supplierIdFromUrl);
+        toast.success(`Supplier ID: ${supplierIdFromUrl} has been added.`);
+      } else {
+        toast.error("No Supplier ID found in the URL.");
       }
-    }
-  }, [searchParams]);
+    }, [searchParams]);
+    
+  
 
   // Function to handle image upload
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -91,8 +106,10 @@ const JoinPage: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
 
 
+
   // Function for next step
   const handleNext = async () => {
+    toast.success(supplierId)
     if (step < 5) {
       setStep(step + 1);
     } else {
