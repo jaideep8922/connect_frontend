@@ -118,7 +118,10 @@ const JoinPage: React.FC = () => {
 
       if (formData.userType === "Retailer") {
         formDataToSend.append('sellerId', supplierId || '');
+        toast.success(`supplierId: ${supplierId}`)
+
       }
+
 
       try {
         const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/users/create`, {
