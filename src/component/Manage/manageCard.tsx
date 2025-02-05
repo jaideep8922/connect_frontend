@@ -24,7 +24,7 @@ export function ManageCard({ product, onEdit }: ProductCardProps) {
     };
 
     return (
-        <div className="rounded-lg border bg-card text-card-foreground shadow-sm" onClick={handleClick}>
+        <div className="rounded-lg border border-[#6d232353] bg-card text-card-foreground shadow-xl" onClick={handleClick}>
             <div className="relative">
                 <img
                     src={product?.productImage}

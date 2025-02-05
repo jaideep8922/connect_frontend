@@ -226,7 +226,7 @@ export default function MainHome() {
           </div>
 
           <div>
-            <h1 className="font-semibold text-black">sdf{sellerData?.businessName}</h1>
+            <h1 className="font-semibold text-black">{sellerData?.businessName}</h1>
             <p className="text-sm text-gray-500">{sellerData?.businessOwner}</p>
           </div>
         </div>

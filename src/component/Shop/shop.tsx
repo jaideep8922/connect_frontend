@@ -11,6 +11,9 @@ import Link from 'next/link'
 import BottomNavigation from '../global/bottomNavigation'
 import { useEffect, useState } from 'react'
 import Profile from "@/assets/profile_user.jpg";
+import { useSelector } from 'react-redux';
+import { RootState } from '@/store/store';
+import { useRouter } from 'next/navigation';
 
 
 export default function ShopMain() {
@@ -18,6 +21,10 @@ export default function ShopMain() {
     const [sellerData, setSellerData] = useState<any>([]);
     const [error, setError] = useState<string | null>(null);
     const [imageSlider, setImageSlider] = useState<any>([]);
+    const router = useRouter();
+
+    const carts = useSelector((state: RootState) => state.cart.cart);
+
 
     const [sellerId, setSellerId] = useState<string | null>(null);
     const [phoneNumber, setPhoneNumber] = useState<string | null>(null);
@@ -103,13 +110,6 @@ export default function ShopMain() {
             fetchSellerDetails();
         }
     }, [sellerId]);
-
-    // Use the fetched phoneNumber and store it to localStorage (if necessary)
-    useEffect(() => {
-        if (phoneNumber) {
-            localStorage.setItem('sellerPhone', phoneNumber);
-        }
-    }, [phoneNumber]);
 
     useEffect(() => {
         // Fetch banner images if sellerId is available
@@ -203,6 +203,14 @@ export default function ShopMain() {
                         onChange={(e) => setSearch(e.target.value)}
                     />
                 </div>
+                <div className="relative inline-block" onClick={() => router.push('/cart')
+                }>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#6D2323" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-shopping-basket"><path d="m15 11-1 9" /><path d="m19 11-4-7" /><path d="M2 11h20" /><path d="m3.5 11 1.6 7.4a2 2 0 0 0 2 1.6h9.8a2 2 0 0 0 2-1.6l1.7-7.4" /><path d="M4.5 15.5h15" /><path d="m5 11 4-7" /><path d="m9 11 1 9" /></svg>
+                    <p className="absolute -top-2 -right-2 bg-red-600 text-white rounded-full text-xs w-5 h-5 flex items-center justify-center">
+                        {carts?.length}
+                    </p>
+                </div>
+
                 {/* <button className="p-2">
                     <Menu className="w-5 h-5 text-gray-600" />
                 </button> */}
