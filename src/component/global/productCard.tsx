@@ -7,7 +7,7 @@ import { addToCart, removeFromCart } from "@/store/slices/cartSlice";
 import { RootState } from "@/store/store";
 import { useRouter } from "next/navigation";
 
-// Define the ProductCardProps interface
+// Define the ProductCardProps interfac
 interface ProductCardProps {
   product: {
     productName: string;
