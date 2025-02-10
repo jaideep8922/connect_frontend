@@ -8,7 +8,6 @@ import Logo from '@/assets/logo.png';
 import toast, { Toaster } from 'react-hot-toast';
 import { useSearchParams } from "next/navigation";
 import axios from "axios";
-import { CloudFog } from "lucide-react";
 
 interface FormData {
   userType: "Retailer" | "Supplier" | "Guest";
@@ -29,6 +28,7 @@ interface FormData {
 
 
 const JoinPage: React.FC = () => {
+  const searchParams = useSearchParams();
   const [selectedImage, setSelectedImage] = useState<any>(null);
   const [otpVisible, setOtpVisible] = useState(false);
   const [phone, setPhone] = useState("");
@@ -54,54 +54,44 @@ const JoinPage: React.FC = () => {
   });
 
   const [step, setStep] = useState<number>(1);
-  const router = useRouter();
-  const searchParams = useSearchParams();
-
   const [id, setId] = useState<string | null>(null);
+  const router = useRouter();
   const [userType, setUserType] = useState<any>(null)
+
+  // Get the URL parameter 'id'
+  const urlParams = new URLSearchParams(window.location.search);
+  const ids = urlParams.get('id');
+
+  console.log("urlParams",urlParams)
+
+  // Check if 'id' is present in the URL
+  // if (id) {
+  //   sessionStorage.setItem('id', id);
+  // }
+
+  // console.log("==============", id)
 
 
   useEffect(() => {
     if (typeof window !== "undefined") {
-      const userTyp = searchParams.get("type");
       const storedId = sessionStorage.getItem("id");
-      const idParam = searchParams.get("customId");
+      console.log("storedId", storedId)
+      const userTyp = sessionStorage.getItem("type");
 
-      console.log("userTyp", userTyp);
+      const idParam = searchParams.get("id");
+      setUserType(userType)
 
-      setUserType(userTyp || sessionStorage.getItem("type"));
-      setId(idParam || storedId);
+      console.log("userTyp", userTyp)
 
-      if (userTyp) {
-        sessionStorage.setItem("type", userTyp);
-      }
+      const idToUse = idParam || storedId;
+      setId(idToUse);
       if (idParam) {
         sessionStorage.setItem("id", idParam);
       }
     }
   }, [searchParams]);
 
-
-
-
-  // console.log("userType", userType)
-
-  // useEffect(() => {
-  //   if (typeof window !== "undefined") {
-  //     const userTyp = sessionStorage.getItem("type");
-  //     const storedId = sessionStorage.getItem("id");
-  //     const idParam = searchParams.get("id");
-  //     setUserType(userType)
-
-  //     console.log("userTyp", userTyp)
-
-  //     const idToUse = idParam || storedId;
-  //     setId(idToUse);
-  //     if (idParam) {
-  //       sessionStorage.setItem("id", idParam);
-  //     }
-  //   }
-  // }, [searchParams]);
+  // console.log("idididididid", id)
 
   // Function to handle image upload
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -134,12 +124,11 @@ const JoinPage: React.FC = () => {
     } else {
       setLoading(true);
 
-      console.log("isOtpVerified", isOtpVerified)
-
       if (!isOtpVerified) {
         toast.error("Please verify OTP before submitting the form.");
         return;
       }
+
       const formDataToSend: any = new FormData();
 
       // Append all form data to FormData
@@ -156,6 +145,7 @@ const JoinPage: React.FC = () => {
         formDataToSend.append('sellerId', id);
       }
 
+      console.log("formDataToSend", formDataToSend)
       try {
         const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/users/create`, {
           method: "POST",
@@ -417,7 +407,7 @@ const JoinPage: React.FC = () => {
       alert("Please enter the OTP.");
       return;
     }
-  
+
     setIsSubmitting(true);
     try {
       const response = await axios.post(
@@ -427,18 +417,18 @@ const JoinPage: React.FC = () => {
           otp,
         }
       );
-  
+
       // Log the response to the console
       console.log("OTP verified successfully:", response);
-  
+
       // Store token in localStorage
       const token = response.data.token; // Assuming token is in response.data.token
       localStorage.setItem("authToken", token); // Store the token
-  
+
       // Optionally, store additional user info if needed
-      
+
       localStorage.setItem("userDetails", JSON.stringify(response.data.user)); // You can adjust based on your response structure
-  
+
       toast.success("OTP verified successfully!");
       router.push("/manage");
     } catch (error) {
@@ -448,8 +438,8 @@ const JoinPage: React.FC = () => {
       setIsSubmitting(false);
     }
   };
-  
-  
+
+
 
 
   return (
@@ -522,59 +512,59 @@ const JoinPage: React.FC = () => {
               </div>
             )}
           </>
-        ) : userType === 'supplier' ?(
-<div>
-              <label className="block mb-1 text-sm items-center text-[#6D2323] font-medium">
-                Phone Number:
-              </label>
+        ) : userType === 'supplier' ? (
+          <div>
+            <label className="block mb-1 text-sm items-center text-[#6D2323] font-medium">
+              Phone Number:
+            </label>
 
-              <input
-                type="text"
-                value={mobile}
-                onChange={(e) => setMobile(e.target.value)}
-                placeholder="Enter your phone number"
-                className="w-full p-2 border rounded"
-                required
-                disabled={isOtpSent}
-              />
+            <input
+              type="text"
+              value={mobile}
+              onChange={(e) => setMobile(e.target.value)}
+              placeholder="Enter your phone number"
+              className="w-full p-2 border rounded"
+              required
+              disabled={isOtpSent}
+            />
 
-              {/* Send OTP Button */}
-              {!isOtpSent && (
+            {/* Send OTP Button */}
+            {!isOtpSent && (
+              <button
+                onClick={sendOtps}
+                className={`w-full bg-[#6D2323] text-white py-2 rounded mt-2 ${isSubmitting ? "opacity-50 cursor-not-allowed" : "hover:bg-[#6D2323]"
+                  }`}
+                disabled={isSubmitting}
+              >
+                Send OTP
+              </button>
+            )}
+
+            {/* OTP Input & Verify Button */}
+            {isOtpSent && (
+              <>
+                <input
+                  type="text"
+                  value={otp}
+                  onChange={(e) => setOtp(e.target.value)}
+                  placeholder="Enter OTP"
+                  className="w-full p-2 border rounded mt-2"
+                  required
+                />
+
                 <button
-                  onClick={sendOtps}
-                  className={`w-full bg-[#6D2323] text-white py-2 rounded mt-2 ${isSubmitting ? "opacity-50 cursor-not-allowed" : "hover:bg-[#6D2323]"
+                  onClick={verifyOtps}
+                  className={`w-full bg-green-600 text-white py-2 rounded mt-2 ${isSubmitting ? "opacity-50 cursor-not-allowed" : "hover:bg-green-700"
                     }`}
                   disabled={isSubmitting}
                 >
-                  Send OTP
+                  Verify OTP & Continue
                 </button>
-              )}
+              </>
+            )}
+          </div>
 
-              {/* OTP Input & Verify Button */}
-              {isOtpSent && (
-                <>
-                  <input
-                    type="text"
-                    value={otp}
-                    onChange={(e) => setOtp(e.target.value)}
-                    placeholder="Enter OTP"
-                    className="w-full p-2 border rounded mt-2"
-                    required
-                  />
-
-                  <button
-                    onClick={verifyOtps}
-                    className={`w-full bg-green-600 text-white py-2 rounded mt-2 ${isSubmitting ? "opacity-50 cursor-not-allowed" : "hover:bg-green-700"
-                      }`}
-                    disabled={isSubmitting}
-                  >
-                    Verify OTP & Continue
-                  </button>
-                </>
-              )}
-            </div>
-
-        ): (
+        ) : (
           <>
             <div>
               <label className="block mb-1 text-sm items-center text-[#6D2323] font-medium">
