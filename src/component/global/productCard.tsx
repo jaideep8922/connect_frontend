@@ -17,7 +17,7 @@ interface ProductCardProps {
     averagePrice: string;
     goodPrice: string;
     highPrice: string;
-    tax: '', // Add a default tax value or calculate it as needed
+    tax: '', // Add a default tax value or calculate it as need
   };
 }
 
