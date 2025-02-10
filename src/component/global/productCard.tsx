@@ -17,6 +17,7 @@ interface ProductCardProps {
     averagePrice: string;
     goodPrice: string;
     highPrice: string;
+    tax: '', // Add a default tax value or calculate it as needed
   };
 }
 
@@ -47,6 +48,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
         price: price,
         selectedPrice: selectedPrice,
         quantity: quantity,
+        tax:product.tax
       };
 
       setCart([cartItem])
@@ -69,6 +71,8 @@ const ProductCard = ({ product }: ProductCardProps) => {
       price: product[selectedPrice as keyof typeof product],
       selectedPrice: selectedPrice,
       quantity: quantity,
+      tax:product.tax
+
     };
 
 
@@ -130,9 +134,12 @@ const ProductCard = ({ product }: ProductCardProps) => {
           />
 
           {/* MOQ in the bottom-left corner */}
-          {/* <span className="absolute w-full bottom-0 left-0 text-white text-xs px-2 py-1 rounded bg-gradient-to-r from-black to-transparent">
+          {product?.moq?.length > 0 && (
+            <span className="absolute w-full bottom-0 left-0 text-white text-xs px-2 py-1 rounded bg-gradient-to-r from-black to-transparent">
             MOQ: {product.moq}
-          </span> */}
+          </span>
+          )}
+          
         </div>
       </Link>
 

@@ -8,15 +8,18 @@ type CartItem = {
   price: string;
   selectedPrice: string;
   quantity: number;
+  tax: string;
 };
 
 interface CartState {
   cart: CartItem[];
+  dropped: boolean
 }
 
 const initialState: CartState = {
   // Initialize the cart from localStorage only on the client-side
   cart: typeof window !== "undefined" ? JSON.parse(localStorage.getItem('cart') || '[]') : [],
+  dropped: false
 };
 
 const cartSlice = createSlice({
@@ -61,9 +64,12 @@ const cartSlice = createSlice({
         localStorage.removeItem('cart');
       }
     },
+    droppedUser: (state, action) => {
+      state.dropped = action.payload
+    }
   },
 });
 
-export const { addToCart, removeFromCart, clearCart } = cartSlice.actions;
+export const { addToCart, removeFromCart, clearCart, droppedUser } = cartSlice.actions;
 
 export default cartSlice.reducer;

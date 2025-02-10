@@ -79,7 +79,7 @@ const BottomNavigation = () => {
                         <span className="text-xs font-medium text-black">Notes</span>
                     </button>
 
-                    {userType === "Retailer" && phoneNo && (
+                    {userType === "Retailer" && (
                         <a href={`tel:${phoneNo}`}
                             className={`flex flex-col items-center space-y-1 ${isActive('/') ? 'bg-orange-200 p-3 m-2 rounded-md' : 'p-3'}`}
                         >

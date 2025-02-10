@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { ArrowLeft } from "lucide-react";
 import { OrderHistoryCard } from "./orderHistoryCard";
+import Link from "next/link";
 
 export default function OrdersHistoryPage() {
   const [orders, setOrders] = useState([]);
@@ -14,8 +15,8 @@ export default function OrdersHistoryPage() {
     1: "Pending",
     2: "Accepted",
     3: "Processing",
-    5: "Completed",
-    4: "Cancelled",
+    4: "Completed",
+    5: "Cancelled",
   };
 
   const [customId, setCustomId] = useState<string | null>(null);
@@ -27,7 +28,7 @@ export default function OrdersHistoryPage() {
       const localData: any = JSON.parse(localStorage.getItem('userDetails') || '{}');
       const customId = localData?.data?.customId || null;
       setCustomId(customId);
-      
+
       const userType = localStorage.getItem("userType");
       setUserData(userType);
     }
@@ -145,15 +146,14 @@ export default function OrdersHistoryPage() {
       <div className="min-h-screen bg-[#FFEFD3] p-2">
         <div className="mx-auto max-w-2xl space-y-4">
           <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-4 pt-2 border-b mb-4">
-            {["All", "Pending", "Accepted", "Completed", "Cancelled"].map(
+            {["All", "Pending", "Accepted", "Processing", "Completed", "Cancelled"].map(
               (status) => (
                 <button
                   key={status}
-                  className={`rounded-full px-4 py-2 text-sm font-medium ${
-                    selectedStatus === status
+                  className={`rounded-full px-4 py-2 text-sm font-medium ${selectedStatus === status
                       ? "bg-[#6D2323] text-white "
                       : "bg-white text-gray-600 hover:bg-gray-100 border"
-                  }`}
+                    }`}
                   onClick={() => setSelectedStatus(status)}
                 >
                   {status}
@@ -167,9 +167,15 @@ export default function OrdersHistoryPage() {
           ) : error ? (
             <p className="text-center text-red-500">{error}</p>
           ) : filteredOrders.length > 0 ? (
-            filteredOrders.map((order:any) => (
-              // <Link href="/order-history-single"
+            filteredOrders.map((order: any) => (
+              <Link
+                href={`/order-history/${order.orderId}`}
+                key={order.id} // Always include a key when mapping over arrays
+              >
                 <OrderHistoryCard order={order} />
+              </Link>
+              // <Link href="/order-history-single">
+              //   <OrderHistoryCard order={order} />
               // </Link>
             ))
           ) : (

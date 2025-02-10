@@ -10,7 +10,9 @@ interface ReviewCardProps {
 }
 
 export function ReviewCard({ data }: ReviewCardProps) {
-  const reviewData = data?.[0]; 
+  const reviewData:any = data?.[0]; 
+
+  console.log("reviewData", reviewData)
 
   const formattedDate = reviewData?.createdAt
     ? format(new Date(reviewData.createdAt), "MMM dd, yyyy")
@@ -21,8 +23,11 @@ export function ReviewCard({ data }: ReviewCardProps) {
       <div className="flex-1">
         <div className="flex items-center justify-between">
           <h3 className="font-medium text-gray-900">{reviewData?.review || "No review provided"}</h3>
-          <span className="text-sm text-gray-500">{formattedDate}</span>
+
+        <span className="font-bold"> Order Id: {reviewData?.order?.orderId}</span> 
         </div>
+        <span className="text-sm text-gray-500">{formattedDate}</span>
+
         <div className="mt-1 flex items-center gap-0.5">
           {Array.from({ length: 5 }).map((_, i) => (
             <Star

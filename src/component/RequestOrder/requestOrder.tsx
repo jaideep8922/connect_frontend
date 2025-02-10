@@ -25,7 +25,7 @@ const orderStatuses: OrderStatus[] = [
     },
     {
         title: "Pending Order",
-        subtitle: "Enquiry rejected by me",
+        subtitle: "Enquiry pending by me",
         color: "text-red-500",
         link: '/pending-order'
     },

@@ -31,9 +31,11 @@ export function ManageCard({ product, onEdit }: ProductCardProps) {
                     alt={product.name}
                     className="object-cover rounded-t-lg h-32 w-full"
                 />
-                {/* <div className="absolute bottom-0 left-0 right-0 rounded-b-xl bg-black/50 px-2 py-1">
-                    <p className="text-xs text-white">MOQ: {product.moq}</p>
-                </div> */}
+               {product?.moq?.length > 0 && (
+            <span className="absolute w-full bottom-0 left-0 text-white text-xs px-2 py-1 rounded bg-gradient-to-r from-black to-transparent">
+            MOQ: {product.moq}
+          </span>
+          )}
             </div>
             <div className="p-2">
                 <h3 className="font-medium">{product.productName}</h3>

@@ -37,6 +37,7 @@ export default function AddProduct() {
       averagePrice: "",
       goodPrice: "",
       tax: "",
+      moq:""
     },
 
     onSubmit: async (values) => {
@@ -53,6 +54,8 @@ export default function AddProduct() {
         formData.append('productName', values.productName);
         formData.append('description', values.description);
         formData.append('highPrice', values.highPrice);
+        formData.append('tax', values.tax);
+        formData.append('moq', values.moq);
         formData.append('averagePrice', values.averagePrice);
         formData.append('goodPrice', values.goodPrice);
         if (fileInputRef.current?.files?.[0]) {
@@ -146,7 +149,7 @@ export default function AddProduct() {
           </div>
 
           {/* Tax Selection */}
-          <div className="flex items-center justify-between gap-6">
+          <div className="flex items-center justify-between gap-2">
             <select
               name="tax"
               value={formik.values.tax}
@@ -158,6 +161,16 @@ export default function AddProduct() {
               <option value="12%">12%</option>
               <option value="18%">18%</option>
             </select>
+
+            <input
+              type="text"
+              placeholder="Enter MOQ Details"
+              name="moq"
+              value={formik.values.moq}
+              onChange={formik.handleChange}
+              className="w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#6D2323]"
+            />
+
           </div>
 
           {/* Price Inputs */}
@@ -192,6 +205,7 @@ export default function AddProduct() {
 
           {/* Product Details */}
           <div className="space-y-4">
+            
             <input
               type="text"
               placeholder="Product Name"
@@ -233,3 +247,5 @@ export default function AddProduct() {
     </div>
   )
 }
+
+

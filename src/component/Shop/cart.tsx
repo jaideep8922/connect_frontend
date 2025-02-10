@@ -22,12 +22,14 @@ export default function CartPage() {
     const [userDetails, setUserDetails] = useState<any>(null);
     const [description, setDescription] = useState("");
     const [isOpen, setIsOpen] = useState(false)
+    const dropped = useSelector((state: RootState) => state.cart.dropped);
 
 
     const dispatch = useDispatch();
     const router = useRouter();
     const carts = useSelector((state: RootState) => state.cart.cart);
 
+    console.log("carts", carts)
     useEffect(() => {
         // Ensure code runs only in the browser (client side)
         if (typeof window !== "undefined") {
@@ -79,6 +81,11 @@ export default function CartPage() {
         if (carts.length === 0) {
             alert("Your cart is empty.");
             return;
+        }
+
+        if(dropped === true){
+            toast.error("Used Suspended")
+            return
         }
 
         const payload = {
@@ -274,10 +281,10 @@ export default function CartPage() {
                                                     <span>₹{subtotal?.toFixed(2)}</span>
                                                 </div> */}
 
-                                                {/* <div className="flex justify-between">
+                                                <div className="flex justify-between">
                                                     <span>TAX :</span>
-                                                    <span>₹{carts?.others}</span>
-                                                </div> */}
+                                                    <span>{carts[0]?.tax}</span>
+                                                </div>
                                                 {/* <div className="flex justify-between">
                                                     <span>SHIPPING :</span>
                                                     <span>₹{carts.shipping.toFixed(2)}</span>
@@ -318,13 +325,6 @@ export default function CartPage() {
                                         message="Are you sure want to send Enquiry ?"
 
                                     />
-
-                                    {/* {showSuccess && (
-                                        <>
-                                            <SuccessMessage />
-                                        </>
-                                    )} */}
-
 
                                     {/* Product List */}
                                     {/* <div className="mt-6 space-y-4">

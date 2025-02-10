@@ -35,6 +35,8 @@ export default function ManageMainPage() {
     }
   }, []);
 
+ 
+
   // Fetch product list once customId is available
   useEffect(() => {
     if (customId) {

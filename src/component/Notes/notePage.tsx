@@ -1,6 +1,6 @@
 "use client";
 
-import { Plus, Search } from "lucide-react";
+import { ArrowLeft, Plus, Search } from "lucide-react";
 import { BookReviewCard } from "./notes-card";
 import BottomNavigation from "../global/bottomNavigation";
 import { useRouter } from "next/navigation";
@@ -100,14 +100,21 @@ export default function BookReviewsPage() {
   return (
     <>
       <Toaster />
-      <header className="sticky top-0 z-10 flex h-16 items-center justify-between border-b bg-white px-4">
+      <header className="sticky top-0 z-10 flex h-16 items-center border-b bg-white px-4">
+      <button
+          className="flex items-center justify-center rounded-full p-2 hover:bg-gray-100"
+          aria-label="Go back"
+        >
+          <ArrowLeft className="h-5 w-5 text-black cursor-pointer" onClick={() => window.history.back()} />
+        </button>
+
         <h1 className="text-lg font-medium text-gray-900">Note</h1>
-        <button
+        {/* <button
           className="flex h-10 w-10 items-center justify-center rounded-full hover:bg-gray-100"
           aria-label="Search notes"
         >
           <Search className="h-5 w-5 text-gray-600" />
-        </button>
+        </button> */}
       </header>
 
       <div className="min-h-screen bg-[#FFEFD3] p-4">

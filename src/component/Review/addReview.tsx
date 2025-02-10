@@ -244,13 +244,21 @@ function OrderCard({ order }: any) {
     const [rating, setRating] = useState(0);
     const [hover, setHover] = useState(0);
 
-    const statusText: Record<number, string> = {
+    const statusText: { [key: number]: string } = {
         1: "Pending",
         2: "Accepted",
         3: "Processing",
-        4: "Cancelled",
-        5: "Completed",
-    };
+        4: "Completed",
+        5: "Cancelled",
+      };
+
+    // const statusText: Record<number, string> = {
+    //     1: "Pending",
+    //     2: "Accepted",
+    //     3: "Processing",
+    //     4: "Cancelled",
+    //     5: "Completed",
+    // };
 
     // Handle Review Submission
     const handleReviewSubmit = async () => {
@@ -321,9 +329,9 @@ function OrderCard({ order }: any) {
                     <p className="text-sm text-gray-500">{order.notes}</p>
                     <div className="flex items-center gap-2 mt-2">
                         <div
-                            className={`h-2 w-2 rounded-full ${order.statusId === 4
+                            className={`h-2 w-2 rounded-full ${order.statusId === 5
                                     ? "bg-red-500"
-                                    : order.statusId === 5
+                                    : order.statusId === 4
                                         ? "bg-green-500"
                                         : "bg-yellow-500"
                                 }`}
@@ -333,7 +341,7 @@ function OrderCard({ order }: any) {
                         </span>
                     </div>
                     {/* Review Icon */}
-                    {order.statusId === 5 && (
+                    {order.statusId === 4 && (
                         <div className="mt-4 flex items-center gap-2 cursor-pointer" onClick={() => setIsReviewOpen(true)}>
                             <Star className="h-5 w-5 text-yellow-400" />
                             <span className="text-sm text-gray-500">Leave a Review</span>

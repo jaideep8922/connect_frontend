@@ -17,8 +17,8 @@ export function OrderHistoryCard({
     1: "Pending",
     2: "Accepted",
     3: "Processing",
-    5: "Completed",
-    4: "Cancelled",
+    4: "Completed",
+    5: "Cancelled",
   };
 
   const statusColors: { [key: string]: string } = {
@@ -56,7 +56,7 @@ export function OrderHistoryCard({
           </div>
         </div>
         <span
-          className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${
+          className={`rounded-full px-2.5 py-0.5 text-[10px] font-medium ${
             statusColors[status]
           }`}
         >
@@ -81,6 +81,14 @@ export function OrderHistoryCard({
         <div className="flex justify-between text-sm">
           <span className="font-medium">Note: {order.notes}</span>
         </div>
+{order.filePath?.length > 0 && (
+ <div>
+ <span className="font-medium">Transport Receipt: </span>
+ <img src={order.filePath} alt="img" className="mt-3"/>
+ </div>
+)}
+       
+
       </div>
     </div>
   );

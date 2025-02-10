@@ -8,7 +8,7 @@ import Logo from '@/assets/logo.png';
 import toast, { Toaster } from 'react-hot-toast';
 import { useSearchParams } from "next/navigation";
 import axios from "axios";
-import { useRef } from "react";
+import { CloudFog } from "lucide-react";
 
 interface FormData {
   userType: "Retailer" | "Supplier" | "Guest";
@@ -24,6 +24,7 @@ interface FormData {
   otp: string;
   fingerprintId: string;
   file: File | null;
+
 }
 
 
@@ -49,84 +50,58 @@ const JoinPage: React.FC = () => {
     city: "",
     state: "",
     fingerprintId: "",
-    file: null
+    file: null,
   });
 
   const [step, setStep] = useState<number>(1);
   const router = useRouter();
-  const [supplierId, setSupplierId] = useState<string | null>(null);
-
   const searchParams = useSearchParams();
-  const supplierIdRef = useRef<string | null>(null);
 
-  
+  const [id, setId] = useState<string | null>(null);
+  const [userType, setUserType] = useState<any>(null)
 
-//   // Add this useEffect to verify URL parameters
-// useEffect(() => {
-//   console.log('Full URL:', window.location.href);
-//   console.log('Current query params:', searchParams.toString());
-// }, [searchParams]);
 
-// // Add this at the top of your component
-// const initialSupplierId = typeof window !== 'undefined' 
-//   ? new URLSearchParams(window.location.search).get('id')
-//   : null;
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const userTyp = searchParams.get("type");
+      const storedId = sessionStorage.getItem("id");
+      const idParam = searchParams.get("customId");
 
-//   console.log("initialSupplierId", initialSupplierId)
+      console.log("userTyp", userTyp);
 
-const [id, setId] = useState<string | null>(null);
+      setUserType(userTyp || sessionStorage.getItem("type"));
+      setId(idParam || storedId);
 
-useEffect(() => {
-  if (typeof window !== "undefined") {
-    const storedId = sessionStorage.getItem("id");
-    const idParam = searchParams.get("id");
-    const idToUse = idParam || storedId;
-    setId(idToUse);
-    if (idParam) {
-      sessionStorage.setItem("id", idParam);
+      if (userTyp) {
+        sessionStorage.setItem("type", userTyp);
+      }
+      if (idParam) {
+        sessionStorage.setItem("id", idParam);
+      }
     }
-  }
-}, [searchParams]);
-
-
-// useEffect(() => {
-//   if (typeof window !== "undefined") { // Check if it's client-side
-//     const storedId = sessionStorage.getItem("id");
-//     setId(storedId || null);
-//   }
-// }, []);
-
-// useEffect(() => {
-//   if (typeof window !== "undefined") {
-//     const idParam = searchParams.get("id");
-//     console.log("✅ Retrieved ID Param:", idParam);
-//     if (idParam) {
-//       setId(idParam);
-//       sessionStorage.setItem("id", idParam);
-//     }
-//   }
-// }, [searchParams]);
+  }, [searchParams]);
 
 
 
-  // const [id, setId] = useState<string | null>(
-  //   () => sessionStorage.getItem("id") || null
-  // );
+
+  // console.log("userType", userType)
 
   // useEffect(() => {
-  //   const idParam = searchParams.get("id");
-  //   console.log("✅ Retrieved ID Param:", idParam);
-  //   if (idParam) {
-  //     setId(idParam);
-  //     sessionStorage.setItem("id", idParam);
+  //   if (typeof window !== "undefined") {
+  //     const userTyp = sessionStorage.getItem("type");
+  //     const storedId = sessionStorage.getItem("id");
+  //     const idParam = searchParams.get("id");
+  //     setUserType(userType)
+
+  //     console.log("userTyp", userTyp)
+
+  //     const idToUse = idParam || storedId;
+  //     setId(idToUse);
+  //     if (idParam) {
+  //       sessionStorage.setItem("id", idParam);
+  //     }
   //   }
   // }, [searchParams]);
-
-  // useEffect(() => {
-  //   console.log("🔄 Updated ID state:", id);
-  // }, [id]);
-
-
 
   // Function to handle image upload
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -158,6 +133,13 @@ useEffect(() => {
       setStep(step + 1);
     } else {
       setLoading(true);
+
+      console.log("isOtpVerified", isOtpVerified)
+
+      if (!isOtpVerified) {
+        toast.error("Please verify OTP before submitting the form.");
+        return;
+      }
       const formDataToSend: any = new FormData();
 
       // Append all form data to FormData
@@ -169,24 +151,10 @@ useEffect(() => {
           formDataToSend.append(key, value.toString());
         }
       });
-      // Object.keys(formData).forEach(key => {
-      //   if (key === 'file' && formData.file) {
-      //     formDataToSend.append('file', formData.file);
-      //   } else {
-      //     formDataToSend.append(key, formData[key as keyof FormData].toString());
-      //   }
-      // });
 
       if (formData.userType === "Retailer" && id) {
         formDataToSend.append('sellerId', id);
       }
-
-      // if (formData.userType === "Retailer" && supplierId) {
-      //   formDataToSend.append('sellerId', supplierId);
-      //   // toast.success(`supplierId: ${supplierId}`)
-
-      // }
-
 
       try {
         const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/users/create`, {
@@ -237,41 +205,252 @@ useEffect(() => {
   };
 
   // Function for sending OTP
-  const handleSendOtp = async () => {
-    setError(""); // Reset error state
+  const handleOtpSubmitGuest = async () => {
+    setError("");
     setIsSubmitting(true);
 
     try {
-      const response = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/guests/create`, { phone, sellerId: supplierId });
-      if (response.status === 201) {
+      // Step 1: Verify OTP
+      const otpResponse = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/verify-otp`, {
+        phone: `+91${formData.phone}`,
+        otp: formData.otp,
+      });
+
+      console.log("OTP Verification Response:", otpResponse.data);
+      setOtpMessage(otpResponse.data.message);
+
+      if (otpResponse.data.message === "OTP verified successfully") {
+        toast.success("OTP Verified Successfully!");
+        setIsOtpVerified(true);
+      } else {
+        toast.error(otpResponse.data.message || "Invalid OTP. Please try again.");
+        setIsSubmitting(false);
+        return; // Stop execution if OTP is invalid
+      }
+
+      // Step 2: Create Guest User (Only if OTP is verified)
+      const guestResponse = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/guests/create`, {
+        phone: `+91${formData.phone}`,
+        sellerId: id,
+      });
+
+      if (guestResponse.status === 201) {
         router.push(`/shop`);
       }
-    } catch (err: any) {
-      setError(err.response?.data?.message || "Failed to send OTP. Please try again.");
+    } catch (error: any) {
+      console.error("Error:", error.response?.data || error);
+      setError(error.response?.data?.message || "Failed to process request. Please try again.");
+      toast.error(error.response?.data?.message || "An error occurred. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
   };
 
+
   // Function for handling phone submission
-  const handlePhoneSubmit = () => {
+  const handlePhoneSubmit = async () => {
     const phonePattern = /^[0-9]{10}$/;
     if (phonePattern.test(formData.phone)) {
-      setOtpVisible(true);
+      const phoneWithCountryCode = `+91${formData.phone}`;
+
+      try {
+        const response = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/send-otp`, {
+          phone: phoneWithCountryCode,
+        });
+
+        if (response.data.message === "OTP sent successfully") {
+          toast.success("OTP sent successfully!");
+          setOtpVisible(true);
+        } else {
+          toast.error("Failed to send OTP. Try again.");
+        }
+      } catch (error) {
+        console.error("Error sending OTP:", error);
+        toast.error("Error sending OTP. Please try again.");
+      }
     } else {
-      toast.error('Please enter a valid 10-digit phone number.');
+      toast.error("Please enter a valid 10-digit phone number.");
     }
   };
 
-  // Function for handling OTP submission
-  const handleOtpSubmit = () => {
-    if (formData.otp === "1234") {
-      setOtpVisible(false);
-      toast.success('OTP Verified');
-    } else {
-      alert("Invalid OTP. Please try again.");
+  const [isOtpVerified, setIsOtpVerified] = useState(false);
+  const [otpMessage, setOtpMessage] = useState<string | null>(null);
+
+  const handleOtpSubmit = async () => {
+    if (!formData.otp || formData.otp.length !== 6) {
+      toast.error("Please enter a valid 6-digit OTP.");
+      return;
+    }
+
+    try {
+      const response = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/verify-otp`, {
+        phone: `+91${formData.phone}`,
+        otp: formData.otp,
+      });
+
+      console.log("OTP Verification Response:", response.data);
+      setOtpMessage(response.data.message);
+      if (response.data.message === "OTP verified successfully") {
+        toast.success("OTP Verified Successfully!");
+        setIsOtpVerified(true);
+      } else {
+        toast.error(response.data.message || "Invalid OTP. Please try again.");
+      }
+    } catch (error: any) {
+      console.error("Error verifying OTP:", error.response?.data || error);
+      toast.error("OTP verification failed. Please try again.");
     }
   };
+
+
+  const userId = id?.startsWith("RE") || (userType === 'supplier' && id?.startsWith("SU"))
+  const [mobile, setMobile] = useState("");
+
+  // const userTypes = userType === 'supplier'
+  console.log("+++++++++++++", userId)
+
+  const fetchUserDetails = async () => {
+    if (!id) return;
+
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/users/getUserById`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          customId: id,
+          userType: userType === "supplier" ? "Supplier" : "Retailer",
+        }),
+      });
+
+      const data = await response.json();
+      console.log("API Response:", data);
+
+      if (data?.data?.phone) {
+        setMobile(data.data.phone);
+      }
+    } catch (error) {
+      console.error("Error fetching user details:", error);
+    }
+  };
+
+  useEffect(() => {
+    if (id && userType) {
+      fetchUserDetails();
+    }
+  }, [id, userType]);
+
+  const [isOtpSent, setIsOtpSent] = useState(false);
+
+  const sendOtp = async () => {
+    if (!mobile) {
+      alert("Please enter a valid phone number.");
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/send-otp`, {
+        phone: `+91${mobile}`,
+      });
+
+      toast.success("OTP sent successfully!");
+      setIsOtpSent(true);
+    } catch (error) {
+      console.error("Error sending OTP:", error);
+      toast.error("Failed to send OTP.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  // **Step 2: Verify OTP**
+  const verifyOtp = async () => {
+    if (!otp) {
+      alert("Please enter the OTP.");
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/verify-otp-relogin-retailer`, {
+        phone: `+91${mobile}`,
+        otp,
+      });
+
+      toast.success("OTP verified successfully!");
+      router.push("/shop");
+    } catch (error) {
+      console.error("Error verifying OTP:", error);
+      toast.error("Invalid OTP. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const sendOtps = async () => {
+    if (!mobile) {
+      alert("Please enter a valid phone number.");
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/send-otp`, {
+        phone: `+91${mobile}`,
+      });
+
+      toast.success("OTP sent successfully!");
+      setIsOtpSent(true);
+    } catch (error) {
+      console.error("Error sending OTP:", error);
+      toast.error("Failed to send OTP.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  // **Step 2: Verify OTP**
+  const verifyOtps = async () => {
+    if (!otp) {
+      alert("Please enter the OTP.");
+      return;
+    }
+  
+    setIsSubmitting(true);
+    try {
+      const response = await axios.post(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/verify-otp-relogin-supplier`,
+        {
+          phone: `+91${mobile}`,
+          otp,
+        }
+      );
+  
+      // Log the response to the console
+      console.log("OTP verified successfully:", response);
+  
+      // Store token in localStorage
+      const token = response.data.token; // Assuming token is in response.data.token
+      localStorage.setItem("authToken", token); // Store the token
+  
+      // Optionally, store additional user info if needed
+      
+      localStorage.setItem("userDetails", JSON.stringify(response.data.user)); // You can adjust based on your response structure
+  
+      toast.success("OTP verified successfully!");
+      router.push("/manage");
+    } catch (error) {
+      console.error("Error verifying OTP:", error);
+      toast.error("Invalid OTP. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+  
+  
+
 
   return (
     <div className=" h-screen flex flex-col items-center justify-between bg-[#FFEFD3]">
@@ -284,103 +463,215 @@ useEffect(() => {
             alt="Logo"
             className={`transition-all duration-300 ${step === 1 ? 'w-full h-full' : 'w-24 h-18'}`}
           />
-             
+
         </div>
-     
+
       </header>
 
       {/* Main Content */}
       <main className="flex flex-col w-full px-6">
-        {step === 1 && (
-          <div className="bg-[#FFEFD3]">
-            <h1 className="text-lg text-[#6D2323] font-bold mb-6 border-b border-[#6D2323] w-20 border-b-black">Join as-       {id ? <p>ID: {id}</p> : <p>Loading...</p>}
-            </h1>
-            <div className=" flex space-x-5 mb-10 w-30">
-              <label className="flex text-sm text-[#6D2323] items-center space-x-2">
-                <input
-                  type="radio"
-                  name="userType"
-                  value="Retailer"
-                  checked={formData.userType === "Retailer"}
-                  onChange={() => setFormData({ ...formData, userType: "Retailer" })}
-                  className="form-radio text-[#6D2323]"
-                />
-                <span className="text-MD">Retailer</span>
-              </label>
+        {userId !== true ? (
+          <>
+            {step === 1 && (
+              <div className="bg-[#FFEFD3]">
+                <h1 className="text-lg text-[#6D2323] font-bold mb-6 border-b border-[#6D2323] w-20 border-b-black">Join as-
+                  {/* {id ? <p>ID: {id}</p> : <p>Loading...</p>} */}
+                </h1>
+                <div className=" flex space-x-5 mb-10 w-30">
+                  <label className="flex text-sm text-[#6D2323] items-center space-x-2">
+                    <input
+                      type="radio"
+                      name="userType"
+                      value="Retailer"
+                      checked={formData.userType === "Retailer"}
+                      onChange={() => setFormData({ ...formData, userType: "Retailer" })}
+                      className="form-radio text-[#6D2323]"
+                    />
+                    <span className="text-MD">Retailer</span>
+                  </label>
 
-              <label className="flex text-sm items-center text-[#6D2323] space-x-2">
-                <input
-                  type="radio"
-                  name="userType"
-                  value="Supplier"
-                  checked={formData.userType === "Supplier"}
-                  onChange={() => setFormData({ ...formData, userType: "Supplier" })}
-                  className="form-radio text-[#6D2323]"
-                />
-                <span className="text-md">Supplier</span>
-              </label>
+                  <label className="flex text-sm items-center text-[#6D2323] space-x-2">
+                    <input
+                      type="radio"
+                      name="userType"
+                      value="Supplier"
+                      checked={formData.userType === "Supplier"}
+                      onChange={() => setFormData({ ...formData, userType: "Supplier" })}
+                      className="form-radio text-[#6D2323]"
+                    />
+                    <span className="text-md">Supplier</span>
+                  </label>
 
-              <label className="flex text-sm items-center text-[#6D2323] space-x-2">
-                <input
-                  type="radio"
-                  name="userType"
-                  value="Supplier"
-                  checked={formData.userType === "Guest"}
-                  onChange={() => setFormData({ ...formData, userType: "Guest" })}
-                  className="form-radio text-[#6D2323]"
-                />
-                <span className="text-md">Guest User</span>
-              </label>
-{/* 
+                  <label className="flex text-sm items-center text-[#6D2323] space-x-2">
+                    <input
+                      type="radio"
+                      name="userType"
+                      value="Supplier"
+                      checked={formData.userType === "Guest"}
+                      onChange={() => setFormData({ ...formData, userType: "Guest" })}
+                      className="form-radio text-[#6D2323]"
+                    />
+                    <span className="text-md">Guest User</span>
+                  </label>
+                  {/* 
               <button onClick={() => setSupplierId(searchParams.get("id") || null)}>
                 Retry Fetching Supplier ID
               </button> */}
 
+                </div>
+              </div>
+            )}
+          </>
+        ) : userType === 'supplier' ?(
+<div>
+              <label className="block mb-1 text-sm items-center text-[#6D2323] font-medium">
+                Phone Number:
+              </label>
+
+              <input
+                type="text"
+                value={mobile}
+                onChange={(e) => setMobile(e.target.value)}
+                placeholder="Enter your phone number"
+                className="w-full p-2 border rounded"
+                required
+                disabled={isOtpSent}
+              />
+
+              {/* Send OTP Button */}
+              {!isOtpSent && (
+                <button
+                  onClick={sendOtps}
+                  className={`w-full bg-[#6D2323] text-white py-2 rounded mt-2 ${isSubmitting ? "opacity-50 cursor-not-allowed" : "hover:bg-[#6D2323]"
+                    }`}
+                  disabled={isSubmitting}
+                >
+                  Send OTP
+                </button>
+              )}
+
+              {/* OTP Input & Verify Button */}
+              {isOtpSent && (
+                <>
+                  <input
+                    type="text"
+                    value={otp}
+                    onChange={(e) => setOtp(e.target.value)}
+                    placeholder="Enter OTP"
+                    className="w-full p-2 border rounded mt-2"
+                    required
+                  />
+
+                  <button
+                    onClick={verifyOtps}
+                    className={`w-full bg-green-600 text-white py-2 rounded mt-2 ${isSubmitting ? "opacity-50 cursor-not-allowed" : "hover:bg-green-700"
+                      }`}
+                    disabled={isSubmitting}
+                  >
+                    Verify OTP & Continue
+                  </button>
+                </>
+              )}
             </div>
-          </div>
+
+        ): (
+          <>
+            <div>
+              <label className="block mb-1 text-sm items-center text-[#6D2323] font-medium">
+                Phone Number:
+              </label>
+
+              <input
+                type="text"
+                value={mobile}
+                onChange={(e) => setMobile(e.target.value)}
+                placeholder="Enter your phone number"
+                className="w-full p-2 border rounded"
+                required
+                disabled={isOtpSent}
+              />
+
+              {/* Send OTP Button */}
+              {!isOtpSent && (
+                <button
+                  onClick={sendOtp}
+                  className={`w-full bg-[#6D2323] text-white py-2 rounded mt-2 ${isSubmitting ? "opacity-50 cursor-not-allowed" : "hover:bg-[#6D2323]"
+                    }`}
+                  disabled={isSubmitting}
+                >
+                  Send OTP
+                </button>
+              )}
+
+              {/* OTP Input & Verify Button */}
+              {isOtpSent && (
+                <>
+                  <input
+                    type="text"
+                    value={otp}
+                    onChange={(e) => setOtp(e.target.value)}
+                    placeholder="Enter OTP"
+                    className="w-full p-2 border rounded mt-2"
+                    required
+                  />
+
+                  <button
+                    onClick={verifyOtp}
+                    className={`w-full bg-green-600 text-white py-2 rounded mt-2 ${isSubmitting ? "opacity-50 cursor-not-allowed" : "hover:bg-green-700"
+                      }`}
+                    disabled={isSubmitting}
+                  >
+                    Verify OTP & Continue
+                  </button>
+                </>
+              )}
+            </div>
+          </>
         )}
+
 
         {formData.userType === "Guest" && (
           <div className=" mt-10 mb-16">
-
             {/* Phone Input */}
             {!showOtpBox && (
               <div>
-                <label className="block mb-1 text-sm items-center text-[#6D2323] font-medium">Phone Number:</label>
+                <h1 className="text-md font-bold py-2 text-sm items-center text-[#6D2323]">
+                  Type your phone number
+                </h1>
                 <input
-                  type="text"
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  placeholder="Enter your phone number"
-                  className="w-full p-2 border rounded"
-                  required
+                  type="tel"
+                  name="phone"
+                  placeholder="Phone"
+                  value={formData.phone}
+                  onChange={handleInputChange}
+                  className="w-full p-2 border border-slate-400 rounded-lg"
                 />
-                <button
-                  onClick={handleSendOtp}
-                  className={`w-full bg-[#6D2323] text-white py-2 rounded mt-2 ${isSubmitting ? "opacity-50 cursor-not-allowed" : "hover:bg-[#6D2323]"
-                    }`}
-                >
-                  Submit
-                </button>
+                {!otpVisible && (
+                  <button
+                    onClick={handlePhoneSubmit}
+                    className="mt-3 w-full py-2 bg-[#6D2323] text-white rounded-lg hover:bg-[#6D2323] transition"
+                  >
+                    Verify Phone
+                  </button>
+                )}
               </div>
             )}
 
             {/* OTP Input */}
-            {showOtpBox && (
+            {otpVisible && (
               <div className="mt-4">
-                <label className="block mb-1 font-medium">Enter OTP:</label>
+                <h1 className="text-md font-bold py-2">Enter OTP</h1>
                 <input
                   type="text"
-                  value={otp}
-                  onChange={(e) => setOtp(e.target.value)}
-                  placeholder="Enter OTP"
-                  className="w-full p-2 border rounded"
-                  required
+                  name="otp"
+                  placeholder="OTP"
+                  value={formData.otp}
+                  onChange={handleInputChange}
+                  className="w-full p-2 border border-slate-400 rounded-lg"
                 />
                 <button
-                  onClick={handleSendOtp}
-                  disabled={!otp}
-                  className="w-full bg-green-500 text-white py-2 rounded mt-2 hover:bg-green-600"
+                  onClick={handleOtpSubmitGuest}
+                  className="mt-3 w-full py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
                 >
                   Submit OTP
                 </button>
@@ -440,9 +731,11 @@ useEffect(() => {
           <div className="w-full max-w-md space-y-4">
             <h1 className="text-2xl flex font-bold justify-center items-center mb-5 mt-5 text-[#6D2323]">Complete profile !</h1>
             <div>
-              <h1 className="text-md font-bold py-2 text-sm items-center text-[#6D2323]">Type your phone number</h1>
+              <h1 className="text-md font-bold py-2 text-sm items-center text-[#6D2323]">
+                Type your phone number
+              </h1>
               <input
-                type="phone"
+                type="tel"
                 name="phone"
                 placeholder="Phone"
                 value={formData.phone}
@@ -457,7 +750,6 @@ useEffect(() => {
                   Verify Phone
                 </button>
               )}
-
             </div>
 
             {otpVisible && (
@@ -616,24 +908,27 @@ useEffect(() => {
               {step < 5 ? "Next" : "Submit"}
             </button> */}
 
-            <button
-              onClick={handleNext}
-              disabled={loading}
-              className={`w-full py-3 text-white rounded-xl transition duration-200 ${loading ? "bg-gray-400 cursor-not-allowed" : "bg-[#6D2323] hover:bg-[#6D2323]"
-                }`}
-            >
-              {loading ? (
-                <div className="flex items-center justify-center">
-                  <svg className="animate-spin h-5 w-5 mr-2 text-white" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="white" strokeWidth="4"></circle>
-                    <path className="opacity-75" fill="white" d="M4 12a8 8 0 018-8v8H4z"></path>
-                  </svg>
-                  Processing...
-                </div>
-              ) : (
-                step < 5 ? "Next" : "Submit"
-              )}
-            </button>
+            {userId !== true && (
+              <button
+                onClick={handleNext}
+                disabled={loading}
+                className={`w-full  py-3 text-white rounded-xl transition duration-200 ${loading ? "bg-gray-400 cursor-not-allowed" : "bg-[#6D2323] hover:bg-[#6D2323]"
+                  }`}
+              >
+                {loading ? (
+                  <div className="flex items-center justify-center">
+                    <svg className="animate-spin h-5 w-5 mr-2 text-white" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="white" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="white" d="M4 12a8 8 0 018-8v8H4z"></path>
+                    </svg>
+                    Processing...
+                  </div>
+                ) : (
+                  step < 5 ? "Next" : "Submit"
+                )}
+              </button>
+
+            )}
 
 
             {/* Back Button */}
@@ -649,15 +944,18 @@ useEffect(() => {
           </div>
 
           {/* Pagination Dots */}
-          <div className="flex space-x-2">
-            {[1, 2, 3, 4].map((page) => (
-              <span
-                key={page}
-                className={`w-3 h-3 rounded-full ${step === page ? "bg-[#6D2323]" : "bg-gray-300"
-                  }`}
-              ></span>
-            ))}
-          </div>
+          {userId !== true && (
+            <div className="flex space-x-2 ">
+              {[1, 2, 3, 4].map((page) => (
+                <span
+                  key={page}
+                  className={`w-3 h-3 rounded-full ${step === page ? "bg-[#6D2323]" : "bg-gray-300"
+                    }`}
+                ></span>
+              ))}
+            </div>
+          )}
+
         </footer>
       )}
     </div>

@@ -19,6 +19,8 @@ const CartRequestPage: React.FC = () => {
     const [isModalClose, setIsModalClose] = useState(false);
     const [isModalCloses, setIsModalCloses] = useState(false);
     const [showSuccess, setShowSuccess] = useState(false);
+    const [isFileModalOpen, setIsFileModalOpen] = useState(false);
+    const [selectedFile, setSelectedFile] = useState<any>(null);
 
     const router = useRouter();
     const searchParams = useSearchParams();
@@ -101,7 +103,7 @@ const CartRequestPage: React.FC = () => {
                     },
                     body: JSON.stringify({
                         orderId,
-                        statusId: 2, // Send statusId as 2
+                        statusId: 2,
                     }),
                 }
             );
@@ -176,23 +178,41 @@ const CartRequestPage: React.FC = () => {
         setIsModalOpens(false)
     }
 
+    const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        // Ensure the user has selected a file
+        if (event.target.files && event.target.files.length > 0) {
+            const file = event.target.files[0];
+            setSelectedFile(file);
+
+            // Preview the image
+            const imageUrl = URL.createObjectURL(file);
+            // setImagePreview(imageUrl); 
+        }
+    };
+
     const handleConfirms = async () => {
-        if (!selectedStatus) return; // Ensure status is selected
+        if (!selectedStatus) return;
+
+        if (!selectedFile) {
+            toast.error("Please select a file before confirming.");
+            return;
+        }
 
         setIsModalOpens(false);
+
+        const formData = new FormData();
+        formData.append("orderId", orderId || "");
+        formData.append("statusId", selectedStatus.toString()); // Convert to string
+
+        // formData.append("statusId", parseInt(selectedStatus, 10));
+        formData.append("file", selectedFile); // Attach the actual file object
 
         try {
             const response = await fetch(
                 `${process.env.NEXT_PUBLIC_BACKEND_URL}/order/update-order-status`,
                 {
                     method: "PUT",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({
-                        orderId, 
-                        statusId: selectedStatus,
-                    }),
+                    body: formData, // Send FormData with file
                 }
             );
 
@@ -204,20 +224,23 @@ const CartRequestPage: React.FC = () => {
                         router.push("/request-order");
                     }, 3000);
                 } else {
-                    console.error("Failed to update order status: ", data.message);
+                    console.error("Failed to update order status:", data.message);
                 }
             } else {
                 console.error("Failed to update order status: HTTP error", response.status);
             }
         } catch (error) {
-            console.error("Error updating order status: ", error);
+            console.error("Error updating order status:", error);
         }
     };
+
 
     const totalAmount = orderDetails?.OrderProductDetails?.reduce(
         (sum: any, item: any) => sum + item.price * item.quantity,
         0
     );
+
+    const filePath = orders[0]?.filePath;
 
 
     return (
@@ -318,7 +341,9 @@ const CartRequestPage: React.FC = () => {
                                     <button className="rounded-full bg-gray-100 p-2">
                                         <Plus className="h-5 w-5 text-gray-600" />
                                     </button>
+
                                 </div>
+
                             </div>
                         ))}
 
@@ -360,20 +385,7 @@ const CartRequestPage: React.FC = () => {
                                                 <span>TOTAL QUANTITY :</span>
                                                 <span>{orderDetails.totalQuantity}</span>
                                             </div>
-                                            {/* <div className="mt-4 space-y-2 border-t pt-2">
-                                                <div className="flex justify-between">
-                                                    <span>SUBTOTAL :</span>
-                                                </div>
-                                                <div className="flex justify-between">
-                                                    <span>SHIPPING :</span>
-                                                </div>
-                                                <div className="flex justify-between">
-                                                    <span>OTHERS :</span>
-                                                </div>
-                                                <div className="flex justify-between">
-                                                    <span>DISCOUNT :</span>
-                                                </div>
-                                            </div> */}
+
                                             <div className="flex justify-between border-t pt-2 font-medium">
                                                 <span>Total Amount :</span>
                                                 <span>{totalAmount}</span>
@@ -381,10 +393,17 @@ const CartRequestPage: React.FC = () => {
                                         </div>
 
                                         {/* Warning Message */}
-                                        <div className="mt-4 flex justify-center items-center gap-2 text-sm text-red-500">
-                                            <AlertTriangle className="h-4 w-4" />
-                                            <span>Bill not generated by the seller</span>
-                                        </div>
+                                        {orderDetails?.statusId === 4 ? (
+                                            <div className="mt-4">
+                                                <span className="text-green-600">Bill  generated by the seller</span>
+                                            </div>
+                                        ) : (
+                                            <div className="mt-4 flex justify-center items-center gap-2 text-sm text-red-500">
+                                                <AlertTriangle className="h-4 w-4" />
+                                                <span>Bill not generated by the seller</span>
+                                            </div>
+                                        )}
+
 
                                     </div>
                                     {/* Action Buttons */}
@@ -402,8 +421,6 @@ const CartRequestPage: React.FC = () => {
                                     )}
 
                                     {(orderDetails?.statusId === 2 || orderDetails?.statusId === 3 || orderDetails?.statusId === 4) && (
-
-
                                         <div className="mt-6 flex gap-4">
                                             <button onClick={() => setIsModalClose(true)} className="flex flex-1 items-center justify-center gap-2 rounded-md bg-red-600 py-3 text-white">
                                                 Cancel
@@ -413,6 +430,14 @@ const CartRequestPage: React.FC = () => {
                                             </button>
                                         </div>
                                     )}
+
+                                    {filePath?.length > 0 && (
+                                        <div className="items-start mt-4 font-bold">
+                                            <span>Transport Received:</span>
+                                            <img src={filePath} alt="img" className="mt-2" />
+                                        </div>
+                                    )}
+
 
                                     {isModalOpens && (
                                         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
@@ -437,7 +462,11 @@ const CartRequestPage: React.FC = () => {
                                                                 name="status"
                                                                 value={option.statusId} // Store actual numeric statusId
                                                                 checked={selectedStatus === option.statusId}
-                                                                onChange={(e) => setSelectedStatus(Number(e.target.value))} // Ensure it's a number
+                                                                onChange={(e) => {
+                                                                    setSelectedStatus(Number(e.target.value));
+                                                                    setIsFileModalOpen(true);
+                                                                }}
+                                                                // onChange={(e) => setSelectedStatus(Number(e.target.value))} // Ensure it's a number
                                                                 className="h-5 w-5 rounded-full border-2 border-gray-300 text-blue-600 focus:ring-[#6D2323]"
                                                             />
                                                         </label>
@@ -453,9 +482,10 @@ const CartRequestPage: React.FC = () => {
                                                         Cancel
                                                     </button>
                                                     <button
-                                                        className="flex-1 px-6 py-3 rounded-lg bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50"
-                                                        onClick={handleConfirms} // Call function to send selected status
-                                                        disabled={!selectedStatus} // Disable if no selection
+                                                        className="flex-1 px-6 py-3 rounded-lg bg-[#6D2323] text-white"
+                                                        onClick={() => setIsFileModalOpen(true)}
+
+                                                        disabled={!selectedStatus}
                                                     >
                                                         Confirm
                                                     </button>
@@ -464,71 +494,36 @@ const CartRequestPage: React.FC = () => {
                                         </div>
                                     )}
 
+                                    {isFileModalOpen && (
+                                        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+                                            <div className="bg-white p-6 rounded-lg shadow-md w-64">
+                                                <h2 className="text-lg font-semibold">Upload File</h2>
+                                                <input type="file" onChange={handleFileChange} className="my-4 text-sm" />
 
-                                    {/* {isModalOpens && (
-                                        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-                                            <div className="max-w-md mx-auto p-6 bg-white rounded-lg shadow-lg">
-                                                <h1 className="text-2xl font-bold mb-6">Change Status!</h1>
-
-                                                <div className="space-y-3 mb-8">
-                                                    {[
-                                                        { id: 'reject', label: 'Reject' },
-                                                        { id: 'accept', label: 'Accept' },
-                                                        { id: 'pending', label: 'Mark Pending' },
-                                                        { id: 'complete', label: 'Mark Complete' },
-                                                    ].map((option) => (
-                                                        <label
-                                                            key={option.id}
-                                                            className="flex items-center justify-between p-4 rounded-lg border border-gray-100 bg-white shadow-sm cursor-pointer hover:bg-[#FFEFD3]"
-                                                        >
-                                                            <span className="text-gray-600">{option.label}</span>
-                                                            <input
-                                                                type="radio"
-                                                                name="status"
-                                                                value={option.id}
-                                                                checked={selectedStatus === option.id}
-                                                                onChange={(e) => {
-                                                                    setSelectedStatus(e.target.value as any);
-                                                                    if (e.target.value === 'complete') setIsModalOpens(true);
-                                                                }}
-                                                                className="h-5 w-5 rounded-full border-2 border-gray-300 text-blue-600 focus:ring-[#6D2323]"
-                                                            />
-                                                        </label>
-                                                    ))}
-                                                </div>
-
-                                                <div className="flex gap-4">
+                                                <div className="flex justify-between gap-1 w-full">
                                                     <button
-                                                        className="flex-1 px-6 py-3 rounded-lg border border-gray-200 text-gray-700 hover:bg-[#FFEFD3]"
-                                                        onClick={() => setSelectedStatus(null)}
+                                                        onClick={() => setIsFileModalOpen(false)}
+                                                        className="px-4 py-2 bg-gray-300 rounded-lg hover:bg-gray-400"
                                                     >
                                                         Cancel
                                                     </button>
                                                     <button
-                                                        className="flex-1 px-6 py-3 rounded-lg bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50"
-                                                        onClick={() => {
-                                                            if (selectedStatus) {
-                                                                setIsModalOpens(false);
-                                                            }
-                                                        }}
-                                                        disabled={!selectedStatus}
+                                                        onClick={handleConfirms}
+                                                        className="px-4 py-2 bg-[#6D2323] text-white rounded-lg "
                                                     >
                                                         Confirm
                                                     </button>
                                                 </div>
                                             </div>
                                         </div>
-
-
-                                    )} */}
-
+                                    )}
 
                                     <SendEnquiryModal
                                         isOpen={isModalOpen}
                                         onClose={() => setIsModalOpen(false)}
                                         onConfirm={handleConfirm}
                                         title="Accept Order?"
-                                        message="Are you sure you want to accept this order?" // ✅ Custom message
+                                        message="Are you sure you want to accept this order?"
                                     />
 
                                     <SendEnquiryModal
@@ -536,52 +531,9 @@ const CartRequestPage: React.FC = () => {
                                         onClose={() => setIsModalClose(false)}
                                         onConfirm={handleConfirmReject}
                                         title="Reject Order?"
-                                        message="Are you sure you want to reject this order?" // ✅ Different message for rejection
+                                        message="Are you sure you want to reject this order?"
                                     />
 
-
-                                    {/* {showSuccess && (
-                                        <>
-                                            <SuccessMessage />
-                                        </>
-                                    )} */}
-
-
-                                    {/* Product List */}
-                                    {/* <div className="mt-6 space-y-4">
-                                        {orderDetails.products.map((product, index) => (
-                                            <div
-                                                key={index}
-                                                className="flex gap-4 rounded-lg border bg-white p-4"
-                                            >
-                                                <div className="relative h-20 w-20 overflow-hidden rounded-lg">
-                                                    <Image
-                                                        src={product.image}
-                                                        alt={product.name}
-                                                        fill
-                                                        className="object-cover"
-                                                    />
-                                                </div>
-                                                <div className="flex-1">
-                                                    <h3 className="flex justify-start font-semibold">{product.name}</h3>
-                                                    <div className="mt-1 space-y-1 text-xs text-gray-500">
-                                                        <div className="flex justify-between">
-                                                            <span>MOQ: {product.moq}</span>
-                                                            <span>Total Qty: {product.quantity}</span>
-                                                        </div>
-                                                        <div className="flex justify-between">
-                                                            <span>MRP: ₹{product.mrp}</span>
-                                                            <span>{product.totalQty}</span>
-                                                        </div>
-                                                        <div className="flex justify-between font-semibold text-gray-900">
-                                                            <span>Total Amount:</span>
-                                                            <span>₹{product.totalAmount}</span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </div> */}
                                 </div>
                             </div>
                         </div>
@@ -594,9 +546,9 @@ const CartRequestPage: React.FC = () => {
 
 
 const CartRequestPageWrapper: React.FC = () => (
-  <Suspense fallback={<div>Loading...</div>}>
-    <CartRequestPage />
-  </Suspense>
+    <Suspense fallback={<div>Loading...</div>}>
+        <CartRequestPage />
+    </Suspense>
 );
 
 export default CartRequestPageWrapper;
