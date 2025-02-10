@@ -23,7 +23,6 @@ interface FormData {
   otp: string;
   fingerprintId: string;
   file: File | null;
-
 }
 
 
@@ -63,6 +62,7 @@ const JoinPage: React.FC = () => {
   const ids = urlParams.get('id');
 
   console.log("urlParams",urlParams)
+  
 
   // Check if 'id' is present in the URL
   // if (id) {
@@ -71,18 +71,21 @@ const JoinPage: React.FC = () => {
 
   // console.log("==============", id)
 
+  const[supplierRelogin, setSupplierRelogin]= useState<any>()
 
   useEffect(() => {
     if (typeof window !== "undefined") {
       const storedId = sessionStorage.getItem("id");
       console.log("storedId", storedId)
       const userTyp = sessionStorage.getItem("type");
-
+      console.log("userTyp", userTyp)
       const idParam = searchParams.get("id");
       setUserType(userType)
 
-      console.log("userTyp", userTyp)
-
+      const userTypes= searchParams.get("type")
+      setSupplierRelogin(userTypes)
+      console.log("=====>?", userTypes)
+      
       const idToUse = idParam || storedId;
       setId(idToUse);
       if (idParam) {
@@ -91,7 +94,56 @@ const JoinPage: React.FC = () => {
     }
   }, [searchParams]);
 
-  // console.log("idididididid", id)
+  console.log("supplierRelogin",supplierRelogin)
+
+
+  const userId = id?.startsWith("RE") || (supplierRelogin === 'supplier' && id?.startsWith("SU"))
+
+  const [mobile, setMobile] = useState("");
+
+  console.log("userId",userId)
+
+  const fetchUserDetails = async () => {
+    if (!id) return;
+
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/users/getUserById`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          customId: id,
+          // userType:"Retailer"
+          userType: supplierRelogin === "supplier" ? "Supplier" : "Retailer",
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Error: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      console.log("API Response:", data);
+
+      if (data?.data?.phone) {
+        setMobile(data.data.phone);
+      } else {
+        console.error("Phone number not found in the response");
+      }
+    } catch (error) {
+      console.error("Error fetching user details:", error);
+    }
+  };
+
+  useEffect(() => {
+    if (userId) {
+      console.log("Running fetchUserDetails...");
+      fetchUserDetails();
+    }
+  }, [id, userType]);
+
+  console.log("mobile", mobile)
 
   // Function to handle image upload
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -124,10 +176,10 @@ const JoinPage: React.FC = () => {
     } else {
       setLoading(true);
 
-      if (!isOtpVerified) {
-        toast.error("Please verify OTP before submitting the form.");
-        return;
-      }
+      // if (!isOtpVerified) {
+      //   toast.error("Please verify OTP before submitting the form.");
+      //   return;
+      // }
 
       const formDataToSend: any = new FormData();
 
@@ -292,45 +344,6 @@ const JoinPage: React.FC = () => {
     }
   };
 
-
-  const userId = id?.startsWith("RE") || (userType === 'supplier' && id?.startsWith("SU"))
-  const [mobile, setMobile] = useState("");
-
-  // const userTypes = userType === 'supplier'
-  console.log("+++++++++++++", userId)
-
-  const fetchUserDetails = async () => {
-    if (!id) return;
-
-    try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/users/getUserById`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          customId: id,
-          userType: userType === "supplier" ? "Supplier" : "Retailer",
-        }),
-      });
-
-      const data = await response.json();
-      console.log("API Response:", data);
-
-      if (data?.data?.phone) {
-        setMobile(data.data.phone);
-      }
-    } catch (error) {
-      console.error("Error fetching user details:", error);
-    }
-  };
-
-  useEffect(() => {
-    if (id && userType) {
-      fetchUserDetails();
-    }
-  }, [id, userType]);
-
   const [isOtpSent, setIsOtpSent] = useState(false);
 
   const sendOtp = async () => {
@@ -364,10 +377,28 @@ const JoinPage: React.FC = () => {
 
     setIsSubmitting(true);
     try {
-      await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/verify-otp-relogin-retailer`, {
-        phone: `+91${mobile}`,
-        otp,
-      });
+      const response = await axios.post(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/verify-otp-relogin-retailer`,
+        {
+          phone: `+91${mobile}`,
+          otp,
+        }
+      );
+
+      // Log the response to the console
+      console.log("OTP verified successfully:", response);
+
+      // Store token in localStorage
+      // const token = response.data.token;
+      // localStorage.setItem("authToken", token); 
+      // localStorage.setItem("userDetails", JSON.stringify(response.data)); 
+
+      if (typeof window !== "undefined") {
+        localStorage.setItem("userDetails", JSON.stringify(response.data));
+        localStorage.setItem("token", response.data.token);
+
+        localStorage.setItem("userType", "Retailer");
+      }
 
       toast.success("OTP verified successfully!");
       router.push("/shop");
@@ -378,6 +409,11 @@ const JoinPage: React.FC = () => {
       setIsSubmitting(false);
     }
   };
+
+
+
+
+
 
   const sendOtps = async () => {
     if (!mobile) {
@@ -420,14 +456,19 @@ const JoinPage: React.FC = () => {
 
       // Log the response to the console
       console.log("OTP verified successfully:", response);
+      if (typeof window !== "undefined") {
+        localStorage.setItem("userDetails", JSON.stringify(response.data));
+        localStorage.setItem("token", response.data.token);
+        localStorage.setItem("userType", "Supplier");
+      }
 
       // Store token in localStorage
-      const token = response.data.token; // Assuming token is in response.data.token
-      localStorage.setItem("authToken", token); // Store the token
+      // const token = response.data.token; // Assuming token is in response.data.token
+      // localStorage.setItem("authToken", token); // Store the token
 
-      // Optionally, store additional user info if needed
+      // // Optionally, store additional user info if needed
 
-      localStorage.setItem("userDetails", JSON.stringify(response.data.user)); // You can adjust based on your response structure
+      // localStorage.setItem("userDetails", JSON.stringify(response.data.user)); // You can adjust based on your response structure
 
       toast.success("OTP verified successfully!");
       router.push("/manage");
@@ -512,7 +553,7 @@ const JoinPage: React.FC = () => {
               </div>
             )}
           </>
-        ) : userType === 'supplier' ? (
+        ) : supplierRelogin === 'supplier' ? (
           <div>
             <label className="block mb-1 text-sm items-center text-[#6D2323] font-medium">
               Phone Number:
