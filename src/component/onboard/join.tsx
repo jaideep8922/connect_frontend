@@ -97,9 +97,9 @@ const JoinPage: React.FC = () => {
   console.log("supplierRelogin",supplierRelogin)
 
 
-  const userId = id?.startsWith("RE") || (supplierRelogin === 'supplier' && id?.startsWith("SU"))
+  const userId = id?.startsWith("RE") || (supplierRelogin === 'supplier' || sessionStorage.getItem("id")?.includes("SU") && id?.startsWith("SU"))
 
-  const [mobile, setMobile] = useState("");
+  const [mobile, setMobile] = useState(localStorage.getItem("phone"));
 
   console.log("userId",userId)
 
@@ -115,7 +115,7 @@ const JoinPage: React.FC = () => {
         body: JSON.stringify({
           customId: id,
           // userType:"Retailer"
-          userType: supplierRelogin === "supplier" ? "Supplier" : "Retailer",
+          userType: supplierRelogin === "supplier" || (sessionStorage.getItem("id")?.includes("SU") && id?.startsWith("SU")) ? "Supplier" : "Retailer",
         }),
       });
 
@@ -128,6 +128,7 @@ const JoinPage: React.FC = () => {
 
       if (data?.data?.phone) {
         setMobile(data.data.phone);
+        localStorage.setItem("phone", data.data.phone)
       } else {
         console.error("Phone number not found in the response");
       }
@@ -142,6 +143,9 @@ const JoinPage: React.FC = () => {
       fetchUserDetails();
     }
   }, [id, userType]);
+
+  
+  
 
   console.log("mobile", mobile)
 
@@ -385,6 +389,9 @@ const JoinPage: React.FC = () => {
         }
       );
 
+      toast.success("OTP verified successfully!");
+
+
       // Log the response to the console
       console.log("OTP verified successfully:", response);
 
@@ -456,6 +463,8 @@ const JoinPage: React.FC = () => {
 
       // Log the response to the console
       console.log("OTP verified successfully:", response);
+      toast.success("OTP verified successfully!");
+
       if (typeof window !== "undefined") {
         localStorage.setItem("userDetails", JSON.stringify(response.data));
         localStorage.setItem("token", response.data.token);
@@ -553,7 +562,7 @@ const JoinPage: React.FC = () => {
               </div>
             )}
           </>
-        ) : supplierRelogin === 'supplier' ? (
+        ) : supplierRelogin === 'supplier' || sessionStorage.getItem("id")?.includes("SU")  ? (
           <div>
             <label className="block mb-1 text-sm items-center text-[#6D2323] font-medium">
               Phone Number:
@@ -561,7 +570,7 @@ const JoinPage: React.FC = () => {
 
             <input
               type="text"
-              value={mobile}
+              value={mobile || ""}
               onChange={(e) => setMobile(e.target.value)}
               placeholder="Enter your phone number"
               className="w-full p-2 border rounded"
@@ -614,7 +623,7 @@ const JoinPage: React.FC = () => {
 
               <input
                 type="text"
-                value={mobile}
+                value={mobile || ""}
                 onChange={(e) => setMobile(e.target.value)}
                 placeholder="Enter your phone number"
                 className="w-full p-2 border rounded"

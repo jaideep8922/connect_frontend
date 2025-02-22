@@ -43,7 +43,7 @@ const Notification = () => {
 
   useEffect(() => {
     const fetchNotifications = async () => {
-      if (!sellerId || !userType) return; // ✅ Ensure sellerId and userType exist before making API call
+      if (!sellerId || !userType) return;
 
       try {
         const apiUrl =

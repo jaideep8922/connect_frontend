@@ -25,11 +25,13 @@ export default function SingleProductCard() {
   const [cart, setCart] = useState<any[]>([]);
   const [sellerId, setSellerId] = useState<string | null>(null);
   const [id, setId] = useState<string | null>(null);
+  const [sellerIdss, setSellerIdss]= useState<any>('')
 
   // Fetch local storage safely (only client-side)
   useEffect(() => {
     if (typeof window !== "undefined") {
       const localData = localStorage.getItem('userDetails');
+
       if (localData) {
         const parsedData = JSON.parse(localData);
         const sellerIdFromLocalStorage = parsedData?.data?.sellerId;
@@ -41,17 +43,21 @@ export default function SingleProductCard() {
       // Safely get the search parameter from the URL
       const searchParams = new URLSearchParams(window.location.search);
       const productId = searchParams.get('id');
+      const idParam = searchParams.get("sellerId");
+      setSellerIdss(idParam)
       setId(productId); 
     }
   }, []); 
 
+  console.log("sellerId1", sellerIdss)
+
   // Fetch product list based on sellerId
   useEffect(() => {
-    if (sellerId) {
+    if (!sellerId && !sellerIdss) return; 
       const fetchProductList = async () => {
         try {
           const response = await fetch(
-            `${process.env.NEXT_PUBLIC_BACKEND_URL}/product/get-product-list?sellerId=${sellerId}`,
+            `${process.env.NEXT_PUBLIC_BACKEND_URL}/product/get-product-list?sellerId=${sellerId || sellerIdss}`,
             {
               method: 'GET',
               headers: {
@@ -71,8 +77,8 @@ export default function SingleProductCard() {
         }
       };
       fetchProductList();
-    }
-  }, [sellerId]);
+    
+  }, [sellerId, sellerIdss]);
 
   // Find the specific product based on the ID
   const product = productData?.data?.find((data: any) => data?.productId === id);
@@ -155,8 +161,10 @@ export default function SingleProductCard() {
 
   // Handle navigate to cart
   const navigateToCart = () => {
-    router.push('/cart');
+    router.push(`/cart?sellerId=${sellerIdss}`);
   };
+
+  // <Link href={`/single-view?id=${item.productId}&&sellerId=${item.sellerId}`}>
 
 
   const currentDate = new Date();
@@ -185,7 +193,7 @@ export default function SingleProductCard() {
           <span className="sr-only">Notifications</span>
         </div> */}
 
-        <div className="relative inline-block" onClick={() => router.push('/cart')
+        <div className="relative inline-block" onClick={() => router.push(`/cart?sellerId=${sellerIdss}`)
         }>
           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#6D2323" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-shopping-basket"><path d="m15 11-1 9" /><path d="m19 11-4-7" /><path d="M2 11h20" /><path d="m3.5 11 1.6 7.4a2 2 0 0 0 2 1.6h9.8a2 2 0 0 0 2-1.6l1.7-7.4" /><path d="M4.5 15.5h15" /><path d="m5 11 4-7" /><path d="m9 11 1 9" /></svg>
           <p className="absolute -top-2 -right-2 bg-red-600 text-white rounded-full text-xs w-5 h-5 flex items-center justify-center">
@@ -231,7 +239,7 @@ export default function SingleProductCard() {
                       onChange={handlePriceChange}
                       className="mr-2"
                     />
-                    Average: <span className="px-1 font-semibold text-black">{product?.averagePrice}</span> + Tax- {product?.tax}
+                    Average: <span className="px-1 font-semibold text-black">{product?.averagePrice}</span> + Tax- {product?.tax}%
                   </label>
                 </div>
               )}
@@ -246,7 +254,7 @@ export default function SingleProductCard() {
                       onChange={handlePriceChange}
                       className="mr-2"
                     />
-                    Good: <span className="px-1 font-semibold text-black">{product?.goodPrice}</span> + Tax- {product?.tax}
+                    Good: <span className="px-1 font-semibold text-black">{product?.goodPrice}</span> + Tax- {product?.tax}%
                   </label>
                 </div>
               )}
@@ -261,7 +269,7 @@ export default function SingleProductCard() {
                       onChange={handlePriceChange}
                       className="mr-2"
                     />
-                    High: <span className="px-1 font-semibold text-black">{product?.highPrice} </span> + Tax- {product?.tax}
+                    High: <span className="px-1 font-semibold text-black">{product?.highPrice} </span> + Tax- {product?.tax}%
                   </label>
                 </div>
               )}

@@ -14,7 +14,7 @@ import Profile from "@/assets/profile_user.jpg";
 import { useSelector } from 'react-redux';
 import { RootState } from '@/store/store';
 import { useRouter } from 'next/navigation';
-
+import Banner from '../../assets/com_logo.jpeg'
 
 export default function ShopMain() {
     const [productData, setProductData] = useState<any>([]);
@@ -28,6 +28,8 @@ export default function ShopMain() {
 
     const [sellerId, setSellerId] = useState<string | null>(null);
     const [phoneNumber, setPhoneNumber] = useState<string | null>(null);
+    const [adminId, setAdminId] = useState(null)
+
 
     useEffect(() => {
         if (typeof window !== "undefined") {
@@ -35,10 +37,14 @@ export default function ShopMain() {
             if (localData) {
                 const parsedData = JSON.parse(localData);
                 const sellerIdFromLocalStorage = parsedData?.data?.sellerId;
+                const adminId = parsedData?.data?.adminId
+
                 if (sellerIdFromLocalStorage) {
                     setSellerId(sellerIdFromLocalStorage);
                     setPhoneNumber(parsedData?.data?.phone || null);
                 }
+                setAdminId(adminId)
+
             }
         }
     }, []);
@@ -75,6 +81,7 @@ export default function ShopMain() {
         }
     }, [sellerId]);
 
+
     useEffect(() => {
         if (sellerId) {
             const fetchSellerDetails = async () => {
@@ -94,6 +101,7 @@ export default function ShopMain() {
                     );
 
                     const result = await response.json();
+                    console.log("result", result)
 
                     if (!response.ok) {
                         throw new Error(result.message || 'Failed to fetch seller details');
@@ -110,6 +118,9 @@ export default function ShopMain() {
             fetchSellerDetails();
         }
     }, [sellerId]);
+
+    console.log("sellerData",sellerData)
+
 
     useEffect(() => {
         // Fetch banner images if sellerId is available
@@ -155,8 +166,13 @@ export default function ShopMain() {
 
         const searchData = async () => {
             try {
-                const response = await fetch(
-                    `${process.env.NEXT_PUBLIC_BACKEND_URL}/product/search-product?productName=${search}`,
+                const url =
+                    adminId 
+                        ? `${process.env.NEXT_PUBLIC_BACKEND_URL}/product/search-product-by-admin?productName=${search}`
+                        : `${process.env.NEXT_PUBLIC_BACKEND_URL}/product/search-product?productName=${search}`;
+
+                const response = await fetch(url,
+                    // `${process.env.NEXT_PUBLIC_BACKEND_URL}/product/search-product?productName=${search}`,
                     {
                         method: "GET",
                         headers: {
@@ -186,6 +202,7 @@ export default function ShopMain() {
     }, [search]);
 
 
+    console.log("adminId", adminId)
     console.log("searchResults", searchResults)
 
     return (
@@ -219,7 +236,7 @@ export default function ShopMain() {
             {searchResults?.data?.length > 0 && (
                 <div className="absolute top-20 left-0 w-80 mx-4 bg-white shadow-lg rounded-lg p-2 z-50 border border-gray-200">
                     {searchResults.data.map((item: any) => (
-                        <Link href={`/single-view?id=${item.productId}`}>
+                        <Link href={`/single-view?id=${item.productId}&sellerId=${item.sellerId}`}>
 
                             <div
                                 key={item.id}
@@ -227,7 +244,7 @@ export default function ShopMain() {
                             >
                                 {/* Product Image */}
                                 <img
-                                    src={item.productImage || "/placeholder-image.jpg"} // Fallback image
+                                    src={item.productImage || "/placeholder-image.jpg"} 
                                     alt={item.productName || "Product"}
                                     className="w-12 h-12 object-cover rounded-md border"
                                 />
@@ -246,7 +263,6 @@ export default function ShopMain() {
                     ))}
                 </div>
             )}
-
 
 
             {/* Profile Section */}
