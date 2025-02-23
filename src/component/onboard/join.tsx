@@ -58,18 +58,51 @@ const JoinPage: React.FC = () => {
   const [userType, setUserType] = useState<any>(null)
 
   // Get the URL parameter 'id'
-  const urlParams = new URLSearchParams(window.location.search);
-  const ids = urlParams.get('id');
+  // const urlParams = new URLSearchParams(window.location.search);
+  // const ids = urlParams.get('id');
 
-  console.log("urlParams",urlParams)
+  // console.log("urlParams",Array.from(urlParams.entries()).length)
+
+  // useEffect(()=>{
+  //   if (typeof window !== "undefined") {
+  //     sessionStorage.setItem("length", Array.from(urlParams.entries()).length)
+  //   }
+  // },[])
   
+  // const[length, setLength]= useState<number>(0)
 
-  // Check if 'id' is present in the URL
-  // if (id) {
-  //   sessionStorage.setItem('id', id);
-  // }
+  // useEffect(()=>{
+  //   if (typeof window !== "undefined") {
+  //     const data =sessionStorage.getItem("length")
+  //     setLength(data)
+  //   }
+  // },[])
 
-  // console.log("==============", id)
+  // console.log("lengthlength", length)
+
+  const urlParams = new URLSearchParams(window.location.search);
+const ids = urlParams.get("id");
+
+console.log("urlParams", Array.from(urlParams.entries()).length);
+
+useEffect(() => {
+  if (typeof window !== "undefined") {
+    sessionStorage.setItem("length", String(Array.from(urlParams.entries()).length));
+  }
+}, []);
+
+const [length, setLength] = useState<number>(0);
+
+useEffect(() => {
+  if (typeof window !== "undefined") {
+    const data = sessionStorage.getItem("length");
+    setLength(data ? parseInt(data, 10) : 0); // Convert string to number
+  }
+}, []);
+
+console.log("lengthlength", length);
+
+  
 
   const[supplierRelogin, setSupplierRelogin]= useState<any>()
 
@@ -84,7 +117,6 @@ const JoinPage: React.FC = () => {
 
       const userTypes= searchParams.get("type")
       setSupplierRelogin(userTypes)
-      console.log("=====>?", userTypes)
       
       const idToUse = idParam || storedId;
       setId(idToUse);
@@ -256,7 +288,6 @@ const JoinPage: React.FC = () => {
     setIsSubmitting(true);
 
     try {
-      // Step 1: Verify OTP
       const otpResponse = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/verify-otp`, {
         phone: `+91${formData.phone}`,
         otp: formData.otp,
@@ -271,14 +302,22 @@ const JoinPage: React.FC = () => {
       } else {
         toast.error(otpResponse.data.message || "Invalid OTP. Please try again.");
         setIsSubmitting(false);
-        return; // Stop execution if OTP is invalid
+        return; 
       }
 
       // Step 2: Create Guest User (Only if OTP is verified)
       const guestResponse = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/guests/create`, {
-        phone: `+91${formData.phone}`,
+        phone: `${formData?.phone}`,
         sellerId: id,
       });
+
+      console.log("guestResponse", guestResponse?.data)
+      if (typeof window !== "undefined") {
+        localStorage.setItem("userDetails", JSON.stringify(guestResponse.data));
+        localStorage.setItem("token", guestResponse.data.token);
+        localStorage.setItem("userType", formData.userType);
+
+      }
 
       if (guestResponse.status === 201) {
         router.push(`/shop`);
@@ -491,6 +530,7 @@ const JoinPage: React.FC = () => {
 
 
 
+console.log("================================================", length)
 
   return (
     <div className=" h-screen flex flex-col items-center justify-between bg-[#FFEFD3]">
@@ -510,7 +550,7 @@ const JoinPage: React.FC = () => {
 
       {/* Main Content */}
       <main className="flex flex-col w-full px-6">
-        {userId !== true ? (
+        {length !== 3 ? (
           <>
             {step === 1 && (
               <div className="bg-[#FFEFD3]">
@@ -562,7 +602,7 @@ const JoinPage: React.FC = () => {
               </div>
             )}
           </>
-        ) : supplierRelogin === 'supplier' || sessionStorage.getItem("id")?.includes("SU")  ? (
+        ) : supplierRelogin === 'supplier' || sessionStorage.getItem("id")?.includes("SU") || length === 3  ? (
           <div>
             <label className="block mb-1 text-sm items-center text-[#6D2323] font-medium">
               Phone Number:
@@ -686,9 +726,11 @@ const JoinPage: React.FC = () => {
                   onChange={handleInputChange}
                   className="w-full p-2 border border-slate-400 rounded-lg"
                 />
+
                 {!otpVisible && (
                   <button
-                    onClick={handlePhoneSubmit}
+                    // onClick={handlePhoneSubmit}
+                    onClick={handleOtpSubmitGuest}
                     className="mt-3 w-full py-2 bg-[#6D2323] text-white rounded-lg hover:bg-[#6D2323] transition"
                   >
                     Verify Phone
@@ -948,7 +990,7 @@ const JoinPage: React.FC = () => {
               {step < 5 ? "Next" : "Submit"}
             </button> */}
 
-            {userId !== true && (
+            {length !== 3 && (
               <button
                 onClick={handleNext}
                 disabled={loading}
@@ -984,7 +1026,7 @@ const JoinPage: React.FC = () => {
           </div>
 
           {/* Pagination Dots */}
-          {userId !== true && (
+          {length !== 3 && (
             <div className="flex space-x-2 ">
               {[1, 2, 3, 4].map((page) => (
                 <span
