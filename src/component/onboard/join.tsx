@@ -557,7 +557,7 @@ console.log("================================================", length)
                 <h1 className="text-lg text-[#6D2323] font-bold mb-6 border-b border-[#6D2323] w-20 border-b-black">Join as-
                   {/* {id ? <p>ID: {id}</p> : <p>Loading...</p>} */}
                 </h1>
-                <div className=" flex space-x-5 mb-10 w-30">
+                <div className="flex mb-10 space-x-5  w-30">
                   <label className="flex text-sm text-[#6D2323] items-center space-x-2">
                     <input
                       type="radio"
@@ -638,7 +638,7 @@ console.log("================================================", length)
                   value={otp}
                   onChange={(e) => setOtp(e.target.value)}
                   placeholder="Enter OTP"
-                  className="w-full p-2 border rounded mt-2"
+                  className="w-full p-2 mt-2 border rounded"
                   required
                 />
 
@@ -691,7 +691,7 @@ console.log("================================================", length)
                     value={otp}
                     onChange={(e) => setOtp(e.target.value)}
                     placeholder="Enter OTP"
-                    className="w-full p-2 border rounded mt-2"
+                    className="w-full p-2 mt-2 border rounded"
                     required
                   />
 
@@ -711,7 +711,7 @@ console.log("================================================", length)
 
 
         {formData.userType === "Guest" && (
-          <div className=" mt-10 mb-16">
+          <div className="mt-10 mb-16 ">
             {/* Phone Input */}
             {!showOtpBox && (
               <div>
@@ -724,13 +724,13 @@ console.log("================================================", length)
                   placeholder="Phone"
                   value={formData.phone}
                   onChange={handleInputChange}
-                  className="w-full p-2 border border-slate-400 rounded-lg"
+                  className="w-full p-2 border rounded-lg border-slate-400"
                 />
 
                 {!otpVisible && (
                   <button
-                    // onClick={handlePhoneSubmit}
-                    onClick={handleOtpSubmitGuest}
+                    onClick={handlePhoneSubmit}
+                    // onClick={handleOtpSubmitGuest}
                     className="mt-3 w-full py-2 bg-[#6D2323] text-white rounded-lg hover:bg-[#6D2323] transition"
                   >
                     Verify Phone
@@ -742,18 +742,18 @@ console.log("================================================", length)
             {/* OTP Input */}
             {otpVisible && (
               <div className="mt-4">
-                <h1 className="text-md font-bold py-2">Enter OTP</h1>
+                <h1 className="py-2 font-bold text-md">Enter OTP</h1>
                 <input
                   type="text"
                   name="otp"
                   placeholder="OTP"
                   value={formData.otp}
                   onChange={handleInputChange}
-                  className="w-full p-2 border border-slate-400 rounded-lg"
+                  className="w-full p-2 border rounded-lg border-slate-400"
                 />
                 <button
                   onClick={handleOtpSubmitGuest}
-                  className="mt-3 w-full py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
+                  className="w-full py-2 mt-3 text-white transition bg-green-600 rounded-lg hover:bg-green-700"
                 >
                   Submit OTP
                 </button>
@@ -774,7 +774,7 @@ console.log("================================================", length)
                 placeholder="Business Owner"
                 value={formData.businessOwner}
                 onChange={handleInputChange}
-                className="w-full py-3 px-1 border border-slate-400 rounded-lg"
+                className="w-full px-1 py-3 border rounded-lg border-slate-400"
 
               />
             </div>
@@ -787,7 +787,7 @@ console.log("================================================", length)
                 placeholder="Business Owner"
                 value={formData.businessName}
                 onChange={handleInputChange}
-                className="w-full py-3 px-1 border border-slate-400 rounded-lg"
+                className="w-full px-1 py-3 border rounded-lg border-slate-400"
 
               />
             </div>
@@ -803,7 +803,7 @@ console.log("================================================", length)
                 placeholder="GST NO."
                 value={formData.gstNumber}
                 onChange={handleInputChange}
-                className="w-full p-2 border border-slate-400 rounded-lg"
+                className="w-full p-2 border rounded-lg border-slate-400"
               />
             </div>
           </div>
@@ -822,7 +822,7 @@ console.log("================================================", length)
                 placeholder="Phone"
                 value={formData.phone}
                 onChange={handleInputChange}
-                className="w-full p-2 border border-slate-400 rounded-lg"
+                className="w-full p-2 border rounded-lg border-slate-400"
               />
               {!otpVisible && (
                 <button
@@ -836,18 +836,18 @@ console.log("================================================", length)
 
             {otpVisible && (
               <div className="mt-4">
-                <h1 className="text-md font-bold py-2">Enter OTP</h1>
+                <h1 className="py-2 font-bold text-md">Enter OTP</h1>
                 <input
                   type="text"
                   name="otp"
                   placeholder="OTP"
                   value={formData.otp}
                   onChange={handleInputChange}
-                  className="w-full p-2 border border-slate-400 rounded-lg"
+                  className="w-full p-2 border rounded-lg border-slate-400"
                 />
                 <button
                   onClick={handleOtpSubmit}
-                  className="mt-3 w-full py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
+                  className="w-full py-2 mt-3 text-white transition bg-green-600 rounded-lg hover:bg-green-700"
                 >
                   Submit OTP
                 </button>
@@ -862,7 +862,7 @@ console.log("================================================", length)
                 placeholder="Shop Marka"
                 value={formData.shopMarka}
                 onChange={handleInputChange}
-                className="w-full p-2 border border-slate-400 rounded-lg"
+                className="w-full p-2 border rounded-lg border-slate-400"
               />
             </div>
 
@@ -874,7 +874,7 @@ console.log("================================================", length)
                 placeholder="Preferred Transport"
                 value={formData.transport}
                 onChange={handleInputChange}
-                className="w-full p-2 border border-slate-400 rounded-lg"
+                className="w-full p-2 border rounded-lg border-slate-400"
               />
             </div>
 
@@ -893,7 +893,7 @@ console.log("================================================", length)
                 placeholder="Pincode"
                 value={formData.pincode}
                 onChange={handleInputChange}
-                className="w-full p-2 border border-slate-400 rounded-lg"
+                className="w-full p-2 border rounded-lg border-slate-400"
               />
 
             </div>
@@ -906,7 +906,7 @@ console.log("================================================", length)
                 placeholder="City"
                 value={formData.city}
                 onChange={handleInputChange}
-                className="w-full p-2 border border-slate-400 rounded-lg"
+                className="w-full p-2 border rounded-lg border-slate-400"
               />
 
             </div>
@@ -919,7 +919,7 @@ console.log("================================================", length)
                 placeholder="State"
                 value={formData.state}
                 onChange={handleInputChange}
-                className="w-full p-2 border border-slate-400 rounded-lg"
+                className="w-full p-2 border rounded-lg border-slate-400"
               />
 
             </div>
@@ -930,21 +930,21 @@ console.log("================================================", length)
         {step === 5 && (
           <div className="w-full max-w-md space-y-4">
 
-            <div className="flex justify-center items-center flex-col space-y-2">
+            <div className="flex flex-col items-center justify-center space-y-2">
               <label
                 htmlFor="profile-upload"
-                className="group relative cursor-pointer"
+                className="relative cursor-pointer group"
               >
                 <div className="flex h-32 w-32 flex-col items-center justify-center rounded-full bg-[#6D2323] transition-colors group-hover:bg-[#6D2323]">
                   {selectedImage ? (
-                    <div className="relative h-full w-full overflow-hidden rounded-full">
+                    <div className="relative w-full h-full overflow-hidden rounded-full">
                       <Image
                         src={selectedImage}
                         alt="Profile photo"
                         fill
                         className="object-cover"
                       />
-                      <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 transition-opacity group-hover:opacity-100">
+                      <div className="absolute inset-0 flex items-center justify-center transition-opacity opacity-0 bg-black/40 group-hover:opacity-100">
                         <Image src={Camera} alt="cam" />
                       </div>
                     </div>
@@ -979,7 +979,7 @@ console.log("================================================", length)
       {formData.userType === "Guest" ? (
         <></>
       ) : (
-        <footer className="flex flex-col items-center space-y-6 mb-10 w-full px-4 mt-5">
+        <footer className="flex flex-col items-center w-full px-4 mt-5 mb-10 space-y-6">
           <div className="flex flex-col w-full max-w-md space-y-4">
 
             {/* Next/Submit Button */}
@@ -999,7 +999,7 @@ console.log("================================================", length)
               >
                 {loading ? (
                   <div className="flex items-center justify-center">
-                    <svg className="animate-spin h-5 w-5 mr-2 text-white" viewBox="0 0 24 24">
+                    <svg className="w-5 h-5 mr-2 text-white animate-spin" viewBox="0 0 24 24">
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="white" strokeWidth="4"></circle>
                       <path className="opacity-75" fill="white" d="M4 12a8 8 0 018-8v8H4z"></path>
                     </svg>
@@ -1017,7 +1017,7 @@ console.log("================================================", length)
             {step > 1 && (
               <button
                 onClick={handlePrevious}
-                className="w-full py-3 bg-gray-300 text-black rounded-xl hover:bg-gray-400 transition duration-200"
+                className="w-full py-3 text-black transition duration-200 bg-gray-300 rounded-xl hover:bg-gray-400"
               >
                 Back
               </button>
