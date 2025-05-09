@@ -103,20 +103,20 @@ export default function OrdersHistoryPage() {
 
   return (
     <>
-      <header className="sticky top-0 z-10 flex h-20 items-center justify-between border-b bg-white px-4">
+      <header className="sticky top-0 z-10 flex items-center justify-between h-20 px-4 bg-white border-b">
         <button
-          className="flex items-center justify-center rounded-full p-2 hover:bg-gray-100"
+          className="flex items-center justify-center p-2 rounded-full hover:bg-gray-100"
           aria-label="Go back"
         >
           <ArrowLeft
-            className="h-5 w-5 cursor-pointer text-black"
+            className="w-5 h-5 text-black cursor-pointer"
             onClick={() => window.history.back()}
           />
         </button>
 
         <h1 className="text-lg font-medium text-black">Order History</h1>
 
-        <div className="relative flex h-8 w-8 items-center justify-center rounded-full bg-emerald-500 text-white">
+        <div className="relative flex items-center justify-center w-8 h-8 text-white rounded-full bg-emerald-500">
           <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-yellow-400 text-[10px] font-bold">
             {orders.length}
           </span>
@@ -143,15 +143,15 @@ export default function OrdersHistoryPage() {
         </div>
       </header>
 
-      <div className="min-h-screen bg-[#FFEFD3] p-2">
-        <div className="mx-auto max-w-2xl space-y-4">
-          <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-4 pt-2 border-b mb-4">
+      <div className="min-h-screen bg-[#FFFFFF] p-2">
+        <div className="max-w-2xl mx-auto space-y-4">
+          <div className="flex gap-2 pt-2 pb-4 mb-4 overflow-x-auto border-b scrollbar-hide">
             {["All", "Pending", "Accepted", "Processing", "Completed", "Cancelled"].map(
               (status) => (
                 <button
                   key={status}
                   className={`rounded-full px-4 py-2 text-sm font-medium ${selectedStatus === status
-                      ? "bg-[#6D2323] text-white "
+                      ? "bg-[#3A6B34] text-white "
                       : "bg-white text-gray-600 hover:bg-gray-100 border"
                     }`}
                   onClick={() => setSelectedStatus(status)}

@@ -2,7 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-
 :root {
   --background: #ffffff;
   --foreground: #171717;
@@ -50,20 +49,20 @@ a {
 }
 
 .swiper-button-prev,
-    .swiper-button-next {
-        display: none !important;
-    }
+.swiper-button-next {
+  display: none !important;
+}
 
-    @keyframes scan {
-      0% {
-        top: 0;
-      }
-      100% {
-        top: 100%;
-      }
-    }
-    
-  /* Custom class to hide the scrollbar */
+@keyframes scan {
+  0% {
+    top: 0;
+  }
+  100% {
+    top: 100%;
+  }
+}
+
+/* Custom class to hide the scrollbar */
 .scrollbar-hide {
   -ms-overflow-style: none; /* For Internet Explorer and Edge */
   scrollbar-width: none; /* For Firefox */
@@ -73,20 +72,18 @@ a {
   display: none; /* For Chrome, Safari, and Opera */
 }
 
-
 @layer utilities {
   .show-mobile-only {
     @apply block lg:hidden;
   }
 }
 
-
 .goog-te-gadget-simple {
-  background-color: #FFF;
-  border-left: 1px solid #D5D5D5;
-  border-top: 1px solid #9B9B9B;
-  border-bottom: 1px solid #E8E8E8;
-  border-right: 1px solid #D5D5D5;
+  background-color: #fff;
+  border-left: 1px solid #d5d5d5;
+  border-top: 1px solid #9b9b9b;
+  border-bottom: 1px solid #e8e8e8;
+  border-right: 1px solid #d5d5d5;
   font-size: 10pt;
   display: inline-flex; /* Ensure elements stay inline and use flexbox for alignment */
   align-items: center; /* Align icon and text vertically */
@@ -101,7 +98,7 @@ a {
   width: auto;
 }
 
-
 body {
-  @apply bg-[#FFEFD3]; /* Change the background globally */
+  /* @apply bg-[#FFEFD3]; */
+  @apply bg-[#FFFFFF];
 }

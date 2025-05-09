@@ -6,6 +6,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { addToCart, removeFromCart } from "@/store/slices/cartSlice";
 import { RootState } from "@/store/store";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
+import { ShoppingCart } from "lucide-react";
 
 // Define the ProductCardProps interfac
 interface ProductCardProps {
@@ -17,8 +19,18 @@ interface ProductCardProps {
     averagePrice: string;
     goodPrice: string;
     highPrice: string;
+    updatedAt: string;
     tax: '', // Add a default tax value or calculate it as nee
   };
+}
+
+export function formatDate(dateString: string) {
+  const date = new Date(dateString);
+  const day = date.getDate().toString().padStart(2, '0');
+  const months = ['Jan.', 'Feb.', 'Mar.', 'Apr.', 'May.', 'Jun.', 'Jul.', 'Aug.', 'Sep.', 'Oct.', 'Nov.', 'Dec.'];
+  const month = months[date.getMonth()];
+  const year = date.getFullYear();
+  return `${day} ${month} ${year}`;
 }
 
 const ProductCard = ({ product }: ProductCardProps) => {
@@ -48,7 +60,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
         price: price,
         selectedPrice: selectedPrice,
         quantity: quantity,
-        tax:product.tax
+        tax: product.tax
       };
 
       setCart([cartItem])
@@ -71,7 +83,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
       price: product[selectedPrice as keyof typeof product],
       selectedPrice: selectedPrice,
       quantity: quantity,
-      tax:product.tax
+      tax: product.tax
 
     };
 
@@ -105,45 +117,38 @@ const ProductCard = ({ product }: ProductCardProps) => {
     }
   };
 
-  const navigateToCart = () => {
-    router.push('/cart')
-  }
+  // const navigateToCart = () => {
+  //   router.push('/cart')
+  // }
 
   // Current date formatting
-  const currentDate = new Date();
-  const formattedDate = `${currentDate.getDate().toString().padStart(2, '0')}-${(currentDate.getMonth() + 1).toString().padStart(2, '0')}-${currentDate.getFullYear().toString().slice(2)}`;
+  // const currentDate = new Date();
+  // const formattedDate = `${currentDate.getDate().toString().padStart(2, '0')}-${(currentDate.getMonth() + 1).toString().padStart(2, '0')}-${currentDate.getFullYear().toString().slice(2)}`;
 
   console.log("carts", carts)
   return (
-    <div className="border bg-[#FEF9E1] rounded-lg shadow-md p-2">
+    <div className="border bg-[#FFFFFF] rounded-lg shadow-md p-2">
       <Toaster />
       <Link href={`/single-view?id=${product.productId}`}>
         <div className="relative">
-          {/* Date in the top-right corner */}
-          <span className="absolute top-2 right-2 text-[10px] bg-[#6D2323] text-white px-2 rounded-full">
-            Updated On: {formattedDate}
-          </span>
-
-          {/* Product Image */}
-          <img
+          <Image
             src={product?.productImage}
             alt={product?.productImage}
             width={200}
             height={150}
-            className="w-full h-32 object-cover rounded-lg"
+            className="object-cover w-full h-32 rounded-lg"
           />
-
-          {/* MOQ in the bottom-left corner */}
           {product?.moq?.length > 0 && (
-            <span className="absolute w-full bottom-0 left-0 text-white text-xs px-2 py-1 rounded bg-gradient-to-r from-black to-transparent">
-            MOQ: {product.moq}
-          </span>
+            <div className="absolute bottom-0 left-0 flex items-center justify-between w-full px-2 py-1 text-[0.5rem] text-white rounded bg-gradient-to-r from-black to-transparent">
+              <p>MOQ: {product.moq}</p>
+              <p>{formatDate(product?.updatedAt)}</p>
+            </div>
           )}
-          
+
         </div>
       </Link>
 
-      <h3 className="font-semibold mt-2 text-black">{product.productName}</h3>
+      <h3 className="mt-2 font-semibold text-black">{product.productName}</h3>
 
       {/* Price Radio Buttons */}
       {product?.averagePrice && (
@@ -155,8 +160,9 @@ const ProductCard = ({ product }: ProductCardProps) => {
               value="averagePrice"
               checked={selectedPrice === "averagePrice"}
               onChange={handlePriceChange}
-              className="mr-2"
+              className="sr-only peer"
             />
+            <div className="w-[0.8rem] aspect-square border border-[#FF9A2D] rounded-full peer-checked:bg-[#FF9A2D] mr-2" />
             Average: <span className="px-1 font-semibold text-black">{product?.averagePrice}</span>
           </label>
         </div>
@@ -171,8 +177,9 @@ const ProductCard = ({ product }: ProductCardProps) => {
               value="goodPrice"
               checked={selectedPrice === "goodPrice"}
               onChange={handlePriceChange}
-              className="mr-2"
+              className="sr-only peer"
             />
+            <div className="w-[0.8rem] aspect-square border border-[#FF9A2D] rounded-full peer-checked:bg-[#FF9A2D] mr-2" />
             Good: <span className="px-1 font-semibold text-black">{product?.goodPrice}</span>
           </label>
         </div>
@@ -187,26 +194,27 @@ const ProductCard = ({ product }: ProductCardProps) => {
               value="highPrice"
               checked={selectedPrice === "highPrice"}
               onChange={handlePriceChange}
-              className="mr-2"
+              className="sr-only peer"
             />
+            <div className="w-[0.8rem] aspect-square border border-[#FF9A2D] rounded-full peer-checked:bg-[#FF9A2D] mr-2" />
             High: <span className="px-1 font-semibold text-black">{product?.highPrice}</span>
           </label>
         </div>
       )}
 
       <div className="relative">
-        {isAddedToCart && (
+        {/* {isAddedToCart && (
           <div
-            className="absolute top-[-3rem] right-[0.1rem] bg-[#6D2323] text-white p-2 rounded-full cursor-pointer flex items-center"
+            className="absolute top-[-3rem] right-[0.1rem] bg-[#3A6B34] text-white p-2 rounded-full cursor-pointer flex items-center"
             onClick={navigateToCart}
           >
             <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-shopping-cart"><circle cx="8" cy="21" r="1" /><circle cx="19" cy="21" r="1" /><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12" /></svg>
           </div>
-        )}
+        )} */}
 
         {/* Quantity Adjustments */}
         {isAddedToCart ? (
-          <div className="flex justify-between items-center bg-[#6D2323] w-full p-[6px] px-3 text-white rounded-xl mt-4">
+          <div className="flex justify-between items-center text-[#3A6B34] font-bold w-full p-[6px] px-3 rounded-xl mt-4 border-[#3A6B34] border-2">
             <button
               onClick={handleDecrement}
               className="rounded-md"
@@ -216,7 +224,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
             <span className="text-sm">{quantity}</span>
             <button
               onClick={handleIncrement}
-              className=" rounded-md"
+              className="rounded-md "
             >
               +
             </button>
@@ -224,9 +232,10 @@ const ProductCard = ({ product }: ProductCardProps) => {
         ) : (
           <button
             onClick={handleAddToCart}
-            className="bg-[#6D2323] w-full items-center p-[6px] text-white rounded-xl mt-4"
+            className="border-2 border-[#3A6B34] w-full items-center p-[6px] text-[#3A6B34] rounded-xl mt-4 mb-2 flex flex-row justify-evenly items-center"
           >
-            Add to Cart
+            <ShoppingCart />
+            <p>Add to Order</p>
           </button>
         )}
       </div>

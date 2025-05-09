@@ -4,7 +4,7 @@ import { ArrowLeft, Plus, Minus, NotebookPen } from 'lucide-react';
 import Link from "next/link";
 import { Suspense, useEffect, useState } from "react";
 import Pista from '@/assets/pista.jpg';
-import { AlertTriangle, ShoppingCart, MessageSquare } from 'lucide-react'
+import { AlertTriangle, ShoppingCart, Store, MessageSquare, Trash } from 'lucide-react'
 import SendEnquiryModal from "../global/sendEnquiryPopup";
 import SuccessMessage from "../global/successEnquiry";
 import { useDispatch, useSelector } from "react-redux";
@@ -12,8 +12,14 @@ import { RootState } from "@/store/store";
 import { addToCart, clearCart, removeFromCart } from "@/store/slices/cartSlice";
 import toast, { Toaster } from 'react-hot-toast';
 import { useRouter, useSearchParams } from "next/navigation";
+import { useLongPress } from "@/hooks/useLongPress";
 
+type touchAndHoldDataType = {
+    id: string;
+    selectedPrice: string;
+}
 
+const emptyState: touchAndHoldDataType = { id: '', selectedPrice: '' }
 
 function CartPage() {
     const [activeTab, setActiveTab] = useState<"cart" | "bill">("cart");
@@ -27,7 +33,8 @@ function CartPage() {
     const router = useRouter();
     const carts = useSelector((state: RootState) => state.cart.cart);
     const searchParams = useSearchParams();
-    const [sellerIdss, setSellerIdss]= useState<any>('')
+    const [sellerIdss, setSellerIdss] = useState<any>('')
+    const [touchAndHoldData, setTouchAndHoldData] = useState<touchAndHoldDataType>(emptyState);
 
     useEffect(() => {
         // Ensure code runs only in the browser (client side)
@@ -38,7 +45,7 @@ function CartPage() {
             }
 
             const idParam = searchParams.get("sellerId");
-        setSellerIdss(idParam)
+            setSellerIdss(idParam)
 
         }
         // const idParam = searchParams.get("sellerId");
@@ -89,7 +96,7 @@ function CartPage() {
             return;
         }
 
-        if(dropped === true){
+        if (dropped === true) {
             toast.error("Used Suspended")
             return
         }
@@ -142,43 +149,62 @@ function CartPage() {
         setIsOpen(false);
     };
 
-  
+
     const handleConfirm = () => {
         sendCartData();
         setIsModalOpen(false)
         // setShowSuccess(true);
     }
 
+    const longPressHandlers = useLongPress((id: string, selectedPrice: string) => {
+        // alert(`Long press detected! ${id} - ${selectedPrice}`);
+        // dispatch(removeFromCart({ productId: id, selectedPrice: selectedPrice }));
+        setTouchAndHoldData({ id, selectedPrice });
+    }, 800);
+
+    const handleRemoveProduct = () => {
+        dispatch(removeFromCart({ productId: touchAndHoldData?.id, selectedPrice: touchAndHoldData?.selectedPrice }));
+        setTouchAndHoldData(emptyState);
+    }
+
+    const touchAndHoldAnimation = (id: string, selectedPrice: string): string => {
+        if (id === touchAndHoldData.id && selectedPrice === touchAndHoldData.selectedPrice) {
+            return "transform scale-105 transition-transform duration-300 ease-in-out";
+        }
+        return ''
+    }
+
     return (
         <div className="bg-white">
             <Toaster />
-            <header className="sticky top-0 z-10 bg-white px-4 py-3 shadow-sm">
+            <header className="sticky top-0 z-10 px-4 py-3 bg-white shadow-sm">
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
                         <Link href="/" className="text-gray-600 hover:text-gray-900">
-                            <ArrowLeft className="h-5 w-5 cursor-pointer" onClick={() => window.history.back()} />
+                            <ArrowLeft className="w-5 h-5 cursor-pointer" onClick={() => window.history.back()} />
                         </Link>
                         <div>
-                            <h1 className="text-lg font-semibold">Your cart</h1>
+                            <h1 className="text-lg font-semibold text-black">Your cart</h1>
                             <p className="text-sm text-gray-500">{carts?.length} Item / {carts?.reduce((acc, item) => acc + item.quantity, 0)} Quantity</p>
                         </div>
                     </div>
-                    <button className="flex items-center gap-2 rounded-full bg-orange-50 px-4 py-2 text-[#6D2323]" onClick={() => setIsOpen(true)}>
-                        <NotebookPen className="h-5 w-5" />
+                    <button className="flex items-center gap-2 rounded-full bg-orange-50 px-4 py-2 text-[#3A6B34]" onClick={() => setIsOpen(true)}>
+                        <NotebookPen className="w-5 h-5" />
                         <span>Note</span>
                     </button>
 
+                    {isOpen && (<div className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm" />)}
                     {isOpen && (
-                        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
+                        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-opacity-50">
                             <div className="w-full max-w-[500px] rounded-lg bg-white p-6 m-2">
-                                <div className="mb-4 flex items-center justify-between">
-                                    <h2 className="text-lg font-semibold">Add Description</h2>
+                                <div className="flex items-center justify-between mb-4">
+                                    <h2 className="text-lg font-semibold text-black">Add Description</h2>
                                     <button
                                         onClick={() => setIsOpen(false)}
-                                        className="rounded-full p-1 hover:bg-gray-100"
+                                        className="p-1 rounded-full hover:bg-gray-100"
                                     >
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-circle-x"><circle cx="12" cy="12" r="10" /><path d="m15 9-6 6" /><path d="m9 9 6 6" /></svg>
-                                        {/* <X className="h-4 w-4" /> */}
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="black" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-circle-x"><circle cx="12" cy="12" r="10" /><path d="m15 9-6 6" /><path d="m9 9 6 6" /></svg>
+                                        {/* <X className="w-4 h-4" /> */}
                                     </button>
                                 </div>
 
@@ -186,19 +212,19 @@ function CartPage() {
                                     value={description}
                                     onChange={(e) => setDescription(e.target.value)}
                                     placeholder="Type here..."
-                                    className="mb-4 min-h-[200px] w-full resize-none rounded border border-gray-300 p-2 focus:outline-none"
+                                    className="mb-4 min-h-[200px] w-full resize-none rounded border border-gray-300 p-2 focus:outline-none bg-white text-black"
                                 />
 
                                 <div className="flex justify-end gap-2">
                                     <button
                                         onClick={handleReset}
-                                        className="rounded-full border border-gray-300 px-6 py-2 hover:bg-gray-100"
+                                        className="px-6 py-2 text-gray-500 border border-gray-300 rounded-full hover:bg-gray-100"
                                     >
                                         Reset
                                     </button>
                                     <button
                                         onClick={handleSave}
-                                        className="rounded-full bg-[#6D2323] px-6 py-2 text-white hover:bg-[#6D2323]"
+                                        className="rounded-full bg-[#3A6B34] px-6 py-2 text-white"
                                     >
                                         Save
                                     </button>
@@ -207,15 +233,15 @@ function CartPage() {
                         </div>
                     )}
                 </div>
-                <div className="mt-3 flex border-b  border-t border-t-[#6D2323]">
+                <div className="mt-3 flex border-b  border-t border-t-[#3A6B34]">
                     <button
-                        className={`px-6 w-1/2 py-2 ${activeTab === "cart" ? "border-b-2 border-[#6D2323] text-[#6D2323]" : "text-gray-500"}`}
+                        className={`px-6 w-1/2 py-2 ${activeTab === "cart" ? "border-b-2 border-[#3A6B34] text-[#3A6B34]" : "text-gray-500"}`}
                         onClick={() => setActiveTab("cart")}
                     >
                         Cart
                     </button>
                     <button
-                        className={`px-6 w-1/2 py-2 ${activeTab === "bill" ? "border-b-2 border-[#6D2323] text-[#6D2323]" : "text-gray-500"}`}
+                        className={`px-6 w-1/2 py-2 ${activeTab === "bill" ? "border-b-2 border-[#3A6B34] text-[#3A6B34]" : "text-gray-500"}`}
                         onClick={() => setActiveTab("bill")}
                     >
                         Bill
@@ -223,13 +249,14 @@ function CartPage() {
                 </div>
             </header>
 
-            <main className="p-4 bg-[#FFEFD3]">
+            <main className="p-4 bg-[#F7F8FC] h-screen">
                 {activeTab === "cart" ? (
                     <div className="grid grid-cols-2 gap-4">
                         {carts.map((product: any) => (
                             <div
+                                {...longPressHandlers(product.productId, product.selectedPrice)}
                                 key={product.productId}
-                                className="overflow-hidden rounded-xl bg-[#FEF9E1] shadow-sm p-2 border border-[#FEF9E1]"
+                                className={` relative overflow-hidden rounded-xl bg-[#FFFFFF] shadow-sm p-2 border border-gray-300 ${touchAndHoldAnimation(product.productId, product.selectedPrice)} `}
                             >
                                 <div className="relative aspect-square">
                                     <Image
@@ -239,36 +266,47 @@ function CartPage() {
                                         className="object-cover rounded-xl"
                                     />
                                 </div>
-                                <div className="flex items-center justify-between border-t p-3">
+                                <div className="flex items-center justify-between p-3 text-2xl border-t">
                                     <button
-                                        className="rounded-full bg-gray-100 p-2"
+                                        className="p-2 rounded-full"
                                         onClick={() => handleDecrement(product)}
                                     >
-                                        <Minus className="h-5 w-5 text-gray-600" />
+                                        <Minus className="w-5 h-5 text-[#3A6B34]" />
                                     </button>
-                                    <span className="text-lg font-medium">{product.quantity}</span>
+                                    <span className=" text-[#3A6B34] font-medium">{product.quantity}</span>
                                     <button
-                                        className="rounded-full bg-gray-100 p-2"
+                                        className="p-2 rounded-full"
                                         onClick={() => handleIncrement(product)}
                                     >
-                                        <Plus className="h-5 w-5 text-gray-600" />
+                                        <Plus className="w-5 h-5 text-[#3A6B34]" />
                                     </button>
                                 </div>
+                                {(product.productId === touchAndHoldData.id && product.selectedPrice === touchAndHoldData.selectedPrice) &&
+                                    (<div onClick={() => { setTouchAndHoldData(emptyState) }} className="absolute inset-0 flex items-center justify-center text-xl font-semibold text-white bg-gray-200 bg-opacity-50">
+                                        <div onClick={(e) => { e.stopPropagation(); handleRemoveProduct() }} className="flex items-center p-4 space-x-2 bg-white rounded-full cursor-pointer">
+                                            <button
+                                                className="bg-[#FEE4E2] rounded-full p-2 flex items-center space-x-2"
+                                            >
+                                                <Trash className="w-5 h-5 text-red-500" />
+                                            </button>
+                                        </div>
+                                    </div>)
+                                }
                             </div>
                         ))}
                     </div>
                 ) : (
                     <div className="text-center text-gray-700">
-                        <div className="min-h-screen bg-[#FFEFD3]">
-                            <div className=" rounded-lg bg-transparent shadow-sm">
+                        <div className="min-h-screen">
+                            <div className="bg-transparent rounded-lg shadow-sm ">
                                 <div className="">
-                                    <div className="bg-white shadow-lg rounded-lg p-4 border">
+                                    <div className="p-4 bg-white border rounded-lg shadow-lg">
 
 
                                         {/* Date and Time */}
-                                        <div className="mt-4 flex justify-between text-sm text-gray-500">
-                                        <div>Date : {new Date().toLocaleDateString()}</div>
-                                        <div>Time : {new Date().toLocaleTimeString()}</div>
+                                        <div className="flex justify-between mt-4 text-sm text-gray-500">
+                                            <div>Date : {new Date().toLocaleDateString()}</div>
+                                            <div>Time : {new Date().toLocaleTimeString()}</div>
                                         </div>
 
                                         {/* Order Summary */}
@@ -281,7 +319,7 @@ function CartPage() {
                                                 <span>TOTAL QUANTITY :</span>
                                                 <span>{carts?.reduce((acc, item) => acc + item.quantity, 0)}</span>
                                             </div>
-                                            <div className="mt-4 space-y-2 border-t pt-2">
+                                            <div className="pt-2 mt-4 space-y-2 border-t">
                                                 {/* <div className="flex justify-between">
                                                     <span>SUBTOTAL :</span>
                                                     <span>₹{subtotal?.toFixed(2)}</span>
@@ -303,43 +341,43 @@ function CartPage() {
                                             </div>
                                             <div className="flex justify-between font-medium">
                                                 <span>Total Amount :</span>
-                                                <span>₹{carts?.reduce((acc, item:any) => acc + (item.price * item.quantity), 0)}</span>
+                                                <span>₹{carts?.reduce((acc, item: any) => acc + (item.price * item.quantity), 0)}</span>
                                             </div>
                                         </div>
 
                                         {/* Warning Message */}
-                                        {/* <div className="mt-4 flex justify-center items-center gap-2 text-sm text-red-500">
-                                            <AlertTriangle className="h-4 w-4" />
+                                        {/* <div className="flex items-center justify-center gap-2 mt-4 text-sm text-red-500">
+                                            <AlertTriangle className="w-4 h-4" />
                                             <span>Bill not generated by the seller</span>
                                         </div> */}
 
                                     </div>
                                     {/* Action Buttons */}
-                                    <div className="mt-6 flex gap-4">
+                                    {/* <div className="flex gap-4 mt-6">
                                         <button onClick={() => setIsModalOpen(true)} className="flex flex-1 items-center justify-center gap-2 rounded-md bg-[#6D2323] py-2 text-white hover:bg-[#6D2323]">
-                                            <MessageSquare className="h-4 w-4" />
+                                            <MessageSquare className="w-4 h-4" />
                                             Send Enquiry
                                         </button>
 
-                                    </div>
+                                    </div> */}
 
-                                    <SendEnquiryModal
+                                    {/* <SendEnquiryModal
                                         isOpen={isModalOpen}
                                         onClose={() => setIsModalOpen(false)}
                                         onConfirm={handleConfirm}
                                         title="Send Enquiry ?"
                                         message="Are you sure want to send Enquiry ?"
 
-                                    />
+                                    /> */}
 
                                     {/* Product List */}
                                     {/* <div className="mt-6 space-y-4">
                                         {cart?.map((product:any, index:any) => (
                                             <div
                                                 key={index}
-                                                className="flex gap-4 rounded-lg border bg-white p-4"
+                                                className="flex gap-4 p-4 bg-white border rounded-lg"
                                             >
-                                                <div className="relative h-20 w-20 overflow-hidden rounded-lg">
+                                                <div className="relative w-20 h-20 overflow-hidden rounded-lg">
                                                     <Image
                                                         src={product.image}
                                                         alt={product.name}
@@ -371,9 +409,26 @@ function CartPage() {
                             </div>
                         </div>
                     </div>
-                )}
-            </main>
-        </div>
+                )
+                }
+                <SendEnquiryModal
+                    isOpen={isModalOpen}
+                    onClose={() => setIsModalOpen(false)}
+                    onConfirm={handleConfirm}
+                    title="Send Enquiry ?"
+                    message="Are you sure want to send Enquiry ?"
+
+                />
+                {carts.length > 0 && (<div className="fixed bottom-0 left-0 right-0 z-10 flex items-center p-4 text-xs bg-white border-t shadow-sm justify-evenly">
+                    <button onClick={() => setIsModalOpen(true)} className="flex justify-center items-center gap-2 px-4 py-2 rounded-md border-2 bg-[#3A6B34] text-white w-2/5 ">
+                        <ShoppingCart className="w-4 h-4" /> Send Enquiry
+                    </button>
+                    <button onClick={() => router.push("/shop")} className="flex justify-center items-center gap-2 px-4 py-2 rounded-md border-2 border-[#3A6B34] text-[#3A6B34] w-2/5">
+                        <Store className="w-4 h-4" /> Add Item
+                    </button>
+                </div>)}
+            </main >
+        </div >
     );
 }
 
@@ -381,10 +436,10 @@ function CartPage() {
 
 function CartPageWrapper() {
     return (
-      <Suspense fallback={<div>Loading...</div>}>
-        <CartPage />
-      </Suspense>
+        <Suspense fallback={<div>Loading...</div>}>
+            <CartPage />
+        </Suspense>
     )
-  }
-  
-  export default CartPageWrapper
+}
+
+export default CartPageWrapper

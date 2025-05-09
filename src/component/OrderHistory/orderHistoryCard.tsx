@@ -11,7 +11,7 @@ interface OrderCardProps {
 }
 
 export function OrderHistoryCard({
- order
+  order
 }: any) {
   const statusMapping: { [key: number]: string } = {
     1: "Pending",
@@ -46,7 +46,7 @@ export function OrderHistoryCard({
   console.log("order", order)
 
   return (
-    <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm m-1">
+    <div className="p-4 m-1 bg-white border border-gray-200 rounded-lg shadow-sm">
       <div className="flex items-center justify-between">
         <div className="space-y-1">
           <p className="text-sm text-gray-500">Order Id: {order.orderId}</p>
@@ -56,9 +56,8 @@ export function OrderHistoryCard({
           </div>
         </div>
         <span
-          className={`rounded-full px-2.5 py-0.5 text-[10px] font-medium ${
-            statusColors[status]
-          }`}
+          className={`rounded-full px-2.5 py-0.5 text-[10px] font-medium ${statusColors[status]
+            }`}
         >
           {status}
         </span>
@@ -66,28 +65,28 @@ export function OrderHistoryCard({
       <div className="mt-4 space-y-2">
         <div className="flex justify-between text-sm">
           <span className="text-gray-600">TOTAL ITEM</span>
-          <span className="font-medium">{order.totalItem}</span>
+          <span className="font-medium text-gray-600">{order.totalItem}</span>
         </div>
         <div className="flex justify-between text-sm">
           <span className="text-gray-600">TOTAL QUANTITY</span>
-          <span className="font-medium">{order.totalQuantity}</span>
+          <span className="font-medium text-gray-600">{order.totalQuantity}</span>
         </div>
-        {/* <div className="mt-4 flex justify-between">
+        <div className="flex justify-between mt-4">
           <span className="text-gray-600">Total Amount:</span>
-          <span className="text-lg font-semibold">
-            ₹{order.totalItem * order.totalQuantity}
+          <span className="text-lg font-semibold text-gray-600">
+            ₹{order?.OrderProductDetails?.reduce((acc: number, item: any) => acc + item.price, 0)}
           </span>
-        </div> */}
-        <div className="flex justify-between text-sm">
-          <span className="font-medium">Note: {order.notes}</span>
         </div>
-{order.filePath?.length > 0 && (
- <div>
- <span className="font-medium">Transport Receipt: </span>
- <img src={order.filePath} alt="img" className="mt-3"/>
- </div>
-)}
-       
+        <div className="flex justify-between text-sm">
+          <span className="font-medium text-gray-400">Note: {order.notes}</span>
+        </div>
+        {order.filePath?.length > 0 && (
+          <div>
+            <span className="font-medium">Transport Receipt: </span>
+            <img src={order.filePath} alt="img" className="mt-3" />
+          </div>
+        )}
+
 
       </div>
     </div>

@@ -84,17 +84,17 @@ export default function CurrentReceivedOrderMain() {
 
   return (
     <>
-      <header className="sticky top-0 z-10 flex h-20 items-center justify-between border-b bg-white px-4">
+      <header className="sticky top-0 z-10 flex items-center justify-between h-20 px-4 bg-white border-b">
         <button
-          className="flex items-center justify-center rounded-full p-2 hover:bg-gray-100"
+          className="flex items-center justify-center p-2 rounded-full hover:bg-gray-100"
           aria-label="Go back"
         >
-          <ArrowLeft className="h-5 w-5 cursor-pointer text-black" onClick={() => window.history.back()} />
+          <ArrowLeft className="w-5 h-5 text-black cursor-pointer" onClick={() => window.history.back()} />
         </button>
 
         <h1 className="text-lg font-medium text-black">Request Order</h1>
 
-        <div className="relative flex h-8 w-8 items-center justify-center rounded-full bg-emerald-500 text-white">
+        <div className="relative flex items-center justify-center w-8 h-8 text-white rounded-full bg-emerald-500">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="24"
@@ -115,11 +115,11 @@ export default function CurrentReceivedOrderMain() {
         </div>
       </header>
 
-      <div className="max-w-md mx-auto p-4 space-y-4">
-        <div className="max-w-sm mx-auto rounded-lg border bg-white p-4 shadow-sm">
+      <div className="max-w-md p-4 mx-auto space-y-4">
+        <div className="max-w-sm p-4 mx-auto bg-white border rounded-lg shadow-sm">
           <div className="flex items-start justify-between">
             <h3 className="text-lg font-medium text-gray-800">Recent Order</h3>
-            <div className="text-sm text-gray-500 text-right">
+            <div className="text-sm text-right text-gray-500">
               <p>Date - {new Date().toLocaleDateString()}</p>
               <p>Time - {new Date().toLocaleTimeString()}</p>
             </div>
@@ -143,16 +143,16 @@ export default function CurrentReceivedOrderMain() {
               // <Link href="/request-cart" key={index}>
 
               <Link href={`/request-cart?orderId=${order.orderId}`} key={index}>
-                <div className="p-4 border bg-white shadow-sm rounded-lg m-1">
+                <div className="p-4 m-1 text-black bg-white border rounded-lg shadow-sm">
                   <div className="flex items-start gap-3">
-                    <div className="p-2 bg-blue-50 rounded-lg">
-                      <Package className="h-5 w-5 text-[#6D2323]" />
+                    <div className="p-2 rounded-lg bg-blue-50">
+                      <Package className="h-5 w-5 text-[#3A6B34]" />
                     </div>
                     <div className="flex-1">
-                      <div className="flex justify-between items-start">
+                      <div className="flex items-start justify-between">
                         <div>
                           <h3 className="font-medium text-blue-700">Order Id: {order.orderId}</h3>
-                          <p className="text-sm text-muted-foreground mt-1">
+                          <p className="mt-1 text-sm text-muted-foreground">
                             Items: {order.totalItem} · Quantity: {order.totalQuantity}
                           </p>
                         </div>
@@ -164,7 +164,7 @@ export default function CurrentReceivedOrderMain() {
                         </p>
                       </div>
                       <div className="mt-2 text-sm">
-                        <p className="text-muted-foreground mt-4">Created At: {new Date(order.createdAt).toLocaleString()}</p>
+                        <p className="mt-4 text-muted-foreground">Created At: {new Date(order.createdAt).toLocaleString()}</p>
                         <br></br>
                         <p className="text-muted-foreground"><span className="text-blue-600">Notes :</span> {order.notes}</p>
                       </div>

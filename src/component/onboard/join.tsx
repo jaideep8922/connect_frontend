@@ -4,7 +4,7 @@ import React, { Suspense, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Camera from '@/assets/camera-plus.svg';
-import Logo from '@/assets/logo.png';
+import Logo from '@/assets/logo3.svg';
 import toast, { Toaster } from 'react-hot-toast';
 import { useSearchParams } from "next/navigation";
 import axios from "axios";
@@ -68,7 +68,7 @@ const JoinPage: React.FC = () => {
   //     sessionStorage.setItem("length", Array.from(urlParams.entries()).length)
   //   }
   // },[])
-  
+
   // const[length, setLength]= useState<number>(0)
 
   // useEffect(()=>{
@@ -81,30 +81,30 @@ const JoinPage: React.FC = () => {
   // console.log("lengthlength", length)
 
   const urlParams = new URLSearchParams(window.location.search);
-const ids = urlParams.get("id");
+  const ids = urlParams.get("id");
 
-console.log("urlParams", Array.from(urlParams.entries()).length);
+  console.log("urlParams", Array.from(urlParams.entries()).length);
 
-useEffect(() => {
-  if (typeof window !== "undefined") {
-    sessionStorage.setItem("length", String(Array.from(urlParams.entries()).length));
-  }
-}, []);
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      sessionStorage.setItem("length", String(Array.from(urlParams.entries()).length));
+    }
+  }, []);
 
-const [length, setLength] = useState<number>(0);
+  const [length, setLength] = useState<number>(0);
 
-useEffect(() => {
-  if (typeof window !== "undefined") {
-    const data = sessionStorage.getItem("length");
-    setLength(data ? parseInt(data, 10) : 0); // Convert string to number
-  }
-}, []);
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const data = sessionStorage.getItem("length");
+      setLength(data ? parseInt(data, 10) : 0); // Convert string to number
+    }
+  }, []);
 
-console.log("lengthlength", length);
+  console.log("lengthlength", length);
 
-  
 
-  const[supplierRelogin, setSupplierRelogin]= useState<any>()
+
+  const [supplierRelogin, setSupplierRelogin] = useState<any>()
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -115,9 +115,9 @@ console.log("lengthlength", length);
       const idParam = searchParams.get("id");
       setUserType(userType)
 
-      const userTypes= searchParams.get("type")
+      const userTypes = searchParams.get("type")
       setSupplierRelogin(userTypes)
-      
+
       const idToUse = idParam || storedId;
       setId(idToUse);
       if (idParam) {
@@ -126,14 +126,14 @@ console.log("lengthlength", length);
     }
   }, [searchParams]);
 
-  console.log("supplierRelogin",supplierRelogin)
+  console.log("supplierRelogin", supplierRelogin)
 
 
   const userId = id?.startsWith("RE") || (supplierRelogin === 'supplier' || sessionStorage.getItem("id")?.includes("SU") && id?.startsWith("SU"))
 
   const [mobile, setMobile] = useState(localStorage.getItem("phone"));
 
-  console.log("userId",userId)
+  console.log("userId", userId)
 
   const fetchUserDetails = async () => {
     if (!id) return;
@@ -176,8 +176,8 @@ console.log("lengthlength", length);
     }
   }, [id, userType]);
 
-  
-  
+
+
 
   console.log("mobile", mobile)
 
@@ -207,7 +207,13 @@ console.log("lengthlength", length);
 
   // Function for next step
   const handleNext = async () => {
-    if (step < 5) {
+    if (step < 7) {
+      if (step === 3) {
+        handlePhoneSubmit()
+      }
+      if (step === 4) {
+        handleOtpSubmit()
+      }
       setStep(step + 1);
     } else {
       setLoading(true);
@@ -302,7 +308,7 @@ console.log("lengthlength", length);
       } else {
         toast.error(otpResponse.data.message || "Invalid OTP. Please try again.");
         setIsSubmitting(false);
-        return; 
+        return;
       }
 
       // Step 2: Create Guest User (Only if OTP is verified)
@@ -382,6 +388,7 @@ console.log("lengthlength", length);
         toast.error(response.data.message || "Invalid OTP. Please try again.");
       }
     } catch (error: any) {
+      setStep(4);
       console.error("Error verifying OTP:", error.response?.data || error);
       toast.error("OTP verification failed. Please try again.");
     }
@@ -528,20 +535,53 @@ console.log("lengthlength", length);
     }
   };
 
+  const handleInputChangeOtp = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    index: number
+  ) => {
+    const { value } = e.target;
+    if (!/^[0-9]?$/.test(value)) return; // Only allow single digit
+
+    const otpArray = formData.otp.split('');
+    otpArray[index] = value;
+    const newOtp = otpArray.join('');
+
+    setFormData((prev) => ({
+      ...prev,
+      otp: newOtp,
+    }));
+
+    // Move to next field
+    if (value && index < 5) {
+      const nextInput = document.getElementById(`otp-${index + 1}`);
+      nextInput?.focus();
+    }
+  };
+
+  const handleKeyDown = (
+    e: React.KeyboardEvent<HTMLInputElement>,
+    index: number
+  ) => {
+    if (e.key === 'Backspace' && !formData.otp[index] && index > 0) {
+      const prevInput = document.getElementById(`otp-${index - 1}`);
+      prevInput?.focus();
+    }
+  };
 
 
-console.log("================================================", length)
+
+  console.log("================================================", length)
 
   return (
-    <div className=" h-screen flex flex-col items-center justify-between bg-[#FFEFD3]">
+    <div className=" h-screen flex flex-col items-center justify-between bg-[#FFFFFF]">
       <Toaster />
       {/* Header */}
       <header className={`mt-14 transition-all duration-300 ${step === 1 ? 'w-[100%] ' : 'w-[100%]'}`}>
-        <div className={`w-full h-full bg-[#FFEFD3] rounded-full flex items-center justify-center`}>
+        <div className={`w-full h-full bg-[#FFFFFF] rounded-full flex items-center justify-center`}>
           <Image
             src={Logo}
             alt="Logo"
-            className={`transition-all duration-300 ${step === 1 ? 'w-full h-full' : 'w-24 h-18'}`}
+            className={`transition-all duration-300 ${step === 1 ? 'w-1/2 aspect-square' : 'w-24 h-18'}`}
           />
 
         </div>
@@ -550,47 +590,50 @@ console.log("================================================", length)
 
       {/* Main Content */}
       <main className="flex flex-col w-full px-6">
-        {length !== 3 ? (
+        {length === 0 ? (
           <>
             {step === 1 && (
-              <div className="bg-[#FFEFD3]">
-                <h1 className="text-lg text-[#6D2323] font-bold mb-6 border-b border-[#6D2323] w-20 border-b-black">Join as-
+              <div className="bg-[#FFFFFF]">
+                <h1 className="w-20 mb-6 text-lg font-bold text-black border-b border-black border-b-black">Join as-
                   {/* {id ? <p>ID: {id}</p> : <p>Loading...</p>} */}
                 </h1>
-                <div className="flex mb-10 space-x-5  w-30">
-                  <label className="flex text-sm text-[#6D2323] items-center space-x-2">
+                <div className="flex mb-10 space-x-5 justify-evenly w-30">
+                  <label className="flex items-center space-x-2 text-sm text-black">
                     <input
                       type="radio"
                       name="userType"
                       value="Retailer"
                       checked={formData.userType === "Retailer"}
                       onChange={() => setFormData({ ...formData, userType: "Retailer" })}
-                      className="form-radio text-[#6D2323]"
+                      className="sr-only peer"
                     />
+                    <div className="w-[0.8rem] aspect-square border border-[#FF9A2D] rounded-full peer-checked:bg-[#FF9A2D] mr-2" />
                     <span className="text-MD">Retailer</span>
                   </label>
 
-                  <label className="flex text-sm items-center text-[#6D2323] space-x-2">
+                  <label className="flex items-center space-x-2 text-sm text-black">
                     <input
                       type="radio"
                       name="userType"
                       value="Supplier"
                       checked={formData.userType === "Supplier"}
                       onChange={() => setFormData({ ...formData, userType: "Supplier" })}
-                      className="form-radio text-[#6D2323]"
+                      className="sr-only peer"
                     />
+                    <div className="w-[0.8rem] aspect-square border border-[#FF9A2D] rounded-full peer-checked:bg-[#FF9A2D] mr-2" />
                     <span className="text-md">Supplier</span>
                   </label>
 
-                  <label className="flex text-sm items-center text-[#6D2323] space-x-2">
+                  <label className="flex items-center space-x-2 text-sm text-black">
                     <input
                       type="radio"
                       name="userType"
                       value="Supplier"
                       checked={formData.userType === "Guest"}
                       onChange={() => setFormData({ ...formData, userType: "Guest" })}
-                      className="form-radio text-[#6D2323]"
+                      className="sr-only peer"
                     />
+                    <div className="w-[0.8rem] aspect-square border border-[#FF9A2D] rounded-full peer-checked:bg-[#FF9A2D] mr-2" />
                     <span className="text-md">Guest User</span>
                   </label>
                   {/* 
@@ -602,9 +645,9 @@ console.log("================================================", length)
               </div>
             )}
           </>
-        ) : supplierRelogin === 'supplier' || sessionStorage.getItem("id")?.includes("SU") || length === 3  ? (
+        ) : supplierRelogin === 'supplier' || sessionStorage.getItem("id")?.includes("SU") ? (
           <div>
-            <label className="block mb-1 text-sm items-center text-[#6D2323] font-medium">
+            <label className="items-center block mb-1 text-sm font-medium text-black">
               Phone Number:
             </label>
 
@@ -612,17 +655,24 @@ console.log("================================================", length)
               type="text"
               value={mobile || ""}
               onChange={(e) => setMobile(e.target.value)}
-              placeholder="Enter your phone number"
-              className="w-full p-2 border rounded"
+              className="w-full p-2 text-black bg-white border rounded-lg border-slate-400"
               required
               disabled={isOtpSent}
             />
+            {/* <input
+                type="tel"
+                name="phone"
+                placeholder="Phone"
+                value={formData.phone}
+                onChange={handleInputChange}
+                className="w-full p-2 text-black bg-white border rounded-lg border-slate-400"
+              /> */}
 
             {/* Send OTP Button */}
             {!isOtpSent && (
               <button
                 onClick={sendOtps}
-                className={`w-full bg-[#6D2323] text-white py-2 rounded mt-2 ${isSubmitting ? "opacity-50 cursor-not-allowed" : "hover:bg-[#6D2323]"
+                className={`w-full bg-[#3A6B34] text-white py-2 rounded mt-2 ${isSubmitting ? "opacity-50 cursor-not-allowed" : "hover:bg-[#3A6B34]"
                   }`}
                 disabled={isSubmitting}
               >
@@ -638,13 +688,13 @@ console.log("================================================", length)
                   value={otp}
                   onChange={(e) => setOtp(e.target.value)}
                   placeholder="Enter OTP"
-                  className="w-full p-2 mt-2 border rounded"
+                  className="w-full p-2 mt-2 text-black bg-white border rounded-lg border-slate-400"
                   required
                 />
 
                 <button
                   onClick={verifyOtps}
-                  className={`w-full bg-green-600 text-white py-2 rounded mt-2 ${isSubmitting ? "opacity-50 cursor-not-allowed" : "hover:bg-green-700"
+                  className={`w-full bg-[#3A6B34] text-white py-2 rounded mt-2 ${isSubmitting ? "opacity-50 cursor-not-allowed" : "hover:bg-[#3A6B34]"
                     }`}
                   disabled={isSubmitting}
                 >
@@ -657,7 +707,7 @@ console.log("================================================", length)
         ) : (
           <>
             <div>
-              <label className="block mb-1 text-sm items-center text-[#6D2323] font-medium">
+              <label className="items-center block mb-1 text-sm font-medium text-black">
                 Phone Number:
               </label>
 
@@ -665,8 +715,7 @@ console.log("================================================", length)
                 type="text"
                 value={mobile || ""}
                 onChange={(e) => setMobile(e.target.value)}
-                placeholder="Enter your phone number"
-                className="w-full p-2 border rounded"
+                className="w-full p-2 mt-2 text-black bg-white border rounded-lg border-slate-400"
                 required
                 disabled={isOtpSent}
               />
@@ -675,7 +724,7 @@ console.log("================================================", length)
               {!isOtpSent && (
                 <button
                   onClick={sendOtp}
-                  className={`w-full bg-[#6D2323] text-white py-2 rounded mt-2 ${isSubmitting ? "opacity-50 cursor-not-allowed" : "hover:bg-[#6D2323]"
+                  className={`w-full bg-[#3A6B34] text-white py-2 rounded mt-2 ${isSubmitting ? "opacity-50 cursor-not-allowed" : "hover:bg-[#3A6B34]"
                     }`}
                   disabled={isSubmitting}
                 >
@@ -691,7 +740,7 @@ console.log("================================================", length)
                     value={otp}
                     onChange={(e) => setOtp(e.target.value)}
                     placeholder="Enter OTP"
-                    className="w-full p-2 mt-2 border rounded"
+                    className="w-full p-2 mt-2 text-black bg-white border rounded-lg border-slate-400"
                     required
                   />
 
@@ -715,7 +764,7 @@ console.log("================================================", length)
             {/* Phone Input */}
             {!showOtpBox && (
               <div>
-                <h1 className="text-md font-bold py-2 text-sm items-center text-[#6D2323]">
+                <h1 className="text-md font-bold py-2 text-sm items-center text-[#3A6B34]">
                   Type your phone number
                 </h1>
                 <input
@@ -724,14 +773,14 @@ console.log("================================================", length)
                   placeholder="Phone"
                   value={formData.phone}
                   onChange={handleInputChange}
-                  className="w-full p-2 border rounded-lg border-slate-400"
+                  className="w-full p-2 text-black bg-white border rounded-lg border-slate-400"
                 />
 
                 {!otpVisible && (
                   <button
                     onClick={handlePhoneSubmit}
                     // onClick={handleOtpSubmitGuest}
-                    className="mt-3 w-full py-2 bg-[#6D2323] text-white rounded-lg hover:bg-[#6D2323] transition"
+                    className="mt-3 w-full py-2 bg-[#3A6B34] text-white rounded-lg hover:bg-[#3A6B34] transition"
                   >
                     Verify Phone
                   </button>
@@ -742,14 +791,14 @@ console.log("================================================", length)
             {/* OTP Input */}
             {otpVisible && (
               <div className="mt-4">
-                <h1 className="py-2 font-bold text-md">Enter OTP</h1>
+                <h1 className="py-2 font-bold text-black text-md">Enter OTP</h1>
                 <input
                   type="text"
                   name="otp"
                   placeholder="OTP"
                   value={formData.otp}
                   onChange={handleInputChange}
-                  className="w-full p-2 border rounded-lg border-slate-400"
+                  className="w-full p-2 text-black bg-white border rounded-lg border-slate-400"
                 />
                 <button
                   onClick={handleOtpSubmitGuest}
@@ -764,56 +813,56 @@ console.log("================================================", length)
         )}
 
         {step === 2 && (
-          <div className="w-full max-w-md space-y-4">
-            <h1 className="text-2xl flex font-bold justify-center items-center mb-5 text-[#6D2323]">Complete profile !</h1>
+          <div className="w-full max-w-md space-y-4 text-black">
+            <h1 className="text-2xl flex font-bold justify-center items-center mb-5 text-[#3A6B34]">Complete profile !</h1>
             <div>
-              <h1 className="text-md font-bold py-2 text-sm items-center text-[#6D2323]">Business Owner</h1>
+              <h1 className="items-center py-2 text-sm font-bold text-black text-md">Business Owner</h1>
               <input
                 type="text"
                 name="businessOwner"
                 placeholder="Business Owner"
                 value={formData.businessOwner}
                 onChange={handleInputChange}
-                className="w-full px-1 py-3 border rounded-lg border-slate-400"
+                className="w-full px-2 py-3 bg-white border rounded-lg border-slate-400"
 
               />
             </div>
             <div>
 
-              <h1 className="text-md font-bold py-2 text-sm items-center text-[#6D2323]">Business Name</h1>
+              <h1 className="items-center py-2 text-sm font-bold text-black text-md">Business Name</h1>
               <input
                 type="text"
                 name="businessName"
                 placeholder="Business Owner"
                 value={formData.businessName}
                 onChange={handleInputChange}
-                className="w-full px-1 py-3 border rounded-lg border-slate-400"
+                className="w-full px-2 py-3 bg-white border rounded-lg border-slate-400"
 
               />
             </div>
-            {/* <p className="mt-2 text-xs text-gray-500">
+            <p className="mt-2 text-xs text-gray-500">
               Update your profile name to reflect your identity. This will be displayed on your account and visible to others.
-            </p> */}
+            </p>
 
-            <div>
-              <h1 className="text-md font-bold py-2 text-sm items-center text-[#6D2323]">GST NO.</h1>
+            {/* <div>
+              <h1 className="items-center py-2 text-sm font-bold text-black text-md">GST NO.</h1>
               <input
                 type="gst"
                 name="gstNumber"
                 placeholder="GST NO."
                 value={formData.gstNumber}
                 onChange={handleInputChange}
-                className="w-full p-2 border rounded-lg border-slate-400"
+                className="w-full p-2 bg-white border rounded-lg border-slate-400"
               />
-            </div>
+            </div> */}
           </div>
         )}
 
         {step === 3 && (
           <div className="w-full max-w-md space-y-4">
-            <h1 className="text-2xl flex font-bold justify-center items-center mb-5 mt-5 text-[#6D2323]">Complete profile !</h1>
+            <h1 className="text-2xl flex font-bold justify-center items-center mb-5 mt-5 text-[#3A6B34]">Complete profile !</h1>
             <div>
-              <h1 className="text-md font-bold py-2 text-sm items-center text-[#6D2323]">
+              <h1 className="items-center py-2 text-sm font-bold text-black text-md">
                 Type your phone number
               </h1>
               <input
@@ -822,19 +871,23 @@ console.log("================================================", length)
                 placeholder="Phone"
                 value={formData.phone}
                 onChange={handleInputChange}
-                className="w-full p-2 border rounded-lg border-slate-400"
+                className="w-full p-2 text-black bg-white border rounded-lg border-slate-400"
               />
-              {!otpVisible && (
+              {/* {!otpVisible && (
                 <button
                   onClick={handlePhoneSubmit}
-                  className="mt-3 w-full py-2 bg-[#6D2323] text-white rounded-lg hover:bg-[#6D2323] transition"
+                  className="mt-3 w-full py-2 bg-[#3A6B34] text-white rounded-lg hover:bg-[#3A6B34] transition"
                 >
                   Verify Phone
                 </button>
-              )}
+              )} */}
             </div>
 
-            {otpVisible && (
+            <p className="mt-2 text-xs text-gray-500">
+              Verification code will be send to this number.
+            </p>
+
+            {/* {otpVisible && (
               <div className="mt-4">
                 <h1 className="py-2 font-bold text-md">Enter OTP</h1>
                 <input
@@ -852,9 +905,9 @@ console.log("================================================", length)
                   Submit OTP
                 </button>
               </div>
-            )}
+            )} */}
 
-            <div>
+            {/* <div>
               <h1 className="text-md font-bold py-2 text-sm items-center text-[#6D2323]">Shop Marka</h1>
               <input
                 type="shopMarka"
@@ -876,66 +929,143 @@ console.log("================================================", length)
                 onChange={handleInputChange}
                 className="w-full p-2 border rounded-lg border-slate-400"
               />
-            </div>
+            </div> */}
 
           </div>
         )}
 
         {step === 4 && (
-          <div className="w-full max-w-md space-y-4">
+          // <div className="mt-4">
+          //   <h1 className="py-2 font-bold text-md">Enter OTP</h1>
+          //   <input
+          //     type="text"
+          //     name="otp"
+          //     placeholder="OTP"
+          //     value={formData.otp}
+          //     onChange={handleInputChange}
+          //     className="w-full p-2 border rounded-lg border-slate-400"
+          //   />
+          //   {/* <button
+          //     onClick={handleOtpSubmit}
+          //     className="w-full py-2 mt-3 text-white transition bg-green-600 rounded-lg hover:bg-green-700"
+          //   >
+          //     Submit OTP
+          //   </button> */}
+          // </div>
 
-
-            <div>
-              <h1 className="text-md font-bold py-2 text-sm items-center text-[#6D2323]">Pin Code</h1>
-              <input
-                type="pincode"
-                name="pincode"
-                placeholder="Pincode"
-                value={formData.pincode}
-                onChange={handleInputChange}
-                className="w-full p-2 border rounded-lg border-slate-400"
-              />
-
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-gray-700">Verification code</label>
+            <div className="flex gap-2">
+              {[...Array(6)].map((_, i) => (
+                <input
+                  key={i}
+                  id={`otp-${i}`}
+                  name="otp"
+                  type="text"
+                  maxLength={1}
+                  value={formData.otp[i] || ''}
+                  onChange={(e) => handleInputChangeOtp(e, i)}
+                  onKeyDown={(e) => handleKeyDown(e, i)}
+                  className="w-12 h-12 text-lg text-center text-black bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              ))}
             </div>
-
-            <div>
-              <h1 className="text-md font-bold py-2 text-sm items-center text-[#6D2323]">City / State</h1>
-              <input
-                type="city"
-                name="city"
-                placeholder="City"
-                value={formData.city}
-                onChange={handleInputChange}
-                className="w-full p-2 border rounded-lg border-slate-400"
-              />
-
-            </div>
-
-            <div>
-              <h1 className="text-md font-bold py-2 text-sm items-center text-[#6D2323]">State</h1>
-              <input
-                type="state"
-                name="state"
-                placeholder="State"
-                value={formData.state}
-                onChange={handleInputChange}
-                className="w-full p-2 border rounded-lg border-slate-400"
-              />
-
-            </div>
-
+            <p className="text-sm text-gray-500">
+              Didn't get a code?{' '}
+              <button className="text-orange-500 hover:underline">Click to resend.</button>
+            </p>
           </div>
+
         )}
 
         {step === 5 && (
           <div className="w-full max-w-md space-y-4">
+            <div>
+              <h1 className="items-center py-2 text-sm font-bold text-black text-md">GST NO.</h1>
+              <input
+                type="gst"
+                name="gstNumber"
+                value={formData.gstNumber}
+                onChange={handleInputChange}
+                className="w-full p-2 text-black bg-white border rounded-lg border-slate-400"
+              />
+            </div>
+            <div>
+              <h1 className="items-center py-2 text-sm font-bold text-black text-md">Shop Marka</h1>
+              <input
+                type="shopMarka"
+                name="shopMarka"
+                value={formData.shopMarka}
+                onChange={handleInputChange}
+                className="w-full p-2 text-black bg-white border rounded-lg border-slate-400"
+              />
+            </div>
 
+            <div>
+              <h1 className="items-center py-2 text-sm font-bold text-black text-md">Preferred Transport</h1>
+              <input
+                type="transport"
+                name="transport"
+                value={formData.transport}
+                onChange={handleInputChange}
+                className="w-full p-2 text-black bg-white border rounded-lg border-slate-400"
+              />
+            </div>
+          </div>
+
+        )}
+
+        {step === 6 && (
+          <div className="w-full max-w-md space-y-4">
+            <h1 className="text-2xl flex font-bold justify-center items-center mb-5 mt-5 text-[#3A6B34]">Buisiness Address</h1>
+            <div>
+              <h1 className="items-center py-2 text-sm font-bold text-black text-md">Pin Code</h1>
+              <input
+                type="pincode"
+                name="pincode"
+                value={formData.pincode}
+                onChange={handleInputChange}
+                className="w-full p-2 text-black bg-white border rounded-lg border-slate-400"
+              />
+
+            </div>
+
+            <div>
+              <h1 className="items-center py-2 text-sm font-bold text-black text-md">City / State</h1>
+              <input
+                type="city"
+                name="city"
+                value={formData.city}
+                onChange={handleInputChange}
+                className="w-full p-2 text-black bg-white border rounded-lg border-slate-400"
+              />
+
+            </div>
+
+            <div>
+              <h1 className="items-center py-2 text-sm font-bold text-black text-md">State</h1>
+              <input
+                type="state"
+                name="state"
+                value={formData.state}
+                onChange={handleInputChange}
+                className="w-full p-2 text-black bg-white border rounded-lg border-slate-400"
+              />
+            </div>
+            <p className="mt-2 text-xs text-gray-500">
+              Update your profile name to reflect your identity. This will be displayed on your account and visible to others.</p>
+          </div>
+        )}
+
+        {step === 7 && (
+          <div className="w-full max-w-md space-y-4">
+            <h1 className="text-2xl flex font-bold justify-center items-center mb-5 mt-5 text-[#3A6B34]">Profile Image</h1>
             <div className="flex flex-col items-center justify-center space-y-2">
               <label
                 htmlFor="profile-upload"
                 className="relative cursor-pointer group"
               >
-                <div className="flex h-32 w-32 flex-col items-center justify-center rounded-full bg-[#6D2323] transition-colors group-hover:bg-[#6D2323]">
+                <div className="flex h-32 w-32 flex-col items-center justify-center rounded-full bg-[#CFFFCA] transition-colors group-hover:bg-[#CFFFCA]">
                   {selectedImage ? (
                     <div className="relative w-full h-full overflow-hidden rounded-full">
                       <Image
@@ -962,9 +1092,9 @@ console.log("================================================", length)
                   className="sr-only"
                 />
               </label>
-              <span className="text-sm font-semibold mt-2 text-[#6D2323]">Upload Profile photo</span>
+              <span className="mt-2 text-sm font-semibold text-black">Upload Profile photo</span>
 
-              <p className="mt-2 text-xs text-[#6D2323]">
+              <p className="mt-2 text-xs text-black">
                 Please upload your profile photo to stay visible
               </p>
             </div>
@@ -990,11 +1120,11 @@ console.log("================================================", length)
               {step < 5 ? "Next" : "Submit"}
             </button> */}
 
-            {length !== 3 && (
+            {length === 0 && (
               <button
                 onClick={handleNext}
                 disabled={loading}
-                className={`w-full  py-3 text-white rounded-xl transition duration-200 ${loading ? "bg-gray-400 cursor-not-allowed" : "bg-[#6D2323] hover:bg-[#6D2323]"
+                className={`w-full  py-3 text-white rounded-xl transition duration-200 ${loading ? "bg-gray-400 cursor-not-allowed" : "bg-[#3A6B34] hover:bg-[#3A6B34]"
                   }`}
               >
                 {loading ? (
@@ -1006,7 +1136,7 @@ console.log("================================================", length)
                     Processing...
                   </div>
                 ) : (
-                  step < 5 ? "Next" : "Submit"
+                  step < 7 ? "Next" : "Submit"
                 )}
               </button>
 
@@ -1017,7 +1147,7 @@ console.log("================================================", length)
             {step > 1 && (
               <button
                 onClick={handlePrevious}
-                className="w-full py-3 text-black transition duration-200 bg-gray-300 rounded-xl hover:bg-gray-400"
+                className="w-full py-3 text-black transition duration-200 rounded-xl border-2 border-[#3A6B34]"
               >
                 Back
               </button>
@@ -1026,7 +1156,7 @@ console.log("================================================", length)
           </div>
 
           {/* Pagination Dots */}
-          {length !== 3 && (
+          {/* {length !== 3 && (
             <div className="flex space-x-2 ">
               {[1, 2, 3, 4].map((page) => (
                 <span
@@ -1036,7 +1166,7 @@ console.log("================================================", length)
                 ></span>
               ))}
             </div>
-          )}
+          )} */}
 
         </footer>
       )}

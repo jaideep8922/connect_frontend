@@ -68,20 +68,20 @@ export default function ReviewsPage() {
 
   return (
     <>
-      <header className="sticky top-0 z-10 flex h-20 items-center justify-between border-b bg-white px-4">
+      <header className="sticky top-0 z-10 flex items-center justify-between h-20 px-4 bg-white border-b">
         <button
-          className="flex items-center justify-center rounded-full p-2 hover:bg-gray-100"
+          className="flex items-center justify-center p-2 rounded-full hover:bg-gray-100"
           aria-label="Go back"
         >
           <ArrowLeft
-            className="h-5 w-5 cursor-pointer  text-black"
+            className="w-5 h-5 text-black cursor-pointer"
             onClick={() => window.history.back()}
           />
         </button>
 
         <h1 className="text-lg font-medium text-black">Review</h1>
 
-        <div className="relative flex h-8 w-8 items-center justify-center rounded-full bg-emerald-500 text-white">
+        <div className="relative flex items-center justify-center w-8 h-8 text-white rounded-full bg-emerald-500">
           <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-yellow-400 text-[10px] font-bold">
             {reviews.length}
           </span>
@@ -107,26 +107,26 @@ export default function ReviewsPage() {
         <ReviewCard data={reviews} />
 
       ) : (
-        <div className="flex items-center justify-center my-4">No review Found</div>
+        <div className="flex items-center justify-center my-4 text-black">No review Found</div>
       )}
 
       <div className="mx-auto bg-white pb-">
         {/* <div className="divide-y divide-gray-100">
           {loading ? (
-            <p className="text-center py-4">Loading reviews...</p>
+            <p className="py-4 text-center">Loading reviews...</p>
           ) : reviews?.data?.length > 0 ? (
             reviews?.data?.map((review:any, i) => (
               <ReviewCard key={i} {...review} />
             ))
           ) : (
-            <p className="text-center py-4">No reviews found.</p>
+            <p className="py-4 text-center">No reviews found.</p>
           )}
         </div> */}
 
         {userType === 'Retailer' && (
-          <div className="fixed bottom-0 left-0 right-0 bg-white p-4">
+          <div className="fixed bottom-0 left-0 right-0 p-4 bg-white">
             <button
-              className="w-full flex items-center justify-center gap-x-2 rounded-lg bg-[#6D2323] px-4 py-3 text-sm font-medium text-white hover:bg-[#6D2323]"
+              className="w-full flex items-center justify-center gap-x-2 rounded-lg bg-[#3A6B34] px-4 py-3 text-sm font-medium text-white hover:bg-[#3A6B34]"
               onClick={() => router.push("/add-review")}
             >
               Add Review
@@ -140,7 +140,7 @@ export default function ReviewsPage() {
                 strokeWidth="2"
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                className="h-5 w-5"
+                className="w-5 h-5"
               >
                 <circle cx="12" cy="12" r="10" />
                 <path d="M8 12h8" />

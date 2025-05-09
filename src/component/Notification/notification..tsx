@@ -67,7 +67,7 @@ const Notification = () => {
               minute: "2-digit",
               hour12: true,
             });
-          
+
             return {
               id: order.id,
               title: `Order Status Updated`,
@@ -77,7 +77,7 @@ const Notification = () => {
               orderStatus: statusMapping[order.statusId] || "Unknown Status", // ✅ Map statusId to text
             };
           });
-          
+
           // const formattedNotifications = orders.map((order: any) => ({
           //   id: order.id,
           //   title: `Order Status Updated`,
@@ -99,8 +99,8 @@ const Notification = () => {
 
   console.log("notifications", notifications);
   return (
-    <div className="min-h-screen bg-gray-100 p-4">
-      <div className="max-w-4xl mx-auto bg-white shadow-md rounded-lg">
+    <div className="min-h-screen bg-[#F7F8FC] p-4">
+      <div className="max-w-4xl mx-auto bg-white rounded-lg shadow-md">
         <header className="p-4 border-b border-gray-200">
           <h1 className="text-lg font-semibold text-gray-800">Notifications</h1>
         </header>
@@ -108,9 +108,8 @@ const Notification = () => {
           {notifications.map((notification: any) => (
             <li
               key={notification.id}
-              className={`p-4 flex items-start space-x-4 ${
-                notification.read ? "bg-[#FFEFD3]" : "bg-blue-50"
-              } border-b border-gray-200 last:border-b-0`}
+              className={`p-4 flex items-start space-x-4 ${notification.read ? "bg-[#FFFFFF]" : "bg-blue-50"
+                } border-b border-gray-200 last:border-b-0`}
             >
               <div className="flex-1">
                 <h2 className="text-sm font-medium text-gray-900">
@@ -118,12 +117,12 @@ const Notification = () => {
                 </h2>
                 <p className="text-sm text-gray-600">{notification.description}</p>
                 <p className="text-sm text-gray-600">
-                  <strong className="text-[#6D2323]">Status:</strong> {notification.orderStatus}
+                  <strong className="text-[#3A6B34]">Status:</strong> {notification.orderStatus}
                 </p>
                 <span className="text-xs text-gray-400">{notification.time}</span>
               </div>
               {!notification.read && (
-                <span className="inline-block w-2.5 h-2.5 bg-[#6D2323] rounded-full"></span>
+                <span className="inline-block w-2.5 h-2.5 bg-[#3A6B34] rounded-full"></span>
               )}
             </li>
           ))}

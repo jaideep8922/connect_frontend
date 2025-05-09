@@ -10,6 +10,7 @@ import toast, { Toaster } from 'react-hot-toast';
 import { useDispatch, useSelector } from "react-redux";
 import { addToCart, removeFromCart } from "@/store/slices/cartSlice";
 import { RootState } from "@/store/store";
+import { formatDate } from "../global/productCard";
 
 export default function SingleProductCard() {
   const router = useRouter();
@@ -25,7 +26,7 @@ export default function SingleProductCard() {
   const [cart, setCart] = useState<any[]>([]);
   const [sellerId, setSellerId] = useState<string | null>(null);
   const [id, setId] = useState<string | null>(null);
-  const [sellerIdss, setSellerIdss]= useState<any>('')
+  const [sellerIdss, setSellerIdss] = useState<any>('')
 
   // Fetch local storage safely (only client-side)
   useEffect(() => {
@@ -45,39 +46,39 @@ export default function SingleProductCard() {
       const productId = searchParams.get('id');
       const idParam = searchParams.get("sellerId");
       setSellerIdss(idParam)
-      setId(productId); 
+      setId(productId);
     }
-  }, []); 
+  }, []);
 
   console.log("sellerId1", sellerIdss)
 
   // Fetch product list based on sellerId
   useEffect(() => {
-    if (!sellerId && !sellerIdss) return; 
-      const fetchProductList = async () => {
-        try {
-          const response = await fetch(
-            `${process.env.NEXT_PUBLIC_BACKEND_URL}/product/get-product-list?sellerId=${sellerId || sellerIdss}`,
-            {
-              method: 'GET',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-            }
-          );
-          const result = await response.json();
-          if (!response.ok) {
-            throw new Error(result.message || 'Failed to fetch product details');
+    if (!sellerId && !sellerIdss) return;
+    const fetchProductList = async () => {
+      try {
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/product/get-product-list?sellerId=${sellerId || sellerIdss}`,
+          {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+            },
           }
-          setProductData(result);
-          setError(null);
-        } catch (error: any) {
-          console.error('Error fetching product details:', error.message);
-          setError(error.message);
+        );
+        const result = await response.json();
+        if (!response.ok) {
+          throw new Error(result.message || 'Failed to fetch product details');
         }
-      };
-      fetchProductList();
-    
+        setProductData(result);
+        setError(null);
+      } catch (error: any) {
+        console.error('Error fetching product details:', error.message);
+        setError(error.message);
+      }
+    };
+    fetchProductList();
+
   }, [sellerId, sellerIdss]);
 
   // Find the specific product based on the ID
@@ -102,7 +103,7 @@ export default function SingleProductCard() {
           price: price,
           selectedPrice: selectedPrice,
           quantity: quantity,
-          tax:selectedProduct?.tax
+          tax: selectedProduct?.tax
         };
 
         // Update cart state
@@ -129,7 +130,7 @@ export default function SingleProductCard() {
       price: price,
       selectedPrice: selectedPrice,
       quantity: quantity + 1,
-      tax:selectedProduct?.tax
+      tax: selectedProduct?.tax
 
     };
 
@@ -148,7 +149,7 @@ export default function SingleProductCard() {
         price: price,
         selectedPrice: selectedPrice,
         quantity: quantity - 1,
-        tax:selectedProduct?.tax
+        tax: selectedProduct?.tax
 
       };
 
@@ -178,67 +179,67 @@ export default function SingleProductCard() {
   return (
     <>
       <Toaster />
-      <header className="sticky top-0 z-10 flex h-20 items-center justify-between border-b bg-white px-4">
+      <header className="sticky top-0 z-10 flex h-20 items-center justify-between border-b bg-[#FF9A2D] px-4">
         <button
-          className="flex items-center justify-center rounded-full p-2 hover:bg-gray-100"
+          className="flex items-center justify-center p-2 rounded-full hover:bg-gray-100"
           aria-label="Go back"
         >
-          <ArrowLeft className="h-5 w-5 cursor-pointer text-black" onClick={() => window.history.back()} />
+          <ArrowLeft className="w-5 h-5 text-white cursor-pointer" onClick={() => window.history.back()} />
         </button>
 
-        <h1 className="text-lg font-medium text-black">Product Details</h1>
+        <h1 className="text-lg font-medium text-white">Product Details</h1>
 
-        {/* <div className="relative flex h-8 w-8 items-center justify-center rounded-full bg-emerald-500 text-white">
+        {/* <div className="relative flex items-center justify-center w-8 h-8 text-white rounded-full bg-emerald-500">
           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-truck"><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2" /><path d="M15 18H9" /><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14" /><circle cx="17" cy="18" r="2" /><circle cx="7" cy="18" r="2" /></svg>
           <span className="sr-only">Notifications</span>
         </div> */}
 
-        <div className="relative inline-block" onClick={() => router.push(`/cart?sellerId=${sellerIdss}`)
-        }>
+        {!sellerIdss && (<div className="relative inline-block" onClick={() => router.push(`/cart?sellerId=${sellerIdss}`)}>
           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#6D2323" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-shopping-basket"><path d="m15 11-1 9" /><path d="m19 11-4-7" /><path d="M2 11h20" /><path d="m3.5 11 1.6 7.4a2 2 0 0 0 2 1.6h9.8a2 2 0 0 0 2-1.6l1.7-7.4" /><path d="M4.5 15.5h15" /><path d="m5 11 4-7" /><path d="m9 11 1 9" /></svg>
-          <p className="absolute -top-2 -right-2 bg-red-600 text-white rounded-full text-xs w-5 h-5 flex items-center justify-center">
+          <p className="absolute flex items-center justify-center w-5 h-5 text-xs text-white bg-red-600 rounded-full -top-2 -right-2">
             {carts?.length}
           </p>
-        </div>
+        </div>)}
       </header>
 
       <div className="flex flex-wrap gap-4">
         {/* Only display one product since it's a single object */}
 
-        <div key={product?.productId} className="w-full bg-[#FFEFD3] overflow-hidden shadow-lg">
+        {product && (<div key={product?.productId} className="w-full bg-[#FFFFFF] overflow-hidden shadow-lg">
           <div className="relative m-2">
-            <span className="absolute top-2 right-2 text-[10px] bg-[#6D2323] text-white px-4 py-1 rounded animate-pulse">
+            {/* <span className="absolute top-2 right-2 text-[10px] bg-[#6D2323] text-white px-4 py-1 rounded animate-pulse">
               Updated On: {formattedDate}
-            </span>
+            </span> */}
             <Image
-              src={product?.productImage}
-              alt={product?.productName}
+              src={product?.productImage || ''}
+              alt={product?.productName || 'Product Image'}
               width={320}
               height={350}
               className="w-full h-[350px] object-cover"
             />
             {product?.moq?.length > 0 && (
-              <span className="absolute w-full bottom-0 left-0 text-white text-xs px-2 py-1 rounded bg-gradient-to-r from-black to-transparent">
+              <span className="absolute bottom-0 left-0 flex items-center justify-between w-full px-2 py-1 text-[0.5rem] text-white rounded bg-gradient-to-r from-black to-transparent">
                 MOQ: {product.moq}
+                <p>{formatDate(product?.updatedAt)}</p>
               </span>
             )}
           </div>
 
-          <div className="p-4 space-y-3 mt-2">
+          <div className="p-4 mt-2 space-y-3">
             <h3 className="text-xl font-bold text-black">{product?.productName}</h3>
 
             <div className="space-y-2">
               {product?.averagePrice && (
                 <div className="mt-2">
                   <label className="flex items-center text-sm text-black">
-                    <input
+                    {!sellerIdss && (<input
                       type="radio"
                       name="price"
                       value="average"
                       checked={selectedPrice === "average"}
                       onChange={handlePriceChange}
                       className="mr-2"
-                    />
+                    />)}
                     Average: <span className="px-1 font-semibold text-black">{product?.averagePrice}</span> + Tax- {product?.tax}%
                   </label>
                 </div>
@@ -246,14 +247,14 @@ export default function SingleProductCard() {
               {product?.goodPrice && (
                 <div className="mt-2">
                   <label className="flex items-center text-sm text-black">
-                    <input
+                    {!sellerIdss && (<input
                       type="radio"
                       name="price"
                       value="good"
                       checked={selectedPrice === "good"}
                       onChange={handlePriceChange}
                       className="mr-2"
-                    />
+                    />)}
                     Good: <span className="px-1 font-semibold text-black">{product?.goodPrice}</span> + Tax- {product?.tax}%
                   </label>
                 </div>
@@ -261,14 +262,14 @@ export default function SingleProductCard() {
               {product?.highPrice && (
                 <div className="mt-2">
                   <label className="flex items-center text-sm text-black">
-                    <input
+                    {!sellerIdss && (<input
                       type="radio"
                       name="price"
                       value="high"
                       checked={selectedPrice === "high"}
                       onChange={handlePriceChange}
                       className="mr-2"
-                    />
+                    />)}
                     High: <span className="px-1 font-semibold text-black">{product?.highPrice} </span> + Tax- {product?.tax}%
                   </label>
                 </div>
@@ -281,7 +282,7 @@ export default function SingleProductCard() {
 
             <div className="relative">
               {/* Cart Icon - Visible when item is added to cart */}
-              {isAddedToCart && (
+              {!sellerIdss && isAddedToCart && (
                 <div
                   className="absolute top-2 mt-[-3rem] right-2 bg-[#6D2323] text-white p-2 rounded-full cursor-pointer flex items-center"
                   onClick={navigateToCart}
@@ -292,27 +293,27 @@ export default function SingleProductCard() {
               )}
 
               {/* Quantity Controls or Add to Cart Button */}
-              {isAddedToCart ? (
+              {!sellerIdss && isAddedToCart ? (
                 <div className="flex justify-between items-center bg-[#6D2323] w-full p-[6px] px-3 text-white rounded-full mt-4">
-                  <button onClick={handleDecrement} className="rounded-md text-xl">
+                  <button onClick={handleDecrement} className="text-xl rounded-md">
                     -
                   </button>
                   <span className="text-sm">{quantity}</span>
-                  <button onClick={handleIncrement} className="rounded-md text-xl">
+                  <button onClick={handleIncrement} className="text-xl rounded-md">
                     +
                   </button>
                 </div>
               ) : (
                 <button
-                  onClick={handleAddToCart}
-                  className="bg-[#6D2323] w-full items-center p-[6px] text-white rounded-full mt-4"
+                  onClick={!sellerIdss ? handleAddToCart : () => { alert(`Edit product with ID: ${product?.productId}`) }}
+                  className="bg-[#3A6B34] w-full items-center p-[6px] text-white rounded-full mt-4"
                 >
-                  Add to Cart
+                  {!sellerIdss ? 'Add to Cart' : 'Edit'}
                 </button>
               )}
             </div>
           </div>
-        </div>
+        </div>)}
       </div>
 
     </>

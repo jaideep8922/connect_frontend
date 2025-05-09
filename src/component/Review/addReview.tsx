@@ -67,17 +67,17 @@ export default function AddReviewPage() {
 
     return (
         <>
-            <header className="sticky top-0 z-10 flex h-20 items-center justify-between border-b bg-white px-4">
+            <header className="sticky top-0 z-10 flex items-center justify-between h-20 px-4 bg-white border-b">
                 <button
-                    className="flex items-center justify-center rounded-full p-2 hover:bg-gray-100"
+                    className="flex items-center justify-center p-2 rounded-full hover:bg-gray-100"
                     aria-label="Go back"
                 >
-                    <ArrowLeft className="h-5 w-5 cursor-pointer text-black" onClick={() => window.history.back()} />
+                    <ArrowLeft className="w-5 h-5 text-black cursor-pointer" onClick={() => window.history.back()} />
                 </button>
 
                 <h1 className="text-lg font-medium text-black">Review</h1>
 
-                <div className="relative flex h-8 w-8 items-center justify-center rounded-full bg-emerald-500 text-white">
+                <div className="relative flex items-center justify-center w-8 h-8 text-white rounded-full bg-emerald-500">
                     <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-yellow-400 text-[10px] font-bold">
                         2
                     </span>
@@ -86,9 +86,9 @@ export default function AddReviewPage() {
                     <span className="sr-only">Notifications</span>
                 </div>
             </header>
-            <div className="min-h-screen bg-[#FFEFD3] p-4">
+            <div className="min-h-screen bg-[#F7F8FC] p-4">
 
-                <div className="mx-auto max-w-2xl space-y-3"
+                <div className="max-w-2xl mx-auto space-y-3"
                 // onClick={() => router.push('/single-review')}
                 >
                     {orders.map((order: any, index) => (
@@ -124,10 +124,10 @@ export default function AddReviewPage() {
 //     };
 
 //     return (
-//         <div className="rounded-xl bg-white p-4 shadow-sm">
+//         <div className="p-4 bg-white shadow-sm rounded-xl">
 //             <div className="flex items-start justify-between">
 //                 <div className="flex gap-3">
-//                     <div className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-50">
+//                     <div className="flex items-center justify-center w-12 h-12 rounded-full bg-blue-50">
 //                         <Package className="h-6 w-6 text-[#6D2323]" />
 //                     </div>
 //                     <div>
@@ -147,14 +147,14 @@ export default function AddReviewPage() {
 //                     className="rounded-full p-2 hover:bg-[#FFEFD3]"
 //                 >
 //                     {isOpen ? (
-//                         <ChevronUp className="h-5 w-5 text-gray-400" />
+//                         <ChevronUp className="w-5 h-5 text-gray-400" />
 //                     ) : (
-//                         <ChevronDown className="h-5 w-5 text-gray-400" />
+//                         <ChevronDown className="w-5 h-5 text-gray-400" />
 //                     )}
 //                 </button>
 //             </div>
 //             {isOpen && (
-//                 <div className="mt-4 border-t pt-4">
+//                 <div className="pt-4 mt-4 border-t">
 //                     <p className="text-sm text-gray-500">{order.notes}</p>
 //                     <div className="flex items-center gap-2 mt-2">
 //                         <div
@@ -172,8 +172,8 @@ export default function AddReviewPage() {
 //                     </div>
 //                     {/* Review Icon */}
 //                     {order.statusId === 3 && (
-//                         <div className="mt-4 flex items-center gap-2 cursor-pointer" onClick={() => setIsReviewOpen(true)}>
-//                             <Star className="h-5 w-5 text-yellow-400" />
+//                         <div className="flex items-center gap-2 mt-4 cursor-pointer" onClick={() => setIsReviewOpen(true)}>
+//                             <Star className="w-5 h-5 text-yellow-400" />
 //                             <span className="text-sm text-gray-500">Leave a Review</span>
 //                         </div>
 //                     )}
@@ -183,7 +183,7 @@ export default function AddReviewPage() {
 //             {/* Review Modal */}
 //             {isReviewOpen && (
 //                 <div className="fixed inset-0 bg-[#FFEFD3]0 bg-opacity-50 flex justify-center items-center z-50 p-3">
-//                     <div className="bg-white p-6 rounded-lg w-96">
+//                     <div className="p-6 bg-white rounded-lg w-96">
 //                         <h3 className="text-lg font-semibold">Leave a Review</h3>
 //                         <div className="flex justify-center space-x-1">
 //                                 {[1, 2, 3, 4, 5].map((star) => (
@@ -212,13 +212,13 @@ export default function AddReviewPage() {
 //                                 rows={4}
 //                                 value={reviewText}
 //                                 onChange={(e) => setReviewText(e.target.value)}
-//                                 className="w-full mt-2 p-2 border border-gray-300 rounded"
+//                                 className="w-full p-2 mt-2 border border-gray-300 rounded"
 //                             />
 //                         </div>
-//                         <div className="mt-4 flex justify-end gap-2">
+//                         <div className="flex justify-end gap-2 mt-4">
 //                             <button
 //                                 onClick={() => setIsReviewOpen(false)}
-//                                 className="px-4 py-2 bg-gray-300 text-gray-700 rounded"
+//                                 className="px-4 py-2 text-gray-700 bg-gray-300 rounded"
 //                             >
 //                                 Cancel
 //                             </button>
@@ -250,7 +250,7 @@ function OrderCard({ order }: any) {
         3: "Processing",
         4: "Completed",
         5: "Cancelled",
-      };
+    };
 
     // const statusText: Record<number, string> = {
     //     1: "Pending",
@@ -268,7 +268,7 @@ function OrderCard({ order }: any) {
         }
 
         const reviewData = {
-            orderId: order.orderId, 
+            orderId: order.orderId,
             review: reviewText,
             ratingStars: rating
         };
@@ -296,17 +296,17 @@ function OrderCard({ order }: any) {
     };
 
     return (
-        <div className="rounded-xl bg-white p-4 shadow-sm">
+        <div className="p-4 bg-white shadow-sm rounded-xl">
             <Toaster />
 
             <div className="flex items-start justify-between">
                 <div className="flex gap-3">
-                    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-50">
-                        <Package className="h-6 w-6 text-[#6D2323]" />
+                    <div className="flex items-center justify-center w-12 h-12 rounded-full bg-[#F0FFF3]">
+                        <Package className="h-6 w-6 text-[#3A6B34]" />
                     </div>
                     <div>
-                        <h3 className="font-semibold">
-                            Order <span className="text-[#6D2323]">{order.orderId}</span>
+                        <h3 className="font-semibold text-black">
+                            Order #<span>{order.orderId}</span>
                         </h3>
                         <p className="text-sm text-gray-500">
                             Placed on {new Date(order.createdAt).toLocaleDateString()}
@@ -318,22 +318,22 @@ function OrderCard({ order }: any) {
                     className="rounded-full p-2 hover:bg-[#FFEFD3]"
                 >
                     {isOpen ? (
-                        <ChevronUp className="h-5 w-5 text-gray-400" />
+                        <ChevronUp className="w-5 h-5 text-gray-400" />
                     ) : (
-                        <ChevronDown className="h-5 w-5 text-gray-400" />
+                        <ChevronDown className="w-5 h-5 text-gray-400" />
                     )}
                 </button>
             </div>
             {isOpen && (
-                <div className="mt-4 border-t pt-4">
+                <div className="pt-4 mt-4 border-t">
                     <p className="text-sm text-gray-500">{order.notes}</p>
                     <div className="flex items-center gap-2 mt-2">
                         <div
                             className={`h-2 w-2 rounded-full ${order.statusId === 5
-                                    ? "bg-red-500"
-                                    : order.statusId === 4
-                                        ? "bg-green-500"
-                                        : "bg-yellow-500"
+                                ? "bg-red-500"
+                                : order.statusId === 4
+                                    ? "bg-green-500"
+                                    : "bg-yellow-500"
                                 }`}
                         />
                         <span className="text-sm text-gray-500">
@@ -342,8 +342,8 @@ function OrderCard({ order }: any) {
                     </div>
                     {/* Review Icon */}
                     {order.statusId === 4 && (
-                        <div className="mt-4 flex items-center gap-2 cursor-pointer" onClick={() => setIsReviewOpen(true)}>
-                            <Star className="h-5 w-5 text-yellow-400" />
+                        <div className="flex items-center gap-2 mt-4 cursor-pointer" onClick={() => setIsReviewOpen(true)}>
+                            <Star className="w-5 h-5 text-yellow-400" />
                             <span className="text-sm text-gray-500">Leave a Review</span>
                         </div>
                     )}
@@ -352,8 +352,8 @@ function OrderCard({ order }: any) {
 
             {/* Review Modal */}
             {isReviewOpen && (
-                <div className="fixed inset-0 bg-[#FFEFD3]0 bg-opacity-50 flex justify-center items-center z-50">
-                    <div className="bg-white p-6 rounded-lg w-96">
+                <div className="fixed inset-0 bg-[#FFFFFF]0 bg-opacity-50 flex justify-center items-center z-50">
+                    <div className="p-6 bg-white rounded-lg w-96">
                         <h3 className="text-lg font-semibold">Leave a Review</h3>
                         <div className="flex justify-center space-x-1">
                             {[1, 2, 3, 4, 5].map((star) => (
@@ -366,8 +366,8 @@ function OrderCard({ order }: any) {
                                 >
                                     <Star
                                         className={`w-8 h-8 ${(hover || rating) >= star
-                                                ? "fill-yellow-400 text-yellow-400"
-                                                : "text-gray-300"
+                                            ? "fill-yellow-400 text-yellow-400"
+                                            : "text-gray-300"
                                             } transition-colors duration-200`}
                                     />
                                 </button>
@@ -382,19 +382,19 @@ function OrderCard({ order }: any) {
                                 rows={4}
                                 value={reviewText}
                                 onChange={(e) => setReviewText(e.target.value)}
-                                className="w-full mt-2 p-2 border border-gray-300 rounded"
+                                className="w-full p-2 mt-2 border border-gray-300 rounded"
                             />
                         </div>
-                        <div className="mt-4 flex justify-end gap-2">
+                        <div className="flex justify-end gap-2 mt-4">
                             <button
                                 onClick={() => setIsReviewOpen(false)}
-                                className="px-4 py-2 bg-gray-300 text-gray-700 rounded"
+                                className="px-4 py-2 text-gray-700 bg-gray-300 rounded"
                             >
                                 Cancel
                             </button>
                             <button
                                 onClick={handleReviewSubmit}
-                                className="px-4 py-2 bg-[#6D2323] text-white rounded"
+                                className="px-4 py-2 bg-[#3A6B34] text-white rounded"
                             >
                                 Submit Review
                             </button>

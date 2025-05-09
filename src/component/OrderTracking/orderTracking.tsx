@@ -59,25 +59,25 @@ const OrderTracker = () => {
 
   return (
     <>
-      <header className="sticky top-0 z-10 flex h-20 items-center justify-between border-b bg-white px-4">
+      <header className="sticky top-0 z-10 flex items-center justify-between h-20 px-4 bg-white border-b">
         <button
-          className="flex items-center justify-center rounded-full p-2 hover:bg-gray-100"
+          className="flex items-center justify-center p-2 rounded-full hover:bg-gray-100"
           aria-label="Go back"
         >
-          <ArrowLeft className="h-5 w-5 cursor-pointer text-black" onClick={() => window.history.back()} />
+          <ArrowLeft className="w-5 h-5 text-black cursor-pointer" onClick={() => window.history.back()} />
         </button>
 
         <h1 className="text-lg font-medium text-black">Order Tracking</h1>
 
-        <div className="relative flex h-8 w-8 items-center justify-center rounded-full bg-emerald-500 text-white">
+        <div className="relative flex items-center justify-center w-8 h-8 text-white rounded-full bg-emerald-500">
           <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-yellow-400 text-[10px] font-bold">
-            2
+            {orders.length}
           </span>
           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-truck"><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2" /><path d="M15 18H9" /><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14" /><circle cx="17" cy="18" r="2" /><circle cx="7" cy="18" r="2" /></svg>
           <span className="sr-only">Notifications</span>
         </div>
       </header>
-      <div className="flex min-h-screen flex-col items-center gap-4 bg-[#FFEFD3] p-4">
+      <div className="flex min-h-screen flex-col items-center gap-4 bg-[#FFFFFF] p-4">
         {/* <Link href='/order-track-single' className="w-full">
 
         {orders.map((order:any, index) => (
@@ -87,8 +87,7 @@ const OrderTracker = () => {
 
         {orders.length > 0 ? (
           orders.map((order, index) => (
-            <OrderCard order={order} />
-
+            <OrderCard key={index} order={order} />
           ))
         ) : (
           <p className="text-black">No orders available.</p>

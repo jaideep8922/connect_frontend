@@ -89,17 +89,17 @@ const AddNote = () => {
   return (
     <div>
       <Toaster />
-      <header className="sticky top-0 z-10 flex h-20 items-center justify-between border-b bg-white px-4">
+      <header className="sticky top-0 z-10 flex items-center justify-between h-20 px-4 bg-white border-b">
         <button
-          className="flex items-center justify-center rounded-full p-2 hover:bg-gray-100"
+          className="flex items-center justify-center p-2 rounded-full hover:bg-gray-100"
           aria-label="Go back"
         >
-          <ArrowLeft className="h-5 w-5 text-black cursor-pointer" onClick={() => window.history.back()} />
+          <ArrowLeft className="w-5 h-5 text-black cursor-pointer" onClick={() => window.history.back()} />
         </button>
 
         <h1 className="text-lg font-medium text-black">Note</h1>
 
-        <div className="relative flex h-8 w-8 items-center justify-center rounded-full bg-emerald-500 text-white">
+        <div className="relative flex items-center justify-center w-8 h-8 text-white rounded-full bg-emerald-500">
           <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-yellow-400 text-[10px] font-bold">
             2
           </span>
@@ -108,8 +108,8 @@ const AddNote = () => {
         </div>
       </header>
 
-      <div className="max-w-md mx-auto p-4 bg-[#FFEFD3] rounded-lg shadow">
-        <h1 className="text-xl font-bold mb-4 text-black">Enter Details</h1>
+      <div className="max-w-md mx-auto p-4 bg-[#FFFFFF] rounded-lg shadow">
+        <h1 className="mb-4 text-xl font-bold text-black">Enter Details</h1>
         {/* <input
           type="text"
           placeholder="Title"
@@ -121,30 +121,30 @@ const AddNote = () => {
           placeholder="Type something..."
           value={text}
           onChange={(e) => setText(e.target.value)}
-          className="w-full p-2 mb-4 h-60 border rounded focus:outline-none text-black bg-white"
+          className="w-full p-2 mb-4 text-black bg-white border rounded h-60 focus:outline-none"
         />
         <button
           onClick={handleSave}
-          className="w-full bg-[#6D2323] text-white py-2 rounded hover:bg-[#6D2323] disabled:opacity-50"
+          className="w-full bg-[#FF9A2D] text-white py-2 rounded hover:bg-[#FF9A2DCC] disabled:opacity-50"
           disabled={isSubmitting}
         >
           {isSubmitting ? "Saving..." : "Save"}
         </button>
 
         {showPopup && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-            <div className="bg-white p-6 rounded-lg shadow-lg">
+          <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+            <div className="p-6 bg-white rounded-lg shadow-lg">
               <p className="mb-4 text-black">Are you sure you want to save?</p>
               <div className="flex justify-end gap-4">
                 <button
                   onClick={() => setShowPopup(false)}
-                  className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-400"
+                  className="px-4 py-2 text-white bg-gray-600 rounded hover:bg-gray-400"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={handleConfirm}
-                  className="px-4 py-2 bg-[#6D2323] text-white rounded hover:bg-[#6D2323]"
+                  className="px-4 py-2 bg-[#FF9A2D] text-white rounded hover:bg-[#FF9A2DCC]"
                 >
                   Yes, Save
                 </button>

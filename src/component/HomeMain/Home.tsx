@@ -211,9 +211,9 @@ export default function MainHome() {
   }, [ userType]);
 
   return (
-    <div className="bg-[#FFEFD3] m-2">
+    <div className="bg-[#FFFFFF] m-2">
       {/* Header */}
-      <header className="flex items-center justify-between bg-white p-4 shadow-sm mb-2">
+      <header className="flex items-center justify-between p-4 mb-2 bg-white shadow-sm">
         <div className="flex items-center gap-2">
           <div className="flex h-[3rem] w-[3rem] items-center justify-center border rounded-full text-white overflow-hidden">
             <Image
@@ -221,7 +221,7 @@ export default function MainHome() {
               alt="Seller avatar"
               width={50}
               height={50}
-              className="w-full h-full object-cover"
+              className="object-cover w-full h-full"
               />
           </div>
 
@@ -230,9 +230,9 @@ export default function MainHome() {
             <p className="text-sm text-gray-500">{sellerData?.businessOwner}</p>
           </div>
         </div>
-        {/* <button className="rounded-full p-2 hover:bg-gray-100"> */}
+        {/* <button className="p-2 rounded-full hover:bg-gray-100"> */}
         <Link href='/notification'>
-          <Bell className="h-6 w-6 text-gray-600" />
+          <Bell className="w-6 h-6 text-gray-600" />
         </Link>
         {/* </button> */}
       </header>
@@ -244,7 +244,7 @@ export default function MainHome() {
             <Link
               key={item.id}
               href={item.href}
-              className="flex items-center border justify-between rounded-xl bg-white p-3 shadow-sm"
+              className="flex items-center justify-between p-3 bg-white border shadow-sm rounded-xl"
             >
               <div className="flex items-center gap-3">
                 <div className={`rounded-xl ${item.bgColor} p-3`}>
@@ -255,7 +255,7 @@ export default function MainHome() {
                   <p className="text-sm text-gray-500">{item.subtitle}</p>
                 </div>
               </div>
-              <ChevronRight className="h-5 w-5 text-gray-400" />
+              <ChevronRight className="w-5 h-5 text-gray-400" />
             </Link>
           ))}
         </div>

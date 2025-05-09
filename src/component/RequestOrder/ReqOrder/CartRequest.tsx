@@ -244,13 +244,13 @@ const CartRequestPage: React.FC = () => {
 
 
     return (
-        <div className="bg-[#FFEFD3]">
+        <div className="bg-[#F7F8FC] min-h-screen">
             <Toaster />
-            <header className="sticky top-0 z-10 bg-white px-4 py-3 shadow-sm">
+            <header className="sticky top-0 z-10 px-4 py-3 text-black bg-white shadow-sm">
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
                         <Link href="/" className="text-gray-600 hover:text-gray-900">
-                            <ArrowLeft className="h-5 w-5 cursor-pointer" onClick={() => window.history.back()} />
+                            <ArrowLeft className="w-5 h-5 cursor-pointer" onClick={() => window.history.back()} />
                         </Link>
                         <div>
                             <h1 className="text-lg font-semibold">Your cart</h1>
@@ -262,33 +262,33 @@ const CartRequestPage: React.FC = () => {
                     {isOpen && (
                         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
                             <div className="w-full max-w-[500px] rounded-lg bg-white p-6 m-2">
-                                <div className="mb-4 flex items-center justify-between">
+                                <div className="flex items-center justify-between mb-4">
                                     <h2 className="text-lg font-semibold">Add Description</h2>
                                     <button
                                         onClick={() => setIsOpen(false)}
-                                        className="rounded-full p-1 hover:bg-gray-100"
+                                        className="p-1 rounded-full hover:bg-gray-100"
                                     >
                                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-circle-x"><circle cx="12" cy="12" r="10" /><path d="m15 9-6 6" /><path d="m9 9 6 6" /></svg>
-                                        {/* <X className="h-4 w-4" /> */}
+                                        {/* <X className="w-4 h-4" /> */}
                                     </button>
                                 </div>
                                 <textarea
                                     value={description}
                                     onChange={(e) => setDescription(e.target.value)}
                                     placeholder="Type here..."
-                                    className="mb-4 min-h-[200px] w-full resize-none rounded border border-gray-300 p-2 focus:border-[#6D2323] focus:outline-none"
+                                    className="mb-4 min-h-[200px] w-full resize-none rounded border border-gray-300 p-2 bg-white focus:outline-none"
                                 />
 
                                 <div className="flex justify-end gap-2">
                                     <button
                                         onClick={handleReset}
-                                        className="rounded-full border border-gray-300 px-6 py-2 hover:bg-gray-100"
+                                        className="px-6 py-2 border border-gray-300 rounded-full hover:bg-gray-100"
                                     >
                                         Reset
                                     </button>
                                     <button
                                         onClick={handleSave}
-                                        className="rounded-full bg-blue-600 px-6 py-2 text-white hover:bg-blue-700"
+                                        className="px-6 py-2 text-white bg-[#3A6B34] rounded-full"
                                     >
                                         Save
                                     </button>
@@ -297,15 +297,15 @@ const CartRequestPage: React.FC = () => {
                         </div>
                     )}
                 </div>
-                <div className="mt-3 flex border-b ">
+                <div className="flex mt-3 border-b ">
                     <button
-                        className={`px-6 w-1/2 py-2 ${activeTab === "cart" ? "border-b-2 border-[#6D2323] text-[#6D2323]" : "text-gray-500"}`}
+                        className={`px-6 w-1/2 py-2 ${activeTab === "cart" ? "border-b-2 border-[#3A6B34] text-[#3A6B34]" : "text-gray-500"}`}
                         onClick={() => setActiveTab("cart")}
                     >
                         Cart
                     </button>
                     <button
-                        className={`px-6 w-1/2 py-2 ${activeTab === "bill" ? "border-b-2 border-[#6D2323] text-[#6D2323]" : "text-gray-500"}`}
+                        className={`px-6 w-1/2 py-2 ${activeTab === "bill" ? "border-b-2 border-[#3A6B34] text-[#3A6B34]" : "text-gray-500"}`}
                         onClick={() => setActiveTab("bill")}
                     >
                         Bill
@@ -319,7 +319,7 @@ const CartRequestPage: React.FC = () => {
                         {orderDetails?.OrderProductDetails.map((product: any) => (
                             <div
                                 key={product.id}
-                                className="overflow-hidden rounded-xl bg-[#FFEFD3] shadow-sm p-2 border"
+                                className="p-2 overflow-hidden bg-white border shadow-sm rounded-xl"
                             >
                                 <div className="relative aspect-square">
                                     <Image
@@ -329,17 +329,17 @@ const CartRequestPage: React.FC = () => {
                                         className="object-cover rounded-xl"
                                     />
 
-                                    {/* <div className="absolute bottom-0 left-0 right-0 rounded-b-xl bg-black/50 px-2 py-1">
+                                    {/* <div className="absolute bottom-0 left-0 right-0 px-2 py-1 rounded-b-xl bg-black/50">
                                         <p className="text-xs text-white">MOQ: {product.moq}</p>
                                     </div> */}
                                 </div>
-                                <div className="flex items-center justify-between border-t p-3">
-                                    <button className="rounded-full bg-gray-100 p-2">
-                                        <Minus className="h-5 w-5 text-gray-600" />
+                                <div className="flex items-center justify-between p-3 border-t">
+                                    <button className="p-2 bg-gray-100 rounded-full">
+                                        <Minus className="w-5 h-5 text-gray-600" />
                                     </button>
-                                    <span className="text-lg font-medium">{product.quantity}</span>
-                                    <button className="rounded-full bg-gray-100 p-2">
-                                        <Plus className="h-5 w-5 text-gray-600" />
+                                    <span className="text-lg font-medium text-black">{product.quantity}</span>
+                                    <button className="p-2 bg-gray-100 rounded-full">
+                                        <Plus className="w-5 h-5 text-gray-600" />
                                     </button>
 
                                 </div>
@@ -351,15 +351,15 @@ const CartRequestPage: React.FC = () => {
                     </div>
                 ) : (
                     <div className="text-center text-gray-700">
-                        <div className="min-h-screen bg-[#FFEFD3]">
-                            <div className=" rounded-lg bg-[#FFEFD3] shadow-sm">
+                        <div className="min-h-screen bg-[#F7F8FC]">
+                            <div className=" rounded-lg bg-[#F7F8FC] shadow-sm">
                                 <div className="">
-                                    <div className="bg-white shadow-lg rounded-lg p-4 border">
+                                    <div className="p-4 bg-white border rounded-lg shadow-lg">
                                         {/* Header */}
                                         <div className="flex items-center justify-between">
                                             {/* <div className="flex items-center gap-2">
                                                 <span className="text-sm text-gray-500">Status</span>
-                                                <span className="rounded-full bg-yellow-100 px-2 py-1 text-xs font-semibold text-yellow-800">
+                                                <span className="px-2 py-1 text-xs font-semibold text-yellow-800 bg-yellow-100 rounded-full">
                                                     {orderDetails.status}
                                                 </span>
                                             </div> */}
@@ -369,7 +369,7 @@ const CartRequestPage: React.FC = () => {
                                         </div>
 
                                         {/* Date and Time */}
-                                        <div className="mt-4 flex justify-between text-sm text-gray-500">
+                                        <div className="flex justify-between mt-4 text-sm text-gray-500">
                                             <div>Date :  {new Date(orderDetails.createdAt).toLocaleString()}</div>
                                             {/* <div>Time : {orderDetails.time}</div> */}
                                         </div>
@@ -386,7 +386,7 @@ const CartRequestPage: React.FC = () => {
                                                 <span>{orderDetails.totalQuantity}</span>
                                             </div>
 
-                                            <div className="flex justify-between border-t pt-2 font-medium">
+                                            <div className="flex justify-between pt-2 font-medium border-t">
                                                 <span>Total Amount :</span>
                                                 <span>{totalAmount}</span>
                                             </div>
@@ -398,8 +398,8 @@ const CartRequestPage: React.FC = () => {
                                                 <span className="text-green-600">Bill  generated by the seller</span>
                                             </div>
                                         ) : (
-                                            <div className="mt-4 flex justify-center items-center gap-2 text-sm text-red-500">
-                                                <AlertTriangle className="h-4 w-4" />
+                                            <div className="flex items-center justify-center gap-2 mt-4 text-sm text-red-500">
+                                                <AlertTriangle className="w-4 h-4" />
                                                 <span>Bill not generated by the seller</span>
                                             </div>
                                         )}
@@ -408,11 +408,11 @@ const CartRequestPage: React.FC = () => {
                                     </div>
                                     {/* Action Buttons */}
                                     {orderDetails?.statusId === 1 ? (
-                                        <div className="mt-6 flex gap-4">
-                                            <button onClick={() => setIsModalClose(true)} className="flex flex-1 items-center justify-center gap-2 rounded-md bg-red-600 py-3 text-white">
+                                        <div className="flex gap-4 mt-6">
+                                            <button onClick={() => setIsModalClose(true)} className="flex items-center justify-center flex-1 gap-2 py-3 text-white bg-red-500 rounded-md">
                                                 Reject
                                             </button>
-                                            <button onClick={() => setIsModalOpen(true)} className="flex flex-1 items-center justify-center gap-2 rounded-md bg-green-500 py-3 text-white">
+                                            <button onClick={() => setIsModalOpen(true)} className="flex items-center justify-center flex-1 gap-2 py-3 text-white bg-[#3A6B34] rounded-md">
                                                 Accept
                                             </button>
                                         </div>
@@ -421,11 +421,11 @@ const CartRequestPage: React.FC = () => {
                                     )}
 
                                     {(orderDetails?.statusId === 2 || orderDetails?.statusId === 3 || orderDetails?.statusId === 4) && (
-                                        <div className="mt-6 flex gap-4">
-                                            <button onClick={() => setIsModalClose(true)} className="flex flex-1 items-center justify-center gap-2 rounded-md bg-red-600 py-3 text-white">
+                                        <div className="flex gap-4 mt-6">
+                                            <button onClick={() => setIsModalClose(true)} className="flex items-center justify-center flex-1 gap-2 py-3 text-white bg-red-500 rounded-md">
                                                 Cancel
                                             </button>
-                                            <button onClick={() => setIsModalOpens(true)} className="flex flex-1 items-center justify-center gap-2 rounded-md bg-[#6D2323] py-3 text-white">
+                                            <button onClick={() => setIsModalOpens(true)} className="flex flex-1 items-center justify-center gap-2 rounded-md bg-[#3A6B34] py-3 text-white">
                                                 Confirm
                                             </button>
                                         </div>
@@ -441,11 +441,11 @@ const CartRequestPage: React.FC = () => {
 
                                     {isModalOpens && (
                                         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-                                            <div className="max-w-md mx-auto p-6 bg-white rounded-lg shadow-lg">
-                                                <h1 className="text-2xl font-bold mb-6">Change Status!</h1>
+                                            <div className="max-w-md p-6 mx-auto bg-white rounded-lg shadow-lg">
+                                                <h1 className="mb-6 text-2xl font-bold">Change Status!</h1>
 
                                                 {/* Status Options */}
-                                                <div className="space-y-3 mb-8">
+                                                <div className="mb-8 space-y-3">
                                                     {[
                                                         { id: "reject", label: "Reject", statusId: 5 },
                                                         { id: "accept", label: "Accept", statusId: 2 },
@@ -467,7 +467,7 @@ const CartRequestPage: React.FC = () => {
                                                                     setIsFileModalOpen(true);
                                                                 }}
                                                                 // onChange={(e) => setSelectedStatus(Number(e.target.value))} // Ensure it's a number
-                                                                className="h-5 w-5 rounded-full border-2 border-gray-300 text-blue-600 focus:ring-[#6D2323]"
+                                                                className="h-5 w-5 rounded-full border-2 border-gray-300 text-blue-600 focus:ring-[#3A6B34]"
                                                             />
                                                         </label>
                                                     ))}
@@ -476,13 +476,13 @@ const CartRequestPage: React.FC = () => {
                                                 {/* Action Buttons */}
                                                 <div className="flex gap-4">
                                                     <button
-                                                        className="flex-1 px-6 py-3 rounded-lg border border-gray-200 text-gray-700 hover:bg-[#FFEFD3]"
+                                                        className="flex-1 px-6 py-3 text-gray-700 border border-gray-200 rounded-lg"
                                                         onClick={handleClose}
                                                     >
                                                         Cancel
                                                     </button>
                                                     <button
-                                                        className="flex-1 px-6 py-3 rounded-lg bg-[#6D2323] text-white"
+                                                        className="flex-1 px-6 py-3 rounded-lg bg-[#3A6B34] text-white"
                                                         onClick={() => setIsFileModalOpen(true)}
 
                                                         disabled={!selectedStatus}
@@ -495,12 +495,12 @@ const CartRequestPage: React.FC = () => {
                                     )}
 
                                     {isFileModalOpen && (
-                                        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-                                            <div className="bg-white p-6 rounded-lg shadow-md w-64">
+                                        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+                                            <div className="w-64 p-6 bg-white rounded-lg shadow-md">
                                                 <h2 className="text-lg font-semibold">Upload File</h2>
                                                 <input type="file" onChange={handleFileChange} className="my-4 text-sm" />
 
-                                                <div className="flex justify-between gap-1 w-full">
+                                                <div className="flex justify-between w-full gap-1">
                                                     <button
                                                         onClick={() => setIsFileModalOpen(false)}
                                                         className="px-4 py-2 bg-gray-300 rounded-lg hover:bg-gray-400"
@@ -509,7 +509,7 @@ const CartRequestPage: React.FC = () => {
                                                     </button>
                                                     <button
                                                         onClick={handleConfirms}
-                                                        className="px-4 py-2 bg-[#6D2323] text-white rounded-lg "
+                                                        className="px-4 py-2 bg-[#3A6B34] text-white rounded-lg "
                                                     >
                                                         Confirm
                                                     </button>

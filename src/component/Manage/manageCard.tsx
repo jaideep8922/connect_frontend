@@ -1,7 +1,9 @@
 import Image from "next/image"
 import { Pencil, Plus } from 'lucide-react'
 import { useRouter } from 'next/navigation';
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { formatDate } from "../global/productCard";
+import Link from "next/link";
 
 interface ProductCardProps {
     product: any
@@ -10,90 +12,108 @@ interface ProductCardProps {
 
 export function ManageCard({ product, onEdit }: ProductCardProps) {
 
-    console.log("product", product)
-    const router = useRouter()
-
-    const handleClick = () => {
-        router.push('/manage-edit')
-    }
+    // console.log("product", product)
+    // const router = useRouter()
 
     const [selectedPrice, setSelectedPrice] = useState<string>("");
+    const [custId, setCustId] = useState<string | null>(null);
+
+    useEffect(() => {
+        if (typeof window !== "undefined") {
+            const localData = localStorage.getItem('userDetails');
+
+            if (localData) {
+                const parsedData = JSON.parse(localData);
+                const custIdFromLocalStorage = parsedData?.data?.customId;
+                if (custIdFromLocalStorage) {
+                    setCustId(custIdFromLocalStorage);
+                }
+            }
+        }
+    }, []);
 
     const handlePriceChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setSelectedPrice(event.target.value);
     };
 
     return (
-        <div className="rounded-lg border border-[#6d232353] bg-card text-card-foreground shadow-xl" onClick={handleClick}>
-            <div className="relative">
-                <img
-                    src={product?.productImage}
-                    alt={product.name}
-                    className="object-cover rounded-t-lg h-32 w-full"
-                />
-               {product?.moq?.length > 0 && (
-            <span className="absolute w-full bottom-0 left-0 text-white text-xs px-2 py-1 rounded bg-gradient-to-r from-black to-transparent">
-            MOQ: {product.moq}
-          </span>
-          )}
-            </div>
-            <div className="p-2">
-                <h3 className="font-medium">{product.productName}</h3>
-                <div className="mt-2">
-                    <label className="flex items-center text-xs ">
-                        <input
+        <div className="border bg-[#FFFFFF] rounded-lg shadow-md p-2">
+            <Link href={`/single-view?id=${product.productId}&sellerId=${custId}`} >
+                <div className="relative">
+                    <Image
+                        width={200}
+                        height={150}
+                        src={product?.productImage}
+                        alt={product.name || "Product Image"}
+                        className="object-cover w-full h-32 rounded-t-lg"
+                    />
+                    {product?.moq?.length > 0 && (
+                        <span className="absolute bottom-0 left-0 flex items-center justify-between w-full px-2 py-1 text-[0.5rem] text-white rounded bg-gradient-to-r from-black to-transparent">
+                            MOQ: {product.moq}
+                            <p>{formatDate(product?.updatedAt)}</p>
+                        </span>
+                    )}
+                </div>
+            </Link>
+
+            {/* <div className="p-2"> */}
+
+            <h3 className="font-medium text-black">{product.productName}</h3>
+            <div className="mt-2">
+                <label className="flex items-center text-xs text-black">
+                    {/* <input
                             type="radio"
                             name="price"
                             value="average"
                             checked={selectedPrice === "average"}
                             onChange={handlePriceChange}
                             className="mr-2"
-                        />
-                        Average: <span className="px-1 font-semibold">{product?.averagePrice}</span>
-                    </label>
-                </div>
-                <div className="mt-2">
-                    <label className="flex items-center text-xs">
-                        <input
+                        /> */}
+                    Average: <span className="px-1 font-semibold text-black">{product?.averagePrice}</span>
+                </label>
+            </div>
+            <div className="mt-2">
+                <label className="flex items-center text-xs text-black">
+                    {/* <input
                             type="radio"
                             name="price"
                             value="good"
                             checked={selectedPrice === "good"}
                             onChange={handlePriceChange}
                             className="mr-2"
-                        />
-                        Good: <span className="px-1 font-semibold">{product?.goodPrice}</span>
-                    </label>
-                </div>
-                <div className="mt-2">
-                    <label className="flex items-center text-xs">
-                        <input
+                        /> */}
+                    Good: <span className="px-1 font-semibold text-black">{product?.goodPrice}</span>
+                </label>
+            </div>
+            <div className="mt-2">
+                <label className="flex items-center text-xs text-black">
+                    {/* <input
                             type="radio"
                             name="price"
                             value="high"
                             checked={selectedPrice === "high"}
                             onChange={handlePriceChange}
                             className="mr-2"
-                        />
-                        High: <span className="px-1 font-semibold">{product?.highPrice}</span>
-                    </label>
-                </div>
-                {/* <div className="mt-1 text-sm">
+                        /> */}
+                    High: <span className="px-1 font-semibold text-black">{product?.highPrice}</span>
+                </label>
+            </div>
+            {/* <div className="mt-1 text-sm">
                     <span className="text-muted-foreground">₹ </span>
                     <span>{product.originalPrice}</span>
                 </div> */}
-                {/* <div className="mt-1 text-sm">
+            {/* <div className="mt-1 text-sm">
                     <span className="text-muted-foreground">₹ </span>
                     <span className="font-medium">{product.price}</span>
                 </div> */}
-                <button
-                    className="w-full text-white flex justify-center gap-1 bg-[#6D2323] p-1 rounded-lg items-center mt-4"
-                    onClick={() => onEdit(product)}
-                >
-                    <Pencil className="h-3 w-4 text-white" />
-                    Edit Product
-                </button>
-            </div>
+            <button
+                className="w-full text-[#3A6B34] flex justify-center items-center gap-1 border-2 border-[#3A6B34] p-1 rounded-lg gap-2 mt-4"
+                onClick={(e) => { e.stopPropagation(); onEdit(product) }}
+            >
+                Edit Product
+                <Pencil className="w-4 h-3 text-[#3A6B34]" />
+            </button>
+            {/* </div> */}
         </div>
     )
 }

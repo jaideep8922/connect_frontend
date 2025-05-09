@@ -1,4 +1,5 @@
 "use client"
+import { formatDate } from '@/component/global/productCard'
 import { ArrowLeft, Package } from 'lucide-react'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
@@ -67,30 +68,30 @@ export default function CurrentProcessedOrderMain() {
     3: { label: "Completed", bgColor: "bg-green-100 text-green-700" },
     4: { label: "Cancelled", bgColor: "bg-red-100 text-red-700" },
   };
-  
+
   return (
     <>
-      <header className="sticky top-0 z-10 flex h-20 items-center justify-between border-b bg-white px-4">
+      <header className="sticky top-0 z-10 flex items-center justify-between h-20 px-4 text-black bg-white border-b">
         <button
-          className="flex items-center justify-center rounded-full p-2 hover:bg-gray-100"
+          className="flex items-center justify-center p-2 rounded-full hover:bg-gray-100"
           aria-label="Go back"
         >
-          <ArrowLeft className="h-5 w-5 cursor-pointer" onClick={() => window.history.back()} />
+          <ArrowLeft className="w-5 h-5 cursor-pointer" onClick={() => window.history.back()} />
         </button>
 
         <h1 className="text-lg font-medium">Process Order</h1>
 
-        <div className="relative flex h-8 w-8 items-center justify-center rounded-full bg-emerald-500 text-white">
+        <div className="relative flex items-center justify-center w-8 h-8 text-white rounded-full bg-emerald-500">
 
           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-shopping-cart"><circle cx="8" cy="21" r="1" /><circle cx="19" cy="21" r="1" /><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12" /></svg>          <span className="sr-only">Notifications</span>
         </div>
       </header>
-      <div className="max-w-md mx-auto p-4 space-y-4">
+      <div className="max-w-md p-4 mx-auto space-y-4">
         {/* Header Section */}
-        <div className="max-w-sm mx-auto rounded-lg border bg-white p-4 shadow-sm">
+        <div className="max-w-sm p-4 mx-auto bg-white border rounded-lg shadow-sm">
           <div className="flex items-start justify-between">
             <h3 className="text-lg font-medium text-gray-800">Recent Order</h3>
-            <div className="text-sm text-gray-500 text-right">
+            <div className="text-sm text-right text-gray-500">
               <p>Date - {new Date().toLocaleDateString()}</p>
               <p>Time - {new Date().toLocaleTimeString()}</p>
             </div>
@@ -112,27 +113,27 @@ export default function CurrentProcessedOrderMain() {
             .map((order: any, index: any) => (
               <Link href={`/request-cart?orderId=${order.orderId}`} key={index}>
 
-                <div key={index} className="p-4 border bg-white shadow-sm rounded-lg m-1">
+                <div key={index} className="p-4 m-1 text-black bg-white border rounded-lg shadow-sm">
                   <div className="flex items-start gap-3">
-                    <div className="p-2 bg-blue-50 rounded-lg">
-                      <Package className="h-5 w-5 text-green-500" />
+                    <div className="p-2 rounded-lg bg-blue-50">
+                      <Package className="w-5 h-5 text-green-500" />
                     </div>
                     <div className="flex-1">
-                      <div className="flex justify-between items-start">
+                      <div className="flex items-start justify-between">
                         <div>
                           <h3 className="font-medium text-green-700">Order Id: {order.orderId}</h3>
                           <p className="text-sm text-muted-foreground">
                             Items: {order.totalItem} · Quantity: {order.totalQuantity}
                           </p>
                         </div>
-                        <button className="text-white bg-green-400 rounded-full text-xs px-4 py-1">
+                        <button className="px-4 py-1 text-xs text-white bg-green-400 rounded-full">
                           <span className="sr-only">View order details</span>
                           {statusMap[order.statusId]?.label || "Unknown"}
                         </button>
                       </div>
-                      <div className="flex  gap-2 mt-2 text-sm">
+                      <div className="flex gap-2 mt-2 text-sm">
                         <p className="text-muted-foreground">Placed On :</p>
-                        <p className="text-muted-foreground">{order.date}</p>
+                        <p className="text-muted-foreground ">{formatDate(order.createdAt)}</p>
                       </div>
                     </div>
                   </div>

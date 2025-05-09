@@ -92,7 +92,7 @@ export default function BookReviewsPage() {
 
   if (error) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-[#FFEFD3]">
+      <div className="flex items-center justify-center min-h-screen bg-[#FFFFFF]">
         <p className="text-red-600">{error}</p>
       </div>
     );
@@ -100,25 +100,25 @@ export default function BookReviewsPage() {
   return (
     <>
       <Toaster />
-      <header className="sticky top-0 z-10 flex h-16 items-center border-b bg-white px-4">
-      <button
-          className="flex items-center justify-center rounded-full p-2 hover:bg-gray-100"
+      <header className="sticky top-0 z-10 flex items-center h-16 px-4 bg-white border-b">
+        <button
+          className="flex items-center justify-center p-2 rounded-full hover:bg-gray-100"
           aria-label="Go back"
         >
-          <ArrowLeft className="h-5 w-5 text-black cursor-pointer" onClick={() => window.history.back()} />
+          <ArrowLeft className="w-5 h-5 text-black cursor-pointer" onClick={() => window.history.back()} />
         </button>
 
         <h1 className="text-lg font-medium text-gray-900">Note</h1>
         {/* <button
-          className="flex h-10 w-10 items-center justify-center rounded-full hover:bg-gray-100"
+          className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-gray-100"
           aria-label="Search notes"
         >
-          <Search className="h-5 w-5 text-gray-600" />
+          <Search className="w-5 h-5 text-gray-600" />
         </button> */}
       </header>
 
-      <div className="min-h-screen bg-[#FFEFD3] p-4">
-        <div className="mx-auto max-w-md space-y-4">
+      <div className="min-h-screen bg-[#FFFFFF] p-4">
+        <div className="max-w-md mx-auto space-y-4">
           {notesData?.map((review: any, i) => (
             <BookReviewCard
               key={i}
@@ -133,10 +133,10 @@ export default function BookReviewsPage() {
 
         <button
           onClick={() => router.push("/add-note")}
-          className="fixed bottom-40 right-6 z-20 flex h-14 w-14 items-center justify-center rounded-full bg-[#6D2323] text-white shadow-lg hover:bg-[#6D2323]"
+          className="fixed bottom-32 right-6 z-20 flex h-14 w-14 items-center justify-center rounded-full bg-[#FF9A2D] text-white shadow-xl hover:bg-[#FF9A2DCC]"
           aria-label="Add new review"
         >
-          <Plus className="h-6 w-6" />
+          <Plus className="w-6 h-6" />
         </button>
       </div>
 

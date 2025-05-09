@@ -53,7 +53,7 @@ export default function OrderDetailsSingle() {
     console.log("customId", customId);
 
     useEffect(() => {
-        if (!customId || !userData) return; 
+        if (!customId || !userData) return;
 
         const fetchOrderDetails = async () => {
             try {
@@ -98,7 +98,7 @@ export default function OrderDetailsSingle() {
         3: "Processing",
         4: "Completed",
         5: "Cancelled",
-      };
+    };
     const statusColors: { [key: string]: string } = {
         Pending: "bg-yellow-100 text-yellow-800",
         Accepted: "bg-pink-100 text-pink-800",
@@ -125,17 +125,17 @@ export default function OrderDetailsSingle() {
 
     return (
         <>
-            <header className="sticky top-0 z-10 flex h-20 items-center justify-between border-b bg-white px-4">
+            <header className="sticky top-0 z-10 flex items-center justify-between h-20 px-4 bg-white border-b">
                 <button
-                    className="flex items-center justify-center rounded-full p-2 hover:bg-gray-100"
+                    className="flex items-center justify-center p-2 text-black rounded-full hover:bg-gray-100"
                     aria-label="Go back"
                 >
-                    <ArrowLeft className="h-5 w-5 cursor-pointer" onClick={() => window.history.back()} />
+                    <ArrowLeft className="w-5 h-5 cursor-pointer" onClick={() => window.history.back()} />
                 </button>
 
-                <h1 className="text-lg font-medium">Order History</h1>
+                <h1 className="text-lg font-medium text-black">Order History</h1>
 
-                <div className="relative flex h-8 w-8 items-center justify-center rounded-full bg-emerald-500 text-white">
+                <div className="relative flex items-center justify-center w-8 h-8 text-white rounded-full bg-emerald-500">
                     <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-yellow-400 text-[10px] font-bold">
                         2
                     </span>
@@ -144,67 +144,67 @@ export default function OrderDetailsSingle() {
                 </div>
             </header>
 
-            <div className="max-w-md mx-auto bg-white p-4">
+            <div className="max-w-md p-4 mx-auto bg-white">
 
                 {/* Header */}
-                <div className='shadow-lg p-3 rounded-lg border mb-5'>
-                    <div className="flex justify-between items-center mb-2">
+                <div className='p-3 mb-5 border rounded-lg shadow-lg'>
+                    <div className="flex items-center justify-between mb-2">
                         <div className="flex items-center gap-2">
-                            <span className="text-sm font-medium">Status:</span>
+                            <span className="text-sm font-medium text-black">Status:</span>
                             <span
                                 className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${statusColors[status]
                                     }`}
                             >
                                 {status}
                             </span>
-                            {/* <span className="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded-full">{order?.statusId}</span> */}
+                            {/* <span className="px-2 py-1 text-xs text-yellow-800 bg-yellow-100 rounded-full">{order?.statusId}</span> */}
                         </div>
                         <div className="text-sm">
                             <span className="text-gray-500">ORDER ID: </span>
-                            <span className="font-medium">{order?.orderId}</span>
+                            <span className="font-medium text-black">{order?.orderId}</span>
                         </div>
                     </div>
 
                     {/* Date and Time */}
-                    <div className="flex justify-between text-sm mb-4">
+                    <div className="flex justify-between mb-4 text-sm">
                         <div>
                             <span className="text-gray-500">Date: </span>
-                            <span>{formattedDate}</span>
+                            <span className='text-black'>{formattedDate}</span>
                         </div>
                         <div>
                             <span className="text-gray-500">Time: </span>
-                            <span>{formattedTime}</span>
+                            <span className='text-black'>{formattedTime}</span>
                         </div>
                     </div>
 
                     {/* Order Summary */}
-                    <div className="text-sm mb-4">
+                    <div className="mb-4 text-sm">
                         <div className="flex justify-between mb-1">
                             <span className="text-gray-500">TOTAL ITEMS :</span>
-                            <span>{order?.totalItem}</span>
+                            <span className='text-black'>{order?.totalItem}</span>
                         </div>
                         <div className="flex justify-between mb-4">
                             <span className="text-gray-500">TOTAL QUANTITY :</span>
-                            <span>{order?.totalQuantity}</span>
+                            <span className='text-black'>{order?.totalQuantity}</span>
                         </div>
 
                         <div className="space-y-2">
 
                             {/* Uncomment this if shipping and discount are included */}
-                            
-  <div className="flex justify-between">
-    <span className="text-gray-500">TAX :</span>
-    <span>  {order?.OrderProductDetails[0]?.product?.tax}
-                                     </span>
-  </div>
-  {/* <div className="flex justify-between">
+
+                            <div className="flex justify-between">
+                                <span className="text-gray-500">TAX :</span>
+                                <span className='text-black'>  {order?.OrderProductDetails[0]?.product?.tax}
+                                </span>
+                            </div>
+                            {/* <div className="flex justify-between">
     <span className="text-gray-500">DISCOUNT</span>
     <span>₹40.0</span>
   </div>
   */}
-                            <div className="flex justify-between font-medium pt-2 border-t">
-                                <span>Total Amount :</span>
-                                <span>
+                            <div className="flex justify-between pt-2 font-medium border-t">
+                                <span className='text-black'>Total Amount :</span>
+                                <span className='text-black'>
                                     ₹
                                     {order?.OrderProductDetails?.reduce(
                                         (acc: number, item: any) => acc + item.quantity * item.price,
@@ -212,9 +212,9 @@ export default function OrderDetailsSingle() {
                                     )}
                                 </span>
                             </div>
-                            <div className="flex  font-medium pt-2 border-t">
-                                <span>Notes : </span>
-                                <span>
+                            <div className="flex pt-2 font-medium border-t">
+                                <span className='text-black'>Notes : </span>
+                                <span className='text-black'>
                                     {order?.notes}
                                 </span>
                             </div>
@@ -222,7 +222,7 @@ export default function OrderDetailsSingle() {
 
                     </div>
                     {/* Bill Notice */}
-                    {/* <div className="flex justify-center items-center gap-2 text-red-500 text-sm ">
+                    {/* <div className="flex items-center justify-center gap-2 text-sm text-red-500 ">
                     <AlertTriangle className="w-4 h-4" />
                     <span>Bill not generated by the seller</span>
                 </div> */}
@@ -231,27 +231,27 @@ export default function OrderDetailsSingle() {
 
                 {/* Product List */}
                 <div className="space-y-4">
-                    {order?.OrderProductDetails?.map((item: any) => (
-                        <div key={item.name} className="flex gap-4 p-3 border rounded-lg">
+                    {order?.OrderProductDetails?.map((item: any, index: number) => (
+                        <div key={index} className="flex gap-4 p-3 text-black border rounded-lg">
                             <Image
                                 src={item?.product?.productImage}
-                                alt={item.name}
+                                alt={item.name || "Product Image"}
                                 width={80}
                                 height={80}
-                                className="rounded-lg object-cover"
+                                className="object-cover rounded-lg"
                             />
                             <div className="flex-1">
-                                <h3 className="font-medium mb-1">{item?.product?.productName}</h3>
-                                <div className="text-sm text-gray-500 space-y-1">
+                                <h3 className="mb-1 font-medium">{item?.product?.productName}</h3>
+                                <div className="space-y-1 text-sm text-gray-500">
                                     <div className="flex justify-between">
-                                        <span>MRP : ₹{item?.product?.highPrice}</span>
+                                        <span>MRP : ₹{item?.price}</span>
                                         <span>Net Qty : {item?.quantity}</span>
                                     </div>
                                     <div className="flex justify-between">
-                                        <span>MOQ :<b className='text-black font-medium'> {item?.product?.moq}</b></span>
+                                        <span>MOQ :<b className='font-medium text-black'> {item?.product?.moq}</b></span>
                                     </div>
                                     <div className="flex justify-between">
-                                        <span>Total Amount: <p className='text-black font-semibold'>₹{item?.product?.highPrice * item.quantity}</p></span>
+                                        <span>Total Amount: <p className='font-semibold text-black'>₹{item?.price * item.quantity}</p></span>
                                     </div>
                                 </div>
                             </div>

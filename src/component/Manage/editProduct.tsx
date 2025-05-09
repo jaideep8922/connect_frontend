@@ -111,32 +111,32 @@ export default function EditProductTable() {
         <>
             <Toaster />
 
-            <header className="sticky top-0 z-10 flex h-20 items-center justify-between border-b bg-white px-4">
+            <header className="sticky top-0 z-10 flex h-20 items-center justify-between border-b bg-[#FF9A2D] px-4">
                 <button
-                    className="flex items-center justify-center rounded-full p-2 hover:bg-gray-100"
+                    className="flex items-center justify-center p-2 rounded-full hover:bg-gray-100"
                     aria-label="Go back"
                 >
-                    <ArrowLeft className="h-5 w-5 cursor-pointer" onClick={() => window.history.back()} />
+                    <ArrowLeft className="w-5 h-5 cursor-pointer" onClick={() => window.history.back()} />
                 </button>
                 <h1 className="text-lg font-medium">Product Details</h1>
-                <div className="relative flex h-8 w-8 items-center justify-center rounded-full bg-emerald-500 text-white">
+                <div className="relative flex items-center justify-center w-8 h-8 text-white rounded-full bg-emerald-500">
                     <span className="sr-only">Notifications</span>
                 </div>
             </header>
 
-            <div className="container mx-auto py-10 px-4">
-                <h1 className="text-xl font-bold">Product Management</h1>
-                <div className="flex justify-end items-end mb-6 mt-3">
+            <div className="container px-4 py-10 mx-auto">
+                <h1 className="text-xl font-bold text-black">Product Management</h1>
+                <div className="flex items-end justify-end mt-3 mb-6">
                     <div className="space-x-2">
                         <button
-                            className="px-2 py-2 bg-[#6D2323] text-white text-xs rounded-md hover:bg-gray-800"
+                            className="px-2 py-2 bg-[#3A6B34] text-white text-xs rounded-md hover:bg-gray-800"
                             onClick={() => setEditMode(!editMode)}
                         >
                             {editMode ? "Cancel" : "Edit Products"}
                         </button>
                         {editMode && (
                             <button
-                                className="px-2 py-2 bg-[#6D2323] text-xs text-white rounded-md hover:bg-[#6D2323]"
+                                className="px-2 py-2 bg-[#3A6B34] text-xs text-white rounded-md hover:bg-[#3A6B34]"
                                 onClick={handleSave}
                             >
                                 Save Changes
@@ -145,31 +145,31 @@ export default function EditProductTable() {
                     </div>
                 </div>
 
-                <div className="border rounded-lg overflow-x-auto">
-                    <table className="min-w-full border-collapse border border-gray-200">
-                        <thead className="bg-gray-100">
-                            <tr>
-                                <th className="border border-gray-200 px-4 py-5 text-left text-xs">Image</th>
-                                <th className="border border-gray-200 px-4 py-5 text-left text-xs">Product</th>
-                                <th className="border border-gray-200 px-4 py-5 text-left text-xs">Average(₹)</th>
-                                <th className="border border-gray-200 px-4 py-5 text-left text-xs">Good(₹)</th>
-                                <th className="border border-gray-200 px-4 py-5 text-left text-xs">High(₹)</th>
+                <div className="overflow-x-auto text-black border rounded-lg">
+                    <table className="min-w-full border border-collapse border-gray-200">
+                        <thead className="bg-[#FF9A2D]">
+                            <tr className="text-white">
+                                <th className="px-4 py-5 text-xs text-left border border-gray-200">Image</th>
+                                <th className="px-4 py-5 text-xs text-left border border-gray-200">Name</th>
+                                <th className="px-4 py-5 text-xs text-left border border-gray-200">Average(₹)</th>
+                                <th className="px-4 py-5 text-xs text-left border border-gray-200">Good(₹)</th>
+                                <th className="px-4 py-5 text-xs text-left border border-gray-200">High(₹)</th>
                             </tr>
                         </thead>
                         <tbody>
                             {products.map((product: any) => (
                                 <tr key={product.id} className="hover:bg-[#FFEFD3] cursor-pointer">
-                                    <td className="border border-gray-200 px-4 py-5">
+                                    <td className="px-4 py-5 border border-gray-200">
                                         <img
                                             src={product.productImage}
                                             alt={product.productName}
                                             width={50}
                                             height={20}
-                                            className="rounded-lg object-cover"
+                                            className="object-cover rounded-lg"
                                         />
                                     </td>
-                                    <td className="border border-gray-200 px-4 py-5 text-xs">{product.productName}</td>
-                                    <td className="border border-gray-200 px-2 py-5 text-xs">
+                                    <td className="px-4 py-5 text-xs border border-gray-200">{product.productName}</td>
+                                    <td className="px-2 py-5 text-xs border border-gray-200">
                                         {editMode ? (
                                             <input
                                                 type="number"
@@ -177,13 +177,13 @@ export default function EditProductTable() {
                                                 onChange={(e) =>
                                                     handlePriceChange(product.id, "averagePrice", e.target.value)
                                                 }
-                                                className="w-full border rounded p-1 text-xs"
+                                                className="w-full p-1 text-xs bg-white border rounded"
                                             />
                                         ) : (
                                             `₹${product.averagePrice || "N/A"}`
                                         )}
                                     </td>
-                                    <td className="border border-gray-200 px-2 py-2 text-xs">
+                                    <td className="px-2 py-2 text-xs border border-gray-200">
                                         {editMode ? (
                                             <input
                                                 type="number"
@@ -191,13 +191,13 @@ export default function EditProductTable() {
                                                 onChange={(e) =>
                                                     handlePriceChange(product.id, "goodPrice", e.target.value)
                                                 }
-                                                className="w-full border rounded p-1 text-xs"
+                                                className="w-full p-1 text-xs bg-white border rounded"
                                             />
                                         ) : (
                                             `₹${product.goodPrice || "N/A"}`
                                         )}
                                     </td>
-                                    <td className="border border-gray-200 px-2 py-2 text-xs">
+                                    <td className="px-2 py-2 text-xs border border-gray-200">
                                         {editMode ? (
                                             <input
                                                 type="number"
@@ -205,7 +205,7 @@ export default function EditProductTable() {
                                                 onChange={(e) =>
                                                     handlePriceChange(product.id, "highPrice", e.target.value)
                                                 }
-                                                className="w-full border rounded p-1 text-xs"
+                                                className="w-full p-1 text-xs bg-white border rounded"
                                             />
                                         ) : (
                                             `₹${product.highPrice || "N/A"}`

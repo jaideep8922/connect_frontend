@@ -8,6 +8,11 @@ import { droppedUser } from "@/store/slices/cartSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 
+import cartImage from "@/assets/shopping-cart-03.svg";
+import phoneImage from "@/assets/phone.svg";
+import shareImage from "@/assets/share-07.svg";
+import dotImage from "@/assets/dots-vertical.svg";
+
 const UserProfile: React.FC = () => {
   const router = useRouter();
   const [userDetails, setUserDetails] = useState<any>(null);
@@ -16,7 +21,7 @@ const UserProfile: React.FC = () => {
   const [userType, setUserType] = useState<string | null>(null);
   const dispatch = useDispatch()
   const dropped = useSelector((state: RootState) => state.cart.dropped);
-  const [activeTab, setActiveTab] = useState("shareQr"); 
+  const [activeTab, setActiveTab] = useState("shareQr");
 
 
   // Fetch user ID from localStorage
@@ -98,7 +103,7 @@ const UserProfile: React.FC = () => {
     //         alt="Profile"
     //         width={80}
     //         height={80}
-    //         className="w-full h-full object-cover"
+    //         className="object-cover w-full h-full"
     //       />
     //     </div>
     //     <h1 className="mt-4 text-lg font-semibold text-black">{businessOwner}</h1>
@@ -123,7 +128,7 @@ const UserProfile: React.FC = () => {
 
     //   {/* Help Section */}
     //   <div className="mt-5 mb-2">
-    //     <a href="#" className="text-sm text-gray-500 hover:underline flex items-center">
+    //     <a href="#" className="flex items-center text-sm text-gray-500 hover:underline">
     //       Need Help/Support
     //     </a>
     //   </div>
@@ -133,74 +138,107 @@ const UserProfile: React.FC = () => {
     //   </div>
     // </div>
 
-    <div className="flex flex-col items-center justify-between bg-[#FFEFD3] p-2">
+    <div className="flex flex-col items-center justify-between bg-[#FFFFFF] p-2">
       {/* Profile Section */}
       <div className="flex flex-col items-center mt-8">
-        <div className="w-20 h-20 rounded-full overflow-hidden border border-[#6D2323]">
+        <div className="w-20 h-20 rounded-full overflow-hidden border border-[#FF9A2D]">
           <Image
             src={filePath || Profile}
             alt="Profile"
             width={80}
             height={80}
-            className="w-full h-full object-cover"
+            className="object-cover w-full h-full"
           />
         </div>
         <h1 className="mt-4 text-lg font-semibold text-black">{businessOwner}</h1>
         <p className="text-sm text-gray-600">{businessName}</p>
       </div>
 
-      <span className="bg-[#fadfb0] text-sm rounded-full px-3 py-1 text-black my-3">
+      {/* <span className="bg-[#fadfb0] text-sm rounded-full px-3 py-1 text-black my-3">
         {userType}
-      </span>
+      </span> */}
+
+      <div className="flex items-center mt-2 justify-evenly w-[80%]">
+        <button className="bg-[#EBFFED] rounded-full p-2 flex items-center space-x-2">
+          <Image
+            src={cartImage}
+            alt="Logo"
+            width={25}
+            height={25}
+          />
+        </button>
+        <button className="bg-[#E0FBFF] rounded-full p-2 flex items-center space-x-2">
+          <Image
+            src={phoneImage}
+            alt="Logo"
+            width={25}
+            height={25}
+          />
+        </button>
+        <button className="bg-[#D2E2FF] rounded-full p-2 flex items-center space-x-2">
+          <Image
+            src={shareImage}
+            alt="Logo"
+            width={25}
+            height={25}
+          />
+        </button>
+        <button className="bg-[#FFD5E4] rounded-full p-2 flex items-center space-x-2">
+          <Image
+            src={dotImage}
+            alt="Logo"
+            width={25}
+            height={25}
+          />
+        </button>
+      </div>
 
       {/* Tabs */}
       {userType === 'Supplier' ? (
-        <div className="mt-5 w-full max-w-md">
-        <div className="flex border-b">
-          <button
-            className={`w-1/2 py-2 text-center text-[#6D2323] ${
-              activeTab === "shareQr" ? "border-b-2 border-[#6D2323]" : ""
-            }`}
-            onClick={() => setActiveTab("shareQr")}
-          >
-            Share QR
-          </button>
-          <button
-            className={`w-1/2 py-2 text-center text-[#6D2323] ${
-              activeTab === "selfQr" ? "border-b-2 border-[#6D2323]" : ""
-            }`}
-            onClick={() => setActiveTab("selfQr")}
-          >
-            Self QR
-          </button>
-        </div>
-
-        {/* Tabs Content */}
-        <div className="mt-4 flex items-center justify-center">
-          {activeTab === "shareQr" && qrCode && (
-            <div className="mt-4">
-              <img src={qrCode} alt="Share QR Code" className="w-60 h-60" />
-            </div>
-          )}
-
-          {activeTab === "selfQr" && qrCodeSelf && (
-            <div className="mt-4">
-              <img src={qrCodeSelf} alt="Self QR Code" className="w-60 h-60" />
-            </div>
-          )}
-        </div>
-      </div>
-      ): (
-          <div className="mt-4">
-            <img src={qrCode} alt="Share QR Code" className="w-60 h-60" />
+        <div className="w-full max-w-md mt-5">
+          <div className="flex border-b">
+            <button
+              className={`w-1/2 py-2 text-center text-[#3A6B34] ${activeTab === "shareQr" ? "border-b-2 border-[#3A6B34]" : ""
+                }`}
+              onClick={() => setActiveTab("shareQr")}
+            >
+              Share QR
+            </button>
+            <button
+              className={`w-1/2 py-2 text-center text-[#3A6B34] ${activeTab === "selfQr" ? "border-b-2 border-[#3A6B34]" : ""
+                }`}
+              onClick={() => setActiveTab("selfQr")}
+            >
+              Self QR
+            </button>
           </div>
-      
+
+          {/* Tabs Content */}
+          <div className="flex items-center justify-center mt-4">
+            {activeTab === "shareQr" && qrCode && (
+              <div className="max-w-sm mx-auto mt-4 overflow-hidden bg-white rounded-lg shadow-lg">
+                <img src={qrCode} alt="Share QR Code" className="w-60 h-60" />
+              </div>
+            )}
+
+            {activeTab === "selfQr" && qrCodeSelf && (
+              <div className="max-w-sm mx-auto mt-4 overflow-hidden bg-white rounded-lg shadow-lg">
+                <img src={qrCodeSelf} alt="Self QR Code" className="w-60 h-60" />
+              </div>
+            )}
+          </div>
+        </div>
+      ) : (
+        <div className="max-w-sm mx-auto mt-4 overflow-hidden bg-white rounded-lg shadow-lg">
+          <img src={qrCode} alt="Share QR Code" className="w-60 h-60" />
+        </div>
+
       )}
-      
+
 
       {/* Help Section */}
       <div className="mt-5 mb-2">
-        <a href="#" className="text-sm text-gray-500 hover:underline flex items-center">
+        <a href="#" className="flex items-center text-sm text-gray-500 hover:underline">
           Need Help/Support
         </a>
       </div>
