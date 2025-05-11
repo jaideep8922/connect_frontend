@@ -26,12 +26,16 @@ import edibleOilImage from "@/assets/edibleoil.svg";
 import householdImage from "@/assets/household.svg";
 import babyCareImage from "@/assets/babycare.svg";
 
+type UserType = "Supplier" | "Retailer" | "Distributor" | "Guest";
 
 export default function ShopMain() {
     const [productData, setProductData] = useState<any>([]);
     const [sellerData, setSellerData] = useState<any>([]);
     const [error, setError] = useState<string | null>(null);
     const [imageSlider, setImageSlider] = useState<any>([]);
+    const [userType, setUserType] = useState<UserType | null>(null);
+    const [customId, setCustomId] = useState<string | null>(null);
+
     const router = useRouter();
 
     const carts = useSelector((state: RootState) => state.cart.cart);
@@ -52,10 +56,15 @@ export default function ShopMain() {
     useEffect(() => {
         if (typeof window !== "undefined") {
             const localData = localStorage.getItem('userDetails');
+            setUserType(localStorage.getItem('userType') as UserType)
+            if (localStorage.getItem('userType') === 'Guest') {
+                setIsSearchToggled(true)
+            }
             if (localData) {
                 const parsedData = JSON.parse(localData);
                 const sellerIdFromLocalStorage = parsedData?.data?.sellerId;
                 const adminId = parsedData?.data?.adminId
+                setCustomId(parsedData?.data?.customId);
 
                 if (sellerIdFromLocalStorage) {
                     setSellerId(sellerIdFromLocalStorage);
@@ -204,7 +213,11 @@ export default function ShopMain() {
                 }
 
                 const result = await response.json();
-                setSearchResults(result);
+                if (userType !== 'Guest') {
+                    setSearchResults(result);
+                } else {
+                    setProductData(result);
+                }
             } catch (error) {
                 console.error("Error fetching products:", error);
             }
@@ -286,8 +299,10 @@ export default function ShopMain() {
                         <Menu className="w-6 h-6" />
                     </button>
                     <div className='flex flex-col items-start justify-center flex-grow px-2'>
-                        <p className="m-0 text-base leading-none">{sellerData?.data?.businessName}</p>
-                        <p className="m-0 text-xs leading-none">{sellerData?.data?.businessOwner}</p>
+                        {userType !== 'Guest' && (<p className="m-0 text-base leading-none">{sellerData?.data?.businessName}</p>)}
+                        {userType !== 'Guest' && (<p className="m-0 text-xs leading-none">{sellerData?.data?.businessOwner}</p>)}
+
+                        {userType === 'Guest' && (<p className="m-0 text-base leading-none">{customId}</p>)}
                     </div>
                     <button className="p-2">
                         <Search onClick={() => setIsSearchToggled((prev) => !prev)} className="w-6 h-6" />
@@ -298,12 +313,12 @@ export default function ShopMain() {
 
                 {/* Search Header */}
                 {isSearchToggled && (<div className="flex items-center gap-3 mx-2 mt-2 bg-transparent">
-                    <div className="flex-1 flex items-center gap-2 px-4 py-2 bg-white rounded-lg border border-[#6D2323]">
-                        <Search className="w-4 h-4 text-[#6D2323]" />
+                    <div className="flex-1 flex items-center gap-2 px-4 py-2 bg-white rounded-lg border border-[#3A6B34]">
+                        <Search className="w-4 h-4 text-[#3A6B34]" />
                         <input
                             type="text"
                             placeholder="Search keywords..."
-                            className="w-full bg-transparent outline-none text-sm text-[#6D2323]"
+                            className="w-full bg-transparent outline-none text-sm text-[#3A6B34]"
                             onChange={(e) => setSearch(e.target.value)}
                         />
                     </div>
@@ -397,7 +412,7 @@ export default function ShopMain() {
                 </div>)}
 
                 {/* Categories */}
-                <div className="flex flex-col items-center justify-between gap-4 px-2 my-8">
+                {userType !== 'Guest' && (<div className="flex flex-col items-center justify-between gap-4 px-2 my-8">
                     <Link href={'/categories'} className='w-full'>
                         <div className="flex flex-row items-center justify-between w-full px-2 cursor-pointer">
                             <p className='font-bold text-[#0D8B28]'>Categories</p>
@@ -421,7 +436,7 @@ export default function ShopMain() {
                             </div>
                         ))}
                     </div>
-                </div>
+                </div>)}
 
                 <div className="px-1">
                     <div className="grid grid-cols-2 gap-2 pb-5 my-5">

@@ -12,6 +12,8 @@ import { addToCart, removeFromCart } from "@/store/slices/cartSlice";
 import { RootState } from "@/store/store";
 import { formatDate } from "../global/productCard";
 
+type UserType = "Supplier" | "Retailer" | "Distributor" | "Guest";
+
 export default function SingleProductCard() {
   const router = useRouter();
   const dispatch = useDispatch();
@@ -27,11 +29,14 @@ export default function SingleProductCard() {
   const [sellerId, setSellerId] = useState<string | null>(null);
   const [id, setId] = useState<string | null>(null);
   const [sellerIdss, setSellerIdss] = useState<any>('')
+  const [product, setProduct] = useState<any>({});
+  const [userType, setUserType] = useState<UserType | null>(null);
 
   // Fetch local storage safely (only client-side)
   useEffect(() => {
     if (typeof window !== "undefined") {
       const localData = localStorage.getItem('userDetails');
+      setUserType(localStorage.getItem('userType') as UserType)
 
       if (localData) {
         const parsedData = JSON.parse(localData);
@@ -81,8 +86,45 @@ export default function SingleProductCard() {
 
   }, [sellerId, sellerIdss]);
 
+
+  useEffect(() => {
+    if (userType !== 'Guest') return;
+    const fetchProduct = async () => {
+      try {
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/product/get-single/${id}`,
+          {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          }
+        );
+        const result = await response.json();
+        if (!response.ok) {
+          throw new Error(result.message || 'Failed to fetch product details');
+        }
+        setProduct(result?.data);
+        setError(null);
+      } catch (error: any) {
+        console.error('Error fetching product details:', error.message);
+        setError(error.message);
+      }
+    };
+    fetchProduct();
+
+  }, [id]);
+
+
   // Find the specific product based on the ID
-  const product = productData?.data?.find((data: any) => data?.productId === id);
+  // const product = productData?.data?.find((data: any) => data?.productId === id);
+
+  useEffect(() => {
+    if (productData?.data?.length > 0) {
+      const foundProduct = productData?.data?.find((data: any) => data?.productId === id);
+      setProduct(foundProduct);
+    }
+  }, [productData])
 
   // Handle price change
   const handlePriceChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -103,7 +145,8 @@ export default function SingleProductCard() {
           price: price,
           selectedPrice: selectedPrice,
           quantity: quantity,
-          tax: selectedProduct?.tax
+          tax: selectedProduct?.tax,
+          sellerId:selectedProduct?.sellerId
         };
 
         // Update cart state
@@ -284,7 +327,7 @@ export default function SingleProductCard() {
               {/* Cart Icon - Visible when item is added to cart */}
               {!sellerIdss && isAddedToCart && (
                 <div
-                  className="absolute top-2 mt-[-3rem] right-2 bg-[#6D2323] text-white p-2 rounded-full cursor-pointer flex items-center"
+                  className="absolute top-2 mt-[-3rem] right-2 bg-[#3A6B34] text-white p-2 rounded-full cursor-pointer flex items-center"
                   onClick={navigateToCart}
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-shopping-cart"><circle cx="8" cy="21" r="1" /><circle cx="19" cy="21" r="1" /><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12" /></svg>
@@ -294,7 +337,7 @@ export default function SingleProductCard() {
 
               {/* Quantity Controls or Add to Cart Button */}
               {!sellerIdss && isAddedToCart ? (
-                <div className="flex justify-between items-center bg-[#6D2323] w-full p-[6px] px-3 text-white rounded-full mt-4">
+                <div className="flex justify-between items-center bg-[#3A6B34] w-full p-[6px] px-3 text-white rounded-full mt-4">
                   <button onClick={handleDecrement} className="text-xl rounded-md">
                     -
                   </button>

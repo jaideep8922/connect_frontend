@@ -19,6 +19,8 @@ type touchAndHoldDataType = {
     selectedPrice: string;
 }
 
+type UserType = "Supplier" | "Retailer" | "Distributor" | "Guest";
+
 const emptyState: touchAndHoldDataType = { id: '', selectedPrice: '' }
 
 function CartPage() {
@@ -35,17 +37,23 @@ function CartPage() {
     const searchParams = useSearchParams();
     const [sellerIdss, setSellerIdss] = useState<any>('')
     const [touchAndHoldData, setTouchAndHoldData] = useState<touchAndHoldDataType>(emptyState);
+    const [userType, setUserType] = useState<UserType | null>(null);
 
     useEffect(() => {
         // Ensure code runs only in the browser (client side)
         if (typeof window !== "undefined") {
             const localData = localStorage.getItem("userDetails");
+            setUserType(localStorage.getItem('userType') as UserType)
             if (localData) {
                 setUserDetails(JSON.parse(localData));
             }
 
             const idParam = searchParams.get("sellerId");
-            setSellerIdss(idParam)
+            if (idParam) {
+                setSellerIdss(idParam)
+            } else {
+                setSellerIdss(carts[0]?.sellerId)
+            }
 
         }
         // const idParam = searchParams.get("sellerId");
@@ -190,7 +198,7 @@ function CartPage() {
                     </div>
                     <button className="flex items-center gap-2 rounded-full bg-orange-50 px-4 py-2 text-[#3A6B34]" onClick={() => setIsOpen(true)}>
                         <NotebookPen className="w-5 h-5" />
-                        <span>Note</span>
+                        <span>{userType === 'Guest' ? 'Address' : 'Note'}</span>
                     </button>
 
                     {isOpen && (<div className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm" />)}
@@ -198,7 +206,7 @@ function CartPage() {
                         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-opacity-50">
                             <div className="w-full max-w-[500px] rounded-lg bg-white p-6 m-2">
                                 <div className="flex items-center justify-between mb-4">
-                                    <h2 className="text-lg font-semibold text-black">Add Description</h2>
+                                    <h2 className="text-lg font-semibold text-black">{userType !== 'Guest' ? 'Add Description' : 'Add Address'}</h2>
                                     <button
                                         onClick={() => setIsOpen(false)}
                                         className="p-1 rounded-full hover:bg-gray-100"

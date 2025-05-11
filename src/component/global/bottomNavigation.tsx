@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 
-type UserType = "Supplier" | "Retailer" | "Distributor";
+type UserType = "Supplier" | "Retailer" | "Distributor" | "Guest";
 
 const BottomNavigation = () => {
     const router = useRouter();
@@ -50,7 +50,7 @@ const BottomNavigation = () => {
                     </button>
 
                     {/* Conditional Menu Item for "Retailer" */}
-                    {userType === "Retailer" && (
+                    {(userType === "Retailer" || userType === "Guest") && (
                         <button
                             className={`flex flex-col items-center space-y-1 ${isActive('/shop') ? 'bg-white p-3 m-2 rounded-md' : 'p-3'}`}
                             onClick={() => router.push('/shop')}

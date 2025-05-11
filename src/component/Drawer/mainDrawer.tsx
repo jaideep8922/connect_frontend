@@ -42,8 +42,8 @@ export default function MainDrawer({ isOpen, toggleDrawer }: { isOpen: boolean, 
                             className="object-cover w-full h-full"
                         />
                     </div>
-                    <h1 className="mt-4 text-lg font-semibold text-black">{userDetails?.businessOwner}</h1>
-                    <p className="text-sm text-gray-600">{userDetails?.businessName}</p>
+                    <h1 className="mt-4 text-lg font-semibold text-black">{userDetails?.businessOwner || userDetails?.customId}</h1>
+                    <p className="text-sm text-gray-600">{userDetails?.businessName || userDetails?.phone}</p>
                 </div>
                 <div className="flex flex-row items-center justify-between w-full p-4 mb-8">
                     <div className="flex flex-row items-center justify-start gap-2">
@@ -57,7 +57,7 @@ export default function MainDrawer({ isOpen, toggleDrawer }: { isOpen: boolean, 
                             />
                         </div>
                         <div className="flex flex-col items-start justify-center">
-                            <h1 className="font-medium text-black text-md">{userDetails?.businessOwner}</h1>
+                            <h1 className="font-medium text-black text-md">{userDetails?.businessOwner || userDetails?.customId}</h1>
                             <p className="text-sm text-red-600">Log-Out</p>
                         </div>
                     </div>

@@ -42,6 +42,8 @@ const UserProfile: React.FC = () => {
             setUserType("Supplier");
           } else if (customId.startsWith("RE")) {
             setUserType("Retailer");
+          } else if (customId.startsWith("GU")) {
+            setUserType("Guest");
           } else {
             setUserType(null);
           }
@@ -150,8 +152,12 @@ const UserProfile: React.FC = () => {
             className="object-cover w-full h-full"
           />
         </div>
-        <h1 className="mt-4 text-lg font-semibold text-black">{businessOwner}</h1>
-        <p className="text-sm text-gray-600">{businessName}</p>
+        {userType !== 'Guest' && (<h1 className="mt-4 text-lg font-semibold text-black">{businessOwner}</h1>)}
+        {userType !== 'Guest' && (<p className="text-sm text-gray-600">{businessName}</p>)}
+
+        {/* for guest */}
+        {userType === 'Guest' && (<h1 className="mt-4 text-lg font-semibold text-black">{userDetails?.customId}</h1>)}
+        {userType === 'Guest' && (<p className="text-sm text-gray-600">{userDetails?.phone}</p>)}
       </div>
 
       {/* <span className="bg-[#fadfb0] text-sm rounded-full px-3 py-1 text-black my-3">
@@ -194,7 +200,7 @@ const UserProfile: React.FC = () => {
       </div>
 
       {/* Tabs */}
-      {userType === 'Supplier' ? (
+      {userType === 'Supplier' && (
         <div className="w-full max-w-md mt-5">
           <div className="flex border-b">
             <button
@@ -228,7 +234,8 @@ const UserProfile: React.FC = () => {
             )}
           </div>
         </div>
-      ) : (
+      )}
+      {userType === 'Retailer' && (
         <div className="max-w-sm mx-auto mt-4 overflow-hidden bg-white rounded-lg shadow-lg">
           <img src={qrCode} alt="Share QR Code" className="w-60 h-60" />
         </div>

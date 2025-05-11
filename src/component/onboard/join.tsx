@@ -320,7 +320,7 @@ const JoinPage: React.FC = () => {
       console.log("guestResponse", guestResponse?.data)
       if (typeof window !== "undefined") {
         localStorage.setItem("userDetails", JSON.stringify(guestResponse.data));
-        localStorage.setItem("token", guestResponse.data.token);
+        localStorage.setItem("token", guestResponse?.data?.data?.token);
         localStorage.setItem("userType", formData.userType);
 
       }

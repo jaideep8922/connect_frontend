@@ -20,6 +20,7 @@ interface ProductCardProps {
     goodPrice: string;
     highPrice: string;
     updatedAt: string;
+    sellerId: string;
     tax: '', // Add a default tax value or calculate it as nee
   };
 }
@@ -60,7 +61,8 @@ const ProductCard = ({ product }: ProductCardProps) => {
         price: price,
         selectedPrice: selectedPrice,
         quantity: quantity,
-        tax: product.tax
+        tax: product.tax,
+        sellerId: product?.sellerId
       };
 
       setCart([cartItem])
@@ -83,8 +85,8 @@ const ProductCard = ({ product }: ProductCardProps) => {
       price: product[selectedPrice as keyof typeof product],
       selectedPrice: selectedPrice,
       quantity: quantity,
-      tax: product.tax
-
+      tax: product.tax,
+      sellerId: product?.sellerId
     };
 
 
@@ -103,6 +105,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
         price: product[selectedPrice as keyof typeof product],
         selectedPrice: selectedPrice,
         quantity: quantity,
+        sellerId: product?.sellerId
       };
 
       setQuantity(quantity - 1);

@@ -9,6 +9,7 @@ type CartItem = {
   selectedPrice: string;
   quantity: number;
   tax: string;
+  sellerId: string
 };
 
 interface CartState {
