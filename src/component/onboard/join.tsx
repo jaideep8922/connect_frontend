@@ -590,7 +590,7 @@ const JoinPage: React.FC = () => {
 
       {/* Main Content */}
       <main className="flex flex-col w-full px-6">
-        {length === 0 ? (
+        {length < 3 ? (
           <>
             {step === 1 && (
               <div className="bg-[#FFFFFF]">
@@ -1120,7 +1120,7 @@ const JoinPage: React.FC = () => {
               {step < 5 ? "Next" : "Submit"}
             </button> */}
 
-            {length === 0 && (
+            {length < 3 && (
               <button
                 onClick={handleNext}
                 disabled={loading}

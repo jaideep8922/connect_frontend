@@ -89,17 +89,17 @@ export default function AddProduct() {
           formData.append('productVideo', videoInputRef.current.files[0]);
         }
 
-        // try {
-        //   const response = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/product/add-product`, formData, {
-        //     headers: { 'Content-Type': 'multipart/form-data' },
-        //   });
-        //   toast.success(response.data.message || "Product added successfully!");
-        //   setTimeout(() => router.push('/manage'), 3000);
-        // } catch (error: any) {
-        //   const errorMessage = error.response?.data?.message || "An unexpected error occurred";
-        //   console.error("Error adding product:", errorMessage);
-        //   toast.error(errorMessage);
-        // }
+        try {
+          const response = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/product/add-product`, formData, {
+            headers: { 'Content-Type': 'multipart/form-data' },
+          });
+          toast.success(response.data.message || "Product added successfully!");
+          setTimeout(() => router.push('/manage'), 3000);
+        } catch (error: any) {
+          const errorMessage = error.response?.data?.message || "An unexpected error occurred";
+          console.error("Error adding product:", errorMessage);
+          toast.error(errorMessage);
+        }
 
       }
     }

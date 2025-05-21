@@ -164,7 +164,7 @@ const UserProfile: React.FC = () => {
         {userType}
       </span> */}
 
-      <div className="flex items-center mt-2 justify-evenly w-[80%]">
+      {userType !== 'Guest' && (<div className="flex items-center mt-2 justify-evenly w-[80%]">
         <button className="bg-[#EBFFED] rounded-full p-2 flex items-center space-x-2">
           <Image
             src={cartImage}
@@ -197,7 +197,7 @@ const UserProfile: React.FC = () => {
             height={25}
           />
         </button>
-      </div>
+      </div>)}
 
       {/* Tabs */}
       {userType === 'Supplier' && (

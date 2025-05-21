@@ -77,7 +77,7 @@ export default function ShopMain() {
     }, []);
 
     useEffect(() => {
-        if (sellerId) {
+        if (sellerId && userType !== 'Guest') {
             const fetchProductList = async () => {
                 try {
                     const response = await fetch(
@@ -151,7 +151,7 @@ export default function ShopMain() {
 
     useEffect(() => {
         // Fetch banner images if sellerId is available
-        if (sellerId) {
+        if (sellerId && userType !== 'Guest') {
             const fetchBannerImages = async () => {
                 try {
                     const response = await fetch(

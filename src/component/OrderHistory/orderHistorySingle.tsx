@@ -60,7 +60,7 @@ export default function OrderDetailsSingle() {
                 let response;
                 let apiEndpoint = "";
 
-                if (userData === "Retailer") {
+                if (userData === "Retailer" || userData === "Guest") {
                     apiEndpoint = `${process.env.NEXT_PUBLIC_BACKEND_URL}/order/get-order-history-by-retailer-id`;
                 } else if (userData === "Supplier") {
                     apiEndpoint = `${process.env.NEXT_PUBLIC_BACKEND_URL}/order/get-order-history-by-supplier-id`;

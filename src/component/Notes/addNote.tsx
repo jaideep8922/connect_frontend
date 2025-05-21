@@ -53,7 +53,7 @@ const AddNote = () => {
     const requestBody: any = { notes: notesText };
     if (customId.startsWith("SU")) {
       requestBody.sellerId = customId;
-    } else if (customId.startsWith("RE")) {
+    } else if (customId.startsWith("RE") || customId.startsWith("GU")) {
       requestBody.retailerId = customId;
     } else {
       console.error("Invalid customId prefix.");

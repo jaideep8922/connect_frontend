@@ -45,7 +45,7 @@ export default function OrdersHistoryPage() {
         let response;
 
         // Fetch orders based on user type
-        if (userData === "Retailer") {
+        if (userData === "Retailer" || userData === "Guest") {
           response = await fetch(
             `${process.env.NEXT_PUBLIC_BACKEND_URL}/order/get-order-history-by-retailer-id`,
             {
@@ -151,8 +151,8 @@ export default function OrdersHistoryPage() {
                 <button
                   key={status}
                   className={`rounded-full px-4 py-2 text-sm font-medium ${selectedStatus === status
-                      ? "bg-[#3A6B34] text-white "
-                      : "bg-white text-gray-600 hover:bg-gray-100 border"
+                    ? "bg-[#3A6B34] text-white "
+                    : "bg-white text-gray-600 hover:bg-gray-100 border"
                     }`}
                   onClick={() => setSelectedStatus(status)}
                 >
