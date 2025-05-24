@@ -66,6 +66,10 @@ export default function ShopMain() {
                 const adminId = parsedData?.data?.adminId
                 setCustomId(parsedData?.data?.customId);
 
+                if (adminId) {
+                    setIsSearchToggled(true)
+                }
+
                 if (sellerIdFromLocalStorage) {
                     setSellerId(sellerIdFromLocalStorage);
                     setPhoneNumber(parsedData?.data?.phone || null);
@@ -212,10 +216,11 @@ export default function ShopMain() {
                     throw new Error("Failed to fetch products");
                 }
 
-                const result = await response.json();
-                if (userType !== 'Guest') {
+                const result = await response.json(); 
+                if (userType !== 'Guest' && !adminId) {
                     setSearchResults(result);
-                } else {
+                }
+                if (userType === 'Guest' || adminId) {
                     setProductData(result);
                 }
             } catch (error) {
@@ -302,7 +307,7 @@ export default function ShopMain() {
                         {userType !== 'Guest' && (<p className="m-0 text-base leading-none">{sellerData?.data?.businessName}</p>)}
                         {userType !== 'Guest' && (<p className="m-0 text-xs leading-none">{sellerData?.data?.businessOwner}</p>)}
 
-                        {userType === 'Guest' && (<p className="m-0 text-base leading-none">{customId}</p>)}
+                        {(userType === 'Guest' || adminId) && (<p className="m-0 text-base leading-none">{customId}</p>)}
                     </div>
                     <button className="p-2">
                         <Search onClick={() => setIsSearchToggled((prev) => !prev)} className="w-6 h-6" />

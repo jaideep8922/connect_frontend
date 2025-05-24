@@ -19,6 +19,7 @@ const UserProfile: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [id, setId] = useState<string | null>(null);
   const [userType, setUserType] = useState<string | null>(null);
+  // const [adminId, setAdminId] = useState<string | null>(null);
   const dispatch = useDispatch()
   const dropped = useSelector((state: RootState) => state.cart.dropped);
   const [activeTab, setActiveTab] = useState("shareQr");
@@ -32,6 +33,7 @@ const UserProfile: React.FC = () => {
       if (storedDetails) {
         const parsedDetails = JSON.parse(storedDetails);
         const customId = parsedDetails.data?.customId;
+        // setAdminId(parsedDetails?.data?.adminId)
 
         if (customId) {
           console.log("customId:", customId);
